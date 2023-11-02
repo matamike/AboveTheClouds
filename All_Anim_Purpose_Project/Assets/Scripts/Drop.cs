@@ -7,6 +7,7 @@ public class Drop : MonoBehaviour{
 
 
     private void OnCollisionEnter(Collision collision){
+        // Detects DropSource Objects (maybe change to layers)
         if(collision.collider.gameObject.TryGetComponent(out DropSource dropSource))
         {
             rb.isKinematic = false;

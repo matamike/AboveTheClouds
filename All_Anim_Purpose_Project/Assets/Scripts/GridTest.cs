@@ -16,9 +16,5 @@ public class GridTest : MonoBehaviour{
         if (Input.GetKeyDown(KeyCode.R)) {
             grid.UpdateGridOffset(offset, true);
         }
-
-        if (Input.GetKeyDown(KeyCode.F)){
-            CursorController.Instance.CheckRaycast();
-        }
     }
 }

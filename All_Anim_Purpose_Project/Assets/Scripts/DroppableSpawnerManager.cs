@@ -15,10 +15,7 @@ public class DroppableSpawnerManager : MonoBehaviour{
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            SpawnDroppable();
-        }
+        if (Input.GetKeyDown(KeyCode.E)) SpawnDroppable();
     }
 
     private void SpawnDroppable(){        
