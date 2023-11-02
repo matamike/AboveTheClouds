@@ -29,6 +29,8 @@ public class CursorController : MonoBehaviour{
     public void CheckRaycast()
     {   
         GameObject go = MouseUtility.GetMouseToWorldRayHit();
+        if (go) Debug.Log(go.name);
+
         if (go != null) OnObjectFocusGained?.Invoke(this, new OnObjectFocusEventArgs
         {
             focus = go,

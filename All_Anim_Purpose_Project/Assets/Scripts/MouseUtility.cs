@@ -18,7 +18,7 @@ public static class MouseUtility{
         Debug.DrawRay(ray.origin, ray.direction * raycastDistance, Color.blue, 2f);
 
         bool result = Physics.Raycast(ray, out RaycastHit hitInfo, raycastDistance);
-        if (result) return hitInfo.collider.gameObject;
+        if (result) return hitInfo.collider.transform.root.gameObject;
         else return null;
     }
 }

@@ -3,43 +3,56 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Move : MonoBehaviour{
-    private bool isMoving = false;
-    private bool isRotating = false;
+    [SerializeField] private bool isMoving = false;
+    [SerializeField] private bool isRotating = false;
     private Vector3 targetPosition;
 
 
     [SerializeField] [Range(1f,10f)]private float duration = 5f;
     private float timer = 0f;
 
+    private void Awake(){
 
-    private void CursorController_OnObjectFocusLost(object sender, CursorController.OnObjectFocusEventArgs e)
+        targetPosition = transform.position;
+    }
+
+    private void OnEnable()
     {
+        MyGrid.OnPositionChanged += MyGrid_OnPositionChanged;
+        if (CursorController.Instance)
+        {
+            CursorController.Instance.OnObjectFocusGained += CursorController_OnObjectFocusGained;
+            CursorController.Instance.OnObjectFocusLost += CursorController_OnObjectFocusLost;
+        }
+    }
+
+    private void OnDisable()
+    {
+        MyGrid.OnPositionChanged -= MyGrid_OnPositionChanged;
+        if (CursorController.Instance)
+        {
+            CursorController.Instance.OnObjectFocusGained -= CursorController_OnObjectFocusGained;
+            CursorController.Instance.OnObjectFocusLost -= CursorController_OnObjectFocusLost;
+        }
+    }
+
+    private void CursorController_OnObjectFocusLost(object sender, CursorController.OnObjectFocusEventArgs e){
         isRotating = false;
     }
 
-    private void CursorController_OnObjectFocusGained(object sender, CursorController.OnObjectFocusEventArgs e)
-    {
+    private void CursorController_OnObjectFocusGained(object sender, CursorController.OnObjectFocusEventArgs e){
         if (e.focus == gameObject) isRotating = true;
         else isRotating = false;
     }
 
-    private void Awake(){
-        MyGrid.OnPositionChanged += MyGrid_OnPositionChanged;
-        CursorController.Instance.OnObjectFocusGained += CursorController_OnObjectFocusGained;
-        CursorController.Instance.OnObjectFocusLost += CursorController_OnObjectFocusLost;
-        targetPosition = transform.position;
-    }
-
     private void MyGrid_OnPositionChanged(object sender, MyGrid.OnPositionChangedEventArgs e){
-        if (e.self == gameObject)
-        {
+        if (e.self == gameObject){
             isMoving = true;
             targetPosition = e.target;
         }
     }
 
-    private void Update()
-    {
+    private void Update(){
         //Moving
         if (isMoving && timer <= duration){
             timer += Time.deltaTime;
@@ -54,7 +67,7 @@ public class Move : MonoBehaviour{
         //Rotating
         if (isRotating)
         {
-            gameObject.transform.Rotate(Vector3.up, 45f * Time.deltaTime);
+            gameObject.transform.Rotate(Vector3.up, 90f * Time.deltaTime);
         }
         else
         {
