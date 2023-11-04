@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2189718724534540686}
   - component: {fileID: 3416874958315747561}
   - component: {fileID: 7845483825343419264}
+  - component: {fileID: 5997272483561598977}
   m_Layer: 0
   m_Name: GridElementVisualBase
   m_TagString: Untagged
@@ -100,7 +101,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 122
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3
 --- !u!65 &7845483825343419264
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -108,12 +109,25 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2189718724534540680}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 58f7916cf80488947b24802a9a4906d4, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5997272483561598977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2189718724534540680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbe4f7fbac249f648b3f2963b796ca70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  springJoint: {fileID: 9062003267875099492}
 --- !u!1 &9062003267875099514
 GameObject:
   m_ObjectHideFlags: 0
@@ -176,11 +190,11 @@ SpringJoint:
   m_AutoConfigureConnectedAnchor: 1
   m_ConnectedAnchor: {x: 0, y: -1, z: 0}
   serializedVersion: 2
-  m_Spring: 1000
-  m_Damper: 0.2
+  m_Spring: 100000
+  m_Damper: 0.75
   m_MinDistance: 0
   m_MaxDistance: 0
-  m_Tolerance: 0.025
+  m_Tolerance: 0.01
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
@@ -234,5 +248,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isMoving: 0
-  isRotating: 0
-  duration: 5
+  resetDuration: 5

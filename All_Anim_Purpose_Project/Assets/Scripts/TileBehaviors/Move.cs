@@ -10,14 +10,14 @@ public class Move : MonoBehaviour{
     private float timer = 0f;
 
     private void OnEnable(){
-        MyGrid.OnPositionChanged += MyGrid_OnPositionChanged;
+        TileGrid.OnPositionChanged += MyGrid_OnPositionChanged;
     }
 
     private void OnDisable(){
-        MyGrid.OnPositionChanged -= MyGrid_OnPositionChanged;
+        TileGrid.OnPositionChanged -= MyGrid_OnPositionChanged;
     }
 
-    private void MyGrid_OnPositionChanged(object sender, MyGrid.OnPositionChangedEventArgs e){
+    private void MyGrid_OnPositionChanged(object sender, TileGrid.OnPositionChangedEventArgs e){
         if (e.self == gameObject){
             isMoving = true;
             targetPosition = (e.target != null)? e.target : transform.position;
