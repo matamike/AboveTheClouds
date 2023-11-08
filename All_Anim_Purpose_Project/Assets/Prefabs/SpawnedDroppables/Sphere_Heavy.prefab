@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2883840500772025262}
   - component: {fileID: 2883840500772025263}
   - component: {fileID: 1693477041948000402}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sphere_Heavy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2883840500772025260}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.1889706, y: 1.5736156, z: 16.037884}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

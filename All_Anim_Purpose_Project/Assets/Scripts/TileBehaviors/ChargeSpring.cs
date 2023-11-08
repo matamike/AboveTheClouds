@@ -11,7 +11,6 @@ public class ChargeSpring : MonoBehaviour{
     private float chargingTimeElapsed = 0f;
     private float cooldown = 2f;
     private float cooldownTimeElapsed = 0f;
-    //private List<GameObject> interactingGOs = new List<GameObject>();
 
     private void Update(){
         if (!isInCooldown){
@@ -27,15 +26,13 @@ public class ChargeSpring : MonoBehaviour{
     }
 
     private void OnCollisionStay(Collision collision){
-        if (collision.gameObject.TryGetComponent(out DropSource dropSource)){
-            //if(!interactingGOs.Contains(dropSource.gameObject))interactingGOs.Add(dropSource.gameObject);
-            if(!isInCooldown) charge = true;
+        if (LayerMask.LayerToName(collision.gameObject.layer) == "Player" || LayerMask.LayerToName(collision.gameObject.layer) == "DroppedObject"){
+            if (!isInCooldown) charge = true;
         }
     }
 
     private void OnCollisionExit(Collision collision){
-        if (collision.gameObject.TryGetComponent(out DropSource dropSource)){
-            //if (interactingGOs.Contains(dropSource.gameObject)) interactingGOs.Remove(dropSource.gameObject);
+        if (LayerMask.LayerToName(collision.gameObject.layer) == "Player" || LayerMask.LayerToName(collision.gameObject.layer) == "DroppedObject"){
             ResetChargingState();
         }
     }

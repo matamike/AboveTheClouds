@@ -10,8 +10,9 @@ public class Rotate : MonoBehaviour
     private float rotateCooldown = 1f;
     private float rotateTimeElapsed;
     private bool isInCooldown = false;
-
-    //private List<GameObject> interactingGameObjects = new List<GameObject>();
+    [SerializeField] private Vector3 forceDirection = Vector3.zero;
+    //[Range(0f,100f)][SerializeField] 
+    private float forceScalar = 0f;
 
     private void Update(){
         RotatingProcess();//Rotating
@@ -19,22 +20,28 @@ public class Rotate : MonoBehaviour
     }
 
     private void OnCollisionStay(Collision collision){
-        if (collision.gameObject.TryGetComponent(out DropSource dropSource)){
-            //TryAddingInteractingSource(dropSource.gameObject);
+        if (LayerMask.LayerToName(collision.gameObject.layer) == "Player" || LayerMask.LayerToName(collision.gameObject.layer) == "DroppedObject")
+        {
+            Rigidbody rb = collision.gameObject.GetComponent<Rigidbody>();
+            rb.AddForce(forceDirection * forceScalar, ForceMode.Acceleration);
             isRotating = true;
         }
     }
 
     private void OnCollisionExit(Collision collision){
-        if (collision.gameObject.TryGetComponent(out DropSource dropSource)){
-            //TryRemoveInteractingSource(dropSource.gameObject);
+        if (LayerMask.LayerToName(collision.gameObject.layer) == "Player" || LayerMask.LayerToName(collision.gameObject.layer) == "DroppedObject")
+        {
+            Rigidbody rb = collision.gameObject.GetComponent<Rigidbody>();
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
             isRotating = false;
         }
     }
 
     private void RotatingProcess(){
         if (isRotating && !isInCooldown){
-            gameObject.transform.Rotate(Vector3.up, Random.Range(-1, 1f) * 300f);
+            forceScalar = Random.Range(-1, 1f) * 300f;
+            gameObject.transform.Rotate(Vector3.up, forceScalar);
             rotateTimeElapsed += Time.deltaTime;
             //Duration Exceeded
             if (rotateTimeElapsed > rotateDuration){

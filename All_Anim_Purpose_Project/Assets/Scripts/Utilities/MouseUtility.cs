@@ -20,4 +20,13 @@ public static class MouseUtility{
         if (result) return hitInfo.collider.transform.root.gameObject;
         else return null;
     }
+
+    public static float GetMouseXNormalized(){
+        return Mathf.Clamp(Input.GetAxis("Mouse X"), -1f, 1f);
+    }
+
+    public static float GetMouseYNormalized()
+    {
+        return Mathf.Clamp(Input.GetAxis("Mouse Y"), -1f, 1f);
+    }
 }

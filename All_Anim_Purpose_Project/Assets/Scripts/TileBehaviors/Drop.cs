@@ -8,7 +8,7 @@ public class Drop : MonoBehaviour{
 
     private void OnCollisionEnter(Collision collision){
         // Detects DropSource Objects (maybe change to layers)
-        if(collision.collider.gameObject.TryGetComponent(out DropSource dropSource))
+        if (LayerMask.LayerToName(collision.gameObject.layer) == "Player" || LayerMask.LayerToName(collision.gameObject.layer) == "DroppedObject")
         {
             rb.isKinematic = false;
             Destroy(rb.transform.root.gameObject, 5f);
