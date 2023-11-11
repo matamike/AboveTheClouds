@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public static class MouseUtility{
@@ -11,9 +10,6 @@ public static class MouseUtility{
     public static GameObject GetMouseToWorldRayHit(){
         //Ray Prep
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        //DEBUG
-        Debug.DrawRay(ray.origin, ray.direction * raycastDistance, Color.blue, 3f);
 
         //Result
         bool result = Physics.Raycast(ray, out RaycastHit hitInfo, raycastDistance);

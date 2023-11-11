@@ -17,10 +17,10 @@ public class PlayerController : Singleton<PlayerController>{
         
     private Rigidbody _rigidbody;
     private bool _isSprinting; //event acquired
-    [SerializeField]private Vector3 _direction; //event acquired
+    [SerializeField]private Vector3 _direction = Vector3.zero; //event acquired
     private Vector3 _computedDirection;
 
-    private void Awake(){
+    private void Start(){
         _rigidbody = GetComponent<Rigidbody>();
     }
 
@@ -60,6 +60,8 @@ public class PlayerController : Singleton<PlayerController>{
         }
     }
 
+    public bool IsMoving() => (_direction != Vector3.zero) ? true : false;
+    
     private Vector3 GetMappedCameraDirection(){
         if (_direction == Vector3.zero) return Vector3.zero;
 

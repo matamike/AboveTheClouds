@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraFollow : Singleton<CameraFollow>{
+    public static event EventHandler<OnDirectionChangedEventArgs> OnDirectionChanged;
     public class OnDirectionChangedEventArgs : EventArgs {
-        public Vector3 direction;
+        public Vector3 euler;
     }
 
     [SerializeField] private Transform _rotateAroundTransform;
@@ -54,6 +55,7 @@ public class CameraFollow : Singleton<CameraFollow>{
             _cameraBackLeft = (-transform.forward + (-transform.right)).normalized;
             _cameraBackRight = (-transform.forward + (transform.right)).normalized;
         }
+        OnDirectionChanged?.Invoke(this, new OnDirectionChangedEventArgs { euler = transform.eulerAngles });
     }
     public Vector3 GetCameraForward() => _cameraForward;
     public Vector3 GetCameraBack() => _cameraBack;

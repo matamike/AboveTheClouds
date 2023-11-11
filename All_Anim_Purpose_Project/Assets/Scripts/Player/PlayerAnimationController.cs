@@ -33,7 +33,6 @@ public class PlayerAnimationController : MonoBehaviour{
     private void SetState(AnimState state) => _state = state;
 
     private void CheckAnimationState(){
-        Debug.Log(_state.ToString() + " Hashcode" + _state.GetHashCode().ToString());
         switch (_state){
             case AnimState.Idle:
                 _animator.SetBool("IsRunning", false);

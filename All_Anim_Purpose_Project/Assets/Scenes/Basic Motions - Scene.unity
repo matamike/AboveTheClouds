@@ -282,6 +282,34 @@ LightingSettings:
   m_PVRFilteringAtrousPositionSigmaIndirect: 2
   m_PVRFilteringAtrousPositionSigmaAO: 1
   m_PVRTiledBaking: 0
+--- !u!1 &565401450 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2686890238580948210, guid: 7856c197eb4c77840878eba92e1c48b7,
+    type: 3}
+  m_PrefabInstance: {fileID: 802726519}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &565401451 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2686890238580842706, guid: 7856c197eb4c77840878eba92e1c48b7,
+    type: 3}
+  m_PrefabInstance: {fileID: 802726519}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &565401452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 565401450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46248eb37bbe7594bbae2bd9cd7e1a22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bodyPartTransform: {fileID: 565401451}
+  isHandled: 1
+  xAxisAngleThresholdInDegrees: 0
+  yAxisAngleThresholdInDegrees: 0
 --- !u!1001 &802726519
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -289,6 +317,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2686890238580842670, guid: 7856c197eb4c77840878eba92e1c48b7,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9980213
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686890238580842670, guid: 7856c197eb4c77840878eba92e1c48b7,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686890238580842670, guid: 7856c197eb4c77840878eba92e1c48b7,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.06287754
+      objectReference: {fileID: 0}
+    - target: {fileID: 2686890238580842670, guid: 7856c197eb4c77840878eba92e1c48b7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -7.21
+      objectReference: {fileID: 0}
     - target: {fileID: 2686890238580842728, guid: 7856c197eb4c77840878eba92e1c48b7,
         type: 3}
       propertyPath: m_RootOrder
@@ -613,6 +661,11 @@ PrefabInstance:
       propertyPath: _rotateAroundTransform
       value: 
       objectReference: {fileID: 802726520}
+    - target: {fileID: 9119927901272667406, guid: 0d49f6a5015dda049a4f2d331bb38ce1,
+        type: 3}
+      propertyPath: _XAxisAngleMinThreshold
+      value: -50
+      objectReference: {fileID: 0}
     - target: {fileID: 9119927901272667407, guid: 0d49f6a5015dda049a4f2d331bb38ce1,
         type: 3}
       propertyPath: m_Name
