@@ -3,12 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputUtility : MonoBehaviour{
-    public static InputUtility Instance {  get; private set; }
-
+public class InputUtility : Singleton<InputUtility>{
     private InputSystem _inputSystem;
     public static event EventHandler<OnMovePerformedEventArgs> OnMovePerformed;
     public static event EventHandler<OnSprintPerformedEventArgs> OnSprintPerformed;
+    public static event EventHandler<OnJumpPerformedEventArgs> OnJumpPerformed;
 
     public class OnMovePerformedEventArgs : EventArgs {
         public Vector3 direction;
@@ -18,9 +17,8 @@ public class InputUtility : MonoBehaviour{
         public bool sprint; 
     }
 
-    private void Awake(){
-        if(Instance == null || Instance != this) Instance = this;
-        //optional in the future DontDestroyOnLoad etc.
+    public class OnJumpPerformedEventArgs : EventArgs{
+        public bool jump;
     }
 
     private void OnEnable(){
@@ -32,15 +30,17 @@ public class InputUtility : MonoBehaviour{
         _inputSystem.Game.Move.canceled += InputSystem_Move_canceled;
         _inputSystem.Game.Sprint.performed += InputSystem_Sprint_performed;
         _inputSystem.Game.Sprint.canceled += InputSystem_Sprint_canceled;
+        _inputSystem.Game.Jump.performed += InputSystem_Jump_performed;
     }
+
     private void OnDisable(){
         _inputSystem.Game.Move.performed -= InputSystem_Move_performed;
         _inputSystem.Game.Move.canceled -= InputSystem_Move_canceled;
         _inputSystem.Game.Sprint.performed -= InputSystem_Sprint_performed;
         _inputSystem.Game.Sprint.canceled -= InputSystem_Sprint_canceled;
+        _inputSystem.Game.Jump.performed += InputSystem_Jump_performed;
         if (_inputSystem != null) _inputSystem.Game.Disable(); // Disable
     }
-
 
     // Event Listeners
     private void InputSystem_Sprint_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj){
@@ -57,5 +57,9 @@ public class InputUtility : MonoBehaviour{
 
     private void InputSystem_Move_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj){
         OnMovePerformed?.Invoke(this, new OnMovePerformedEventArgs { direction = new Vector3(obj.ReadValue<Vector2>().x, 0f, obj.ReadValue<Vector2>().y) });
+    }
+
+    private void InputSystem_Jump_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj){
+        OnJumpPerformed?.Invoke(this, new OnJumpPerformedEventArgs { jump = true });
     }
 }

@@ -50,7 +50,7 @@ MonoBehaviour:
   _followFocusTransform: {fileID: 0}
   followSpeed: 0.25
   followDistance: 6
-  _XAxisAngleMinThreshold: 0
+  _XAxisAngleMinThreshold: -50
   _XAxisAngleMaxThreshold: 50
 --- !u!1 &9119927901948312033
 GameObject:

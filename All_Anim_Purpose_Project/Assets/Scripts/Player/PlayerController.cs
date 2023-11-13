@@ -4,63 +4,97 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerController : Singleton<PlayerController>{
+public class PlayerController : Singleton<PlayerController> {
     public static event EventHandler<OnStatusChangedEventArgs> OnStatusChanged;
-    public class OnStatusChangedEventArgs : EventArgs{
-       public int state;
+    public static event EventHandler<OnVelocityChangedEventArgs> OnVelocityChanged;
+    public class OnStatusChangedEventArgs : EventArgs {
+        public int state;
     }
 
+    public class OnVelocityChangedEventArgs : EventArgs
+    {
+        public Vector3 velocity;
+        public bool grounded;
+    }
 
-    [SerializeField] private Transform _DebugRayParentTransform; //Ray Origin
-    [SerializeField][Range(1f, 100f)] private float _movementSpeed = 2f;
-    [SerializeField][Range(0f, 1f)] private float _turnDirectionSpeed = 1f;
-        
+    
+    
+
     private Rigidbody _rigidbody;
-    private bool _isSprinting; //event acquired
-    [SerializeField]private Vector3 _direction = Vector3.zero; //event acquired
+    private bool _isSprinting;
+    private bool _isGrounded;
+    private bool _isJumping;
+    private Vector3 _direction;
     private Vector3 _computedDirection;
+    private float _movementSpeed;
 
-    private void Start(){
+    //Parameters
+    private float _jumpForce = 7f;
+    private float _walkForce = 100f;
+    private float _sprintForce = 280f;
+    private float _turnDirectionSpeed = 1f;
+
+    private void Start() {
         _rigidbody = GetComponent<Rigidbody>();
+        _isGrounded = true;
     }
 
-    private void OnEnable(){
+    private void OnEnable() {
         InputUtility.OnMovePerformed += InputUtility_OnMovePerformed;
         InputUtility.OnSprintPerformed += InputUtility_OnSprintPerformed;
+        InputUtility.OnJumpPerformed += InputUtility_OnJumpPerformed;
     }
 
-    private void OnDisable(){
+    private void OnDisable() {
         InputUtility.OnMovePerformed -= InputUtility_OnMovePerformed;
         InputUtility.OnSprintPerformed -= InputUtility_OnSprintPerformed;
+        InputUtility.OnJumpPerformed -= InputUtility_OnJumpPerformed;
     }
 
     //Event Hook Callbacks
     private void InputUtility_OnSprintPerformed(object sender, InputUtility.OnSprintPerformedEventArgs e) => _isSprinting = e.sprint;
     private void InputUtility_OnMovePerformed(object sender, InputUtility.OnMovePerformedEventArgs e) => _direction = e.direction.normalized;
-    private void Update(){
-        if (_direction != Vector3.zero){
+    private void InputUtility_OnJumpPerformed(object sender, InputUtility.OnJumpPerformedEventArgs e){
+        if (_isGrounded) _isJumping = e.jump; //elligible for jump only if grounded.
+    }
+    private void Update() {
+        UpdateControlStatus();
+
+        //Motion Control.
+        if (_direction != Vector3.zero) {
             _computedDirection = GetMappedCameraDirection();
             Turn(_computedDirection);
             TransformPlayerDirection();
         }
-        UpdateControlStatus();
     }
 
     private void FixedUpdate(){
-        //if(_direction != Vector3.zero){
-            //_rigidbody.AddForce(_computedDirection * _movementSpeed, ForceMode.Force);
-        //}
+        OnVelocityChanged?.Invoke(this, new OnVelocityChangedEventArgs{
+            velocity = _rigidbody.velocity,
+            grounded = _isGrounded
+        });
+
+        if(_direction != Vector3.zero && _isGrounded && !_isJumping) Move();
     }
 
+    private void OnCollisionStay(Collision collision) => _isGrounded = true;
+    private void OnCollisionExit(Collision collision) => _isGrounded = false;
+    public bool IsMoving() => (_direction != Vector3.zero) ? true : false;
+
     private void UpdateControlStatus(){
-        if (_isSprinting) OnStatusChanged?.Invoke(this, new OnStatusChangedEventArgs { state = 2 });
+        //TODO Rewrite and Clean up
+        if(_isGrounded && _isJumping){
+            Jump();
+            OnStatusChanged?.Invoke(this, new OnStatusChangedEventArgs { state = 3 });
+            _isJumping = false;
+            return;
+        }
+        if (_isSprinting && _direction != Vector3.zero) OnStatusChanged?.Invoke(this, new OnStatusChangedEventArgs { state = 2 });
         else{
             if (_direction != Vector3.zero) OnStatusChanged?.Invoke(this, new OnStatusChangedEventArgs { state = 1 });
             else OnStatusChanged?.Invoke(this, new OnStatusChangedEventArgs { state = 0 });
         }
     }
-
-    public bool IsMoving() => (_direction != Vector3.zero) ? true : false;
     
     private Vector3 GetMappedCameraDirection(){
         if (_direction == Vector3.zero) return Vector3.zero;
@@ -83,6 +117,19 @@ public class PlayerController : Singleton<PlayerController>{
         }
     }
 
+    private void Jump(){
+        _rigidbody.AddExplosionForce(_jumpForce, transform.position, 1f, 1f, ForceMode.Impulse);
+    }
+
+    private void Move(){
+        if (_isSprinting) _movementSpeed = Mathf.Lerp(_movementSpeed, _sprintForce, 2f);
+        else _movementSpeed = Mathf.Lerp(_movementSpeed, _walkForce, 2f);
+
+        _rigidbody.velocity = new Vector3(transform.forward.x * _movementSpeed * Time.deltaTime,
+                                        _rigidbody.velocity.y,
+                                        transform.forward.z * _movementSpeed * Time.deltaTime);
+    }
+
     private void Turn(Vector3 lookDirection){
         lookDirection.y = 0f; // no movement in Y Axis
         Quaternion rotation = Quaternion.LookRotation(lookDirection, transform.up);
@@ -90,8 +137,6 @@ public class PlayerController : Singleton<PlayerController>{
     }
 
     private void TransformPlayerDirection(){
-        Vector3 playerForward = transform.forward;
-        _computedDirection = Vector3.RotateTowards(_direction, playerForward, 180f * Mathf.Deg2Rad, 1f);
+        _computedDirection = Vector3.RotateTowards(_direction, transform.forward, 180f * Mathf.Deg2Rad, 1f);
     }
-    private void DebugDirectionRay(Vector3 dir, Color color, float duration) => Debug.DrawRay((transform.position), dir * 10f, color, duration);
 }
