@@ -4,10 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraFollow : Singleton<CameraFollow>{
-    public static event EventHandler<OnDirectionChangedEventArgs> OnDirectionChanged;
-    public class OnDirectionChangedEventArgs : EventArgs {
-        public Vector3 euler;
-    }
+    public static event EventHandler OnDirectionChanged;
 
     [SerializeField] private Transform _rotateAroundTransform;
     [SerializeField][Range(1f, 10f)] private float rotationSpeed = 2f;
@@ -16,18 +13,15 @@ public class CameraFollow : Singleton<CameraFollow>{
     [SerializeField][Range(1f, 10f)] private float followDistance = 6f;
     [SerializeField][Range(0f, -79f)] private float _XAxisAngleMinThreshold = -35f;
     [SerializeField][Range(0f, 79f)] private float _XAxisAngleMaxThreshold = 35f;
-    private Vector3 _targetVelocity = Vector3.zero;
+    private Vector3 _targetVelocity;
     private Vector3 _calculatedOffset;
     private float _lastKnownMousePositionXAxis, _lastKnownMousePositionYAxis;
     //Directions
-    private Vector3 _cameraForward = Vector3.zero;
-    private Vector3 _cameraBack = Vector3.zero;
-    private Vector3 _cameraLeft = Vector3.zero;
-    private Vector3 _cameraRight = Vector3.zero;
-    private Vector3 _cameraForwardRight = Vector3.zero;
-    private Vector3 _cameraForwardLeft = Vector3.zero;
-    private Vector3 _cameraBackLeft = Vector3.zero; 
-    private Vector3 _cameraBackRight = Vector3.zero;
+    private Vector3 _cameraForward, _cameraBack;
+    private Vector3 _cameraLeft, _cameraRight;
+    private Vector3 _cameraForwardLeft, _cameraForwardRight;
+    private Vector3 _cameraBackLeft, _cameraBackRight;
+    private Vector3 _cameraUp, _cameraDown;
 
 
     private void Start(){
@@ -47,16 +41,21 @@ public class CameraFollow : Singleton<CameraFollow>{
     private void UpdateDirections(){
         if(_cameraForward != transform.forward) {
             _cameraForward = transform.forward;
+            _cameraBack = -transform.forward;
             _cameraRight = transform.right;
             _cameraLeft = -transform.right;
-            _cameraBack = -transform.forward;
             _cameraForwardRight = (transform.forward + transform.right).normalized;
             _cameraForwardLeft = (transform.forward + (-transform.right)).normalized;
             _cameraBackLeft = (-transform.forward + (-transform.right)).normalized;
             _cameraBackRight = (-transform.forward + (transform.right)).normalized;
+            _cameraUp = transform.up;
+            _cameraDown = -transform.up;
         }
-        OnDirectionChanged?.Invoke(this, new OnDirectionChangedEventArgs { euler = transform.eulerAngles });
+        OnDirectionChanged?.Invoke(this, EventArgs.Empty);
     }
+
+    public Vector3 GetCameraUp() => _cameraUp;
+    public Vector3 GetCameraDown() => _cameraDown;
     public Vector3 GetCameraForward() => _cameraForward;
     public Vector3 GetCameraBack() => _cameraBack;
     public Vector3 GetCameraLeft() => _cameraLeft;

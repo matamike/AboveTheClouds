@@ -1,36 +1,41 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BodypartsController : MonoBehaviour{
-    delegate void BodyPart(Transform bodypart, Vector3 euler);
+    delegate void BodyPart(Transform bodypart);
 
     [SerializeField] Transform _bodyPartTransform;
-    private BodyPart _bodyPart;
     [SerializeField] bool isHandled = true;
-    float zAxisAngleThresholdInDegrees = 0f;
-
+    
+    private BodyPart _bodyPart;
     private Vector3 lastKnownDirection;
+    private float zAxisAngleThresholdInDegrees = 0f;
 
     private void Awake(){
         _bodyPart = FaceDirection;
     }
 
-    private void Start(){
+    private void OnEnable(){
         CameraFollow.OnDirectionChanged += CameraFollow_OnDirectionChanged;
     }
 
-    private void CameraFollow_OnDirectionChanged(object sender, CameraFollow.OnDirectionChangedEventArgs e) => _bodyPart(_bodyPartTransform, e.euler);
+    private void OnDisable()
+    {
+        CameraFollow.OnDirectionChanged -= CameraFollow_OnDirectionChanged;
+    }
 
-    private void FaceDirection(Transform bodypart, Vector3 euler){
+    private void CameraFollow_OnDirectionChanged(object sender, EventArgs e) => _bodyPart(_bodyPartTransform);
+
+    private void FaceDirection(Transform bodypart){
         if (isHandled){
-            bool isMoving = PlayerController.Instance.IsMoving();
             Vector3 lookAtForwardDirection = CameraFollow.Instance.GetCameraForward();
             Vector3 lookAtUp = transform.up; 
 
             float dotProductPlayerCamera = Mathf.Round(Vector3.Dot(lookAtForwardDirection, transform.parent.forward));
 
-            if (isMoving) bodypart.LookAt(transform.position + transform.parent.forward, transform.parent.up);
+            if (PlayerController.Instance.HasMovingDirection()) bodypart.LookAt(transform.position + transform.parent.forward, transform.parent.up);
             else{
                 if(dotProductPlayerCamera == 1) lastKnownDirection = CameraFollow.Instance.GetCameraForward();
                 else if(dotProductPlayerCamera == -1) lastKnownDirection = CameraFollow.Instance.GetCameraBack();

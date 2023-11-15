@@ -21,6 +21,8 @@ public class InputUtility : Singleton<InputUtility>{
         public bool jump;
     }
 
+    private Vector3 _lastKnownDirection;
+
     private void OnEnable(){
         if(_inputSystem == null) _inputSystem = new InputSystem(); // Create an Instance.
         _inputSystem.Game.Enable(); //Enable
@@ -42,6 +44,8 @@ public class InputUtility : Singleton<InputUtility>{
         if (_inputSystem != null) _inputSystem.Game.Disable(); // Disable
     }
 
+    public Vector3 GetLastKnownDirection() => _lastKnownDirection;
+
     // Event Listeners
     private void InputSystem_Sprint_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj){
         OnSprintPerformed?.Invoke(this, new OnSprintPerformedEventArgs{ sprint = false });
@@ -53,10 +57,12 @@ public class InputUtility : Singleton<InputUtility>{
 
     private void InputSystem_Move_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj){
         OnMovePerformed?.Invoke(this, new OnMovePerformedEventArgs { direction = Vector3.zero });
+        //_lastKnownDirection = Vector3.zero;
     }
 
     private void InputSystem_Move_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj){
         OnMovePerformed?.Invoke(this, new OnMovePerformedEventArgs { direction = new Vector3(obj.ReadValue<Vector2>().x, 0f, obj.ReadValue<Vector2>().y) });
+        _lastKnownDirection = new Vector3(obj.ReadValue<Vector2>().x, 0f, obj.ReadValue<Vector2>().y);
     }
 
     private void InputSystem_Jump_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj){

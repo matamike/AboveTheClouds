@@ -1105,7 +1105,7 @@ CapsuleCollider:
   m_Material: {fileID: 13400000, guid: 58f7916cf80488947b24802a9a4906d4, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.23
+  m_Radius: 0.25
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
@@ -1121,11 +1121,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81298b4ee7ecc4b46a7145d28be6ef03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _DebugRayParentTransform: {fileID: 4634882403524552377}
-  _turnDirectionSpeed: 1
-  _jumpForce: 8
-  _walkForce: 100
-  _sprintForce: 250
 --- !u!114 &1490964527
 MonoBehaviour:
   m_ObjectHideFlags: 0

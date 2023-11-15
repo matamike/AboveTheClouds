@@ -14,9 +14,8 @@ public class PlayerAnimationController : MonoBehaviour{
     }
     private AnimState _state;
     private Animator _animator;
+    private Vector3 _rigidbodyVelocity;
 
-    private float YAxisVelocity = 0.0f;
-    private bool _grounded = true;
 
     private void Awake(){
         _animator = GetComponent<Animator>();
@@ -41,27 +40,34 @@ public class PlayerAnimationController : MonoBehaviour{
         CheckAnimationState();
     }
 
-    private void PlayerController_OnVelocityChanged(object sender, PlayerController.OnVelocityChangedEventArgs e){
-        YAxisVelocity = e.velocity.y;
-        _animator.SetFloat("JumpVelocity", YAxisVelocity);
-        _grounded = e.grounded;
+    private void PlayerController_OnVelocityChanged(object sender, PlayerController.OnVelocityChangedEventArgs e) => SetVelocity(e.grounded, e.velocity);
+    private void PlayerController_OnStatusChanged(object sender, PlayerController.OnStatusChangedEventArgs e) => SetState((AnimState)e.state);
+
+    //Animation State Functions
+    private void SetJumpVelocity(bool grounded){
+        _animator.SetFloat("JumpVelocity", _rigidbodyVelocity.y);
 
         // Jump Reset
-        if (_animator.GetBool("IsJumping") && _grounded && Mathf.Approximately(YAxisVelocity, 0f)){
+        if (grounded && Mathf.Approximately(_rigidbodyVelocity.y, 0f)){
             _animator.SetBool("IsJumping", false);
             _animator.SetFloat("JumpVelocity", 0.0f);
         }
-        else if(YAxisVelocity < -1f) _animator.SetBool("IsJumping", true); // Fall state
-
+        else if (_rigidbodyVelocity.y < -1f) _animator.SetBool("IsJumping", true); // Fall state
     }
-    private void PlayerController_OnStatusChanged(object sender, PlayerController.OnStatusChangedEventArgs e) => SetState((AnimState)e.state);
 
+    private void SetMotionVelocity() => _animator.SetFloat("MovingVelocity", _rigidbodyVelocity.magnitude);
 
-    //Animation State Functions
+    private void SetVelocity(bool grounded, Vector3 velocity){
+        _rigidbodyVelocity = velocity;
+        _rigidbodyVelocity = new Vector3(_rigidbodyVelocity.x, Mathf.Clamp(Mathf.Round(_rigidbodyVelocity.y), -1f, 1f), _rigidbodyVelocity.z);
+
+        SetJumpVelocity(grounded);
+        SetMotionVelocity();
+    }
+
     private void SetState(AnimState state) => _state = state;
-
+   
     private void CheckAnimationState(){
-        //TODO Rewrite and Clean up
         switch (_state)
         {
             case AnimState.Idle:
