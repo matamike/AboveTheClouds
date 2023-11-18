@@ -4,15 +4,13 @@ using UnityEngine;
 
 public class Move : MonoBehaviour{
     [SerializeField] private bool isMoving = false;
-    private Vector3 targetPosition;
-
     [SerializeField] [Range(1f,10f)]private float resetDuration = 5f;
+    private Vector3 targetPosition;
     private float timer = 0f;
 
     private void OnEnable(){
         TileGrid.OnPositionChanged += MyGrid_OnPositionChanged;
     }
-
     private void OnDisable(){
         TileGrid.OnPositionChanged -= MyGrid_OnPositionChanged;
     }
@@ -25,7 +23,10 @@ public class Move : MonoBehaviour{
     }
 
     private void Update(){
-        //Moving
+        MoveTile();
+    }
+
+    private void MoveTile(){
         if (isMoving && timer <= resetDuration){
             timer += Time.deltaTime;
             gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, targetPosition, resetDuration * Time.deltaTime);

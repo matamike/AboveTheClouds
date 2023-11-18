@@ -10,7 +10,6 @@ public class DroppableSpawnManager : Singleton<DroppableSpawnManager>{
 
     private void Update(){
         if (Input.GetKeyDown(KeyCode.E)) SpawnDroppable();
-        if (Input.GetKeyDown(KeyCode.F1)) CursorController.Instance.DebugPrintCursorPosition();
     }
 
     private void SpawnDroppable(){        

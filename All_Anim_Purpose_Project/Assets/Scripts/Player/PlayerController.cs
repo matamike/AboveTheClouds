@@ -19,66 +19,80 @@ public class PlayerController : Singleton<PlayerController> {
 
     private Rigidbody _rigidbody;
     private bool _isSprinting;
-    private bool _isGrounded;
-    private bool _isJumping;
+    [SerializeField] private bool _isGrounded;
+    [SerializeField] private bool _isJumping;
     private Vector3 _direction; //calculated
     private float _movementSpeed; // calculated
 
     //Parameters
-    private float _jumpForce = 6f;
+    [SerializeField] private float _jumpForce = 6f;
     private float _walkForce = 140f;
     private float _sprintForce = 340f;
     private float _turnDirectionSpeed = 1f;
     private float waitTime = 0.2f;
     private float lerpDirectionTime = 10f;
 
-
     private void Start() {
         _rigidbody = GetComponent<Rigidbody>();
     }
 
     private void OnEnable() {
-        InputUtility.OnMovePerformed += InputUtility_OnMovePerformed;
-        InputUtility.OnSprintPerformed += InputUtility_OnSprintPerformed;
-        InputUtility.OnJumpPerformed += InputUtility_OnJumpPerformed;
+        PlayerInputManager.OnMovePerformed += InputUtility_OnMovePerformed;
+        PlayerInputManager.OnSprintPerformed += InputUtility_OnSprintPerformed;
+        PlayerInputManager.OnJumpPerformed += InputUtility_OnJumpPerformed;
     }
 
     private void OnDisable() {
-        InputUtility.OnMovePerformed -= InputUtility_OnMovePerformed;
-        InputUtility.OnSprintPerformed -= InputUtility_OnSprintPerformed;
-        InputUtility.OnJumpPerformed -= InputUtility_OnJumpPerformed;
+        PlayerInputManager.OnMovePerformed -= InputUtility_OnMovePerformed;
+        PlayerInputManager.OnSprintPerformed -= InputUtility_OnSprintPerformed;
+        PlayerInputManager.OnJumpPerformed -= InputUtility_OnJumpPerformed;
     }
 
     //Event Hook Callbacks
-    private void InputUtility_OnSprintPerformed(object sender, InputUtility.OnSprintPerformedEventArgs e) => _isSprinting = e.sprint;
-    private void InputUtility_OnMovePerformed(object sender, InputUtility.OnMovePerformedEventArgs e) => _direction = e.direction.normalized;
-    private void InputUtility_OnJumpPerformed(object sender, InputUtility.OnJumpPerformedEventArgs e){
+    private void InputUtility_OnSprintPerformed(object sender, PlayerInputManager.OnSprintPerformedEventArgs e) => _isSprinting = e.sprint;
+    private void InputUtility_OnMovePerformed(object sender, PlayerInputManager.OnMovePerformedEventArgs e) => _direction = e.direction.normalized;
+    private void InputUtility_OnJumpPerformed(object sender, PlayerInputManager.OnJumpPerformedEventArgs e){
         if(IsGrounded()) _isJumping = e.jump;
     }
     private void Update() { 
         ControlDirection(); // Turning the player
         ControlMovement(); // Moving the player
+        ClampPlayerVelocity(); //Clamp Velocity of Player Rigidbody to limits
         BroadCastMotionStatus(); //Broadcast to Animator State
         BroadCastVelocity(); //Broadcast Rigidbody Velocity (along with ground state)    
     }
 
-    private void OnCollisionEnter(Collision collision) => StartCoroutine(DelayDirection());
-
+    private void OnCollisionEnter(Collision collision){
+        //_isGrounded = true;
+    }
     private void OnCollisionStay(Collision other){
-        Vector3 closestPoint = other.collider.ClosestPointOnBounds(transform.position);
-        bool state = CheckGrounded(closestPoint, transform.position);
+        bool state = CheckGrounded(other.contacts);
+        //Debug.Log("Check Grounded" + state);
         _isGrounded = state;
         _isJumping = !state;
         if (_isJumping){
-            if (Mathf.Abs(_rigidbody.velocity.y) < 0.1f){
+            if (Mathf.Abs(_rigidbody.velocity.y) < 0.25f){
                 _isGrounded = true;
                 _isJumping = false;
             }
         }
+
+        //transform.parent = other.transform.root;
     }
 
-    private void OnCollisionExit(Collision collision) => StopCoroutine(DelayDirection());
+    private void OnCollisionExit(Collision collision){
+        if(_rigidbody.velocity.y > 0.5f) _isGrounded = false;
+        transform.parent = null;
+    }
 
+    private void ClampPlayerVelocity()
+    {
+        _rigidbody.velocity = new Vector3(Mathf.Clamp(_rigidbody.velocity.x, -50f, 50f),
+                                          Mathf.Clamp(_rigidbody.velocity.y, -10f, 10f),
+                                          Mathf.Clamp(_rigidbody.velocity.z, -50f, 50f));
+
+        if (_rigidbody.velocity.y == 50f) _isJumping = false;
+    }
     public bool HasMovingDirection() => (_direction != Vector3.zero) ? true : false;
     public bool IsSprinting() => (IsWalking() && _isSprinting) ? true : false;
     public bool IsWalking() => (_direction != Vector3.zero) ? true : false;
@@ -86,7 +100,17 @@ public class PlayerController : Singleton<PlayerController> {
     public bool IsGrounded() => _isGrounded;
     public bool IsFalling() =>  (_rigidbody.velocity.y < -0.1f) ? true : false;
 
-    private bool CheckGrounded(Vector3 contactPoint, Vector3 comparePosition) => (Vector3.Distance(contactPoint, comparePosition) < 0.1f) ? true : false;
+    private bool CheckGrounded(ContactPoint[] contactPoints){
+        bool state = false;
+        foreach(ContactPoint point in contactPoints){
+            float angle = Mathf.Abs(Vector3.SignedAngle(transform.position, point.point, Vector3.up));
+            //Debug.Log("Angle" + angle);
+            if (angle >=0f && angle <=60f) state = true;
+            else state = false;
+        }
+
+        return state;
+    }
     private void BroadCastVelocity(){
         OnVelocityChanged?.Invoke(this, new OnVelocityChangedEventArgs{
             velocity = _rigidbody.velocity,
@@ -128,6 +152,11 @@ public class PlayerController : Singleton<PlayerController> {
                                             _rigidbody.velocity.y,
                                             transform.forward.z * _movementSpeed * Time.deltaTime);
         }
+        else
+        {
+            if (!HasMovingDirection()) _rigidbody.velocity = Vector3.Lerp(_rigidbody.velocity, Vector3.zero, 1f * Time.deltaTime);
+            if (IsJumping()) _rigidbody.velocity = Vector3.Lerp(_rigidbody.velocity, new Vector3(_rigidbody.velocity.x, 0f,_rigidbody.velocity.z), 1f * Time.deltaTime);
+        }
     }
     private void UpdateMovementSpeed(){
         float targetSpeed = _isSprinting ? _sprintForce : _walkForce;
@@ -137,7 +166,7 @@ public class PlayerController : Singleton<PlayerController> {
         Vector3 _targetLookDirection = GetMappedCameraDirection();
         _targetLookDirection.y = 0f; // no movement in Y Axis
         Quaternion rotation = Quaternion.LookRotation(_targetLookDirection, transform.up);
-        transform.rotation = Quaternion.Lerp(transform.rotation, rotation, _turnDirectionSpeed);
+        transform.localRotation = Quaternion.Lerp(transform.localRotation, rotation, _turnDirectionSpeed);
     }
     private Vector3 GetMappedCameraDirection()
     {
@@ -171,7 +200,7 @@ public class PlayerController : Singleton<PlayerController> {
     }
 
     private IEnumerator LerpDirection(){
-        _direction = Vector3.Lerp(_direction, InputUtility.Instance.GetLastKnownDirection(), lerpDirectionTime);
+        _direction = Vector3.Lerp(_direction, PlayerInputManager.Instance.GetLastKnownDirection(), lerpDirectionTime);
         yield return new WaitForSeconds(lerpDirectionTime);
     }
 }

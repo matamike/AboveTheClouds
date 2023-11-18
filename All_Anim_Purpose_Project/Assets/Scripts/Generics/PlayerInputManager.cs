@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputUtility : Singleton<InputUtility>{
+public class PlayerInputManager : Singleton<PlayerInputManager>{
     private InputSystem _inputSystem;
     public static event EventHandler<OnMovePerformedEventArgs> OnMovePerformed;
     public static event EventHandler<OnSprintPerformedEventArgs> OnSprintPerformed;
