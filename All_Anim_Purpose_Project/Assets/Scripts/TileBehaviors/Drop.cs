@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Drop : MonoBehaviour{
+public class Drop : MonoBehaviour, IInteractable{
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private bool _isLoosened = false;
     [SerializeField] private Vector3 startPosition, endPosition;
@@ -12,14 +12,6 @@ public class Drop : MonoBehaviour{
 
     private void Update(){
         DropBehavior();
-    }
-
-    private void OnCollisionStay(Collision collision){
-        if (!_isLoosened && LayerUtility.LayerIsName(collision.gameObject.layer, lookUpNames)){
-            startPosition = transform.position;
-            endPosition = transform.position + (Vector3.down * 0.3f);
-            _isLoosened = true;
-        }
     }
 
     private void DropBehavior(){
@@ -32,5 +24,19 @@ public class Drop : MonoBehaviour{
                 _isLoosened = false;               
             }
         }
+    }
+
+
+    //IInteractable Interface
+    public void Interact(GameObject invokeSource){
+        if (!_isLoosened && LayerUtility.LayerIsName(invokeSource.layer, lookUpNames)){
+            startPosition = transform.position;
+            endPosition = transform.position + (Vector3.down * 0.3f);
+            _isLoosened = true;
+        }
+    }
+
+    public void CancelInteracion(GameObject invokeSource){
+        Debug.Log(invokeSource.name + "stopped interacting with " + gameObject.name);
     }
 }

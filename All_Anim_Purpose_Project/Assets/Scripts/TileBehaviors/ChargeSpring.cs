@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ChargeSpring : MonoBehaviour{
+public class ChargeSpring : MonoBehaviour, IInteractable{
     [SerializeField] private SpringJoint springJoint;
     private string[] layerNames = { "Player", "DroppedObject" };
     private float cooldownTimeElapsed = 0f;
@@ -20,12 +20,6 @@ public class ChargeSpring : MonoBehaviour{
             if (chargingEnabled) Charge(); //Charge the Spring
         }
         else Cooldown();
-    }
-
-    private void OnCollisionStay(Collision collision){
-        if (LayerUtility.LayerIsName(collision.gameObject.layer, layerNames)){
-            if (!isInCooldown) chargingEnabled = true;
-        }
     }
 
     private void Cooldown(){
@@ -56,5 +50,15 @@ public class ChargeSpring : MonoBehaviour{
         isCharged = false;
         chargingEnabled = false;
         cooldownTimeElapsed = 0f;//Reset cooldown timer.
+    }
+
+    public void Interact(GameObject invokeSource){
+        if (LayerUtility.LayerIsName(invokeSource.layer, layerNames)){
+            if (!isInCooldown) chargingEnabled = true;
+        }
+    }
+
+    public void CancelInteracion(GameObject invokeSource){
+        Debug.Log(invokeSource.name + "stopped interacting with " + gameObject.name);
     }
 }

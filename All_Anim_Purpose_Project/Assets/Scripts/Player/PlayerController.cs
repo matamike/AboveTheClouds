@@ -62,7 +62,7 @@ public class PlayerController : Singleton<PlayerController> {
         BroadCastVelocity(); //Broadcast Rigidbody Velocity (along with ground state)    
     }
 
-    private void OnCollisionEnter(Collision collision){
+    private void OnCollisionEnter(Collision other){
         //_isGrounded = true;
     }
     private void OnCollisionStay(Collision other){
@@ -77,12 +77,19 @@ public class PlayerController : Singleton<PlayerController> {
             }
         }
 
-        //transform.parent = other.transform.root;
+        if (other.gameObject.TryGetComponent(out IInteractable interactable)){
+            interactable?.Interact(gameObject);
+        }
     }
 
-    private void OnCollisionExit(Collision collision){
+    private void OnCollisionExit(Collision other){
         if(_rigidbody.velocity.y > 0.5f) _isGrounded = false;
         transform.parent = null;
+
+        //Attempt to cancel Interaction with Interactables
+        if (other.gameObject.TryGetComponent(out IInteractable interactable)){
+            interactable?.CancelInteracion(gameObject);
+        }
     }
 
     private void ClampPlayerVelocity()

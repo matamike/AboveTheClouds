@@ -4,7 +4,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEditor.SearchService;
 using UnityEngine;
 
-public class Spin : MonoBehaviour{
+public class Spin : MonoBehaviour, IInteractable{
     [SerializeField] private bool isRotating = false;
     [SerializeField] private bool isInCooldown = false;
     [SerializeField] private float rotateDuration = 0.0f,rotateCooldown = 0.0f;
@@ -20,23 +20,8 @@ public class Spin : MonoBehaviour{
         else Cooldown(); //Cooldown
     }
 
-    private void OnCollisionStay(Collision collision){
-        if (LayerUtility.LayerIsName(collision.gameObject.layer, layerNames)){
-            if (!isInCooldown){
-                playerRB = collision.gameObject.GetComponent<Rigidbody>();
-                isRotating = true;
-            }
-        }
-    }
-
-    private void OnCollisionExit(Collision collision){
-        if (playerRB != null) playerRB.AddForce(Vector3.up * speed, ForceMode.Impulse);
-        playerRB = null;
-    }
-
     private void RotatingProcess(){
         if (isRotating){
-            Debug.Log("Spinning");
             //Transform Rotation
             gameObject.transform.root.transform.eulerAngles += new Vector3(0, rotateDuration * rotateTimeElapsed, 0) * speed;
 
@@ -48,7 +33,6 @@ public class Spin : MonoBehaviour{
 
             //Duration Exceeded
             if (rotateTimeElapsed > rotateDuration){
-                Debug.Log("Going for Cooldown");
                 isRotating = false;
                 isInCooldown = true;
                 rotateTimeElapsed = 0.0f;
@@ -59,10 +43,8 @@ public class Spin : MonoBehaviour{
     private void Cooldown(){
         if (isInCooldown){
             gameObject.transform.eulerAngles = Vector3.Lerp(gameObject.transform.transform.eulerAngles, Vector3.zero, 1f);
-            Debug.Log("Cooldown...");
             rotateTimeElapsed += Time.deltaTime;
             if (rotateTimeElapsed > rotateCooldown){
-                Debug.Log("Cooldown finished!");
                 isInCooldown = false;
                 rotateTimeElapsed = 0.0f;
             }     
@@ -76,7 +58,22 @@ public class Spin : MonoBehaviour{
         Vector3 targetVelocity = new Vector3(velocityXAxis, 0f, velocityZAxis);
         if (playerRB != null){
             playerRB.velocity = targetVelocity;
-            playerRB.transform.eulerAngles = transform.eulerAngles;//new Vector3(0f, speed * Mathf.Cos(2f * Mathf.PI * rotateTimeElapsed * Time.deltaTime), 0f); 
+            playerRB.transform.eulerAngles = transform.eulerAngles;
         }
+    }
+
+    //IInteractable Interface
+    public void Interact(GameObject invokeSource){
+        if (LayerUtility.LayerIsName(invokeSource.layer, layerNames)){
+            if (!isInCooldown){
+                playerRB = invokeSource.GetComponent<Rigidbody>();
+                isRotating = true;
+            }
+        }
+    }
+
+    public void CancelInteracion(GameObject invokeSource){
+        if (playerRB != null) playerRB.AddForce(Vector3.up * speed, ForceMode.Impulse);
+        playerRB = null;
     }
 }
