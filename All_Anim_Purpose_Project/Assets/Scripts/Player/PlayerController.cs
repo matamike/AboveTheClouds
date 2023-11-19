@@ -25,15 +25,19 @@ public class PlayerController : Singleton<PlayerController> {
     private float _movementSpeed; // calculated
 
     //Parameters
-    [SerializeField] private float _jumpForce = 6f;
+    private float _jumpForce = 8f;
     private float _walkForce = 140f;
     private float _sprintForce = 340f;
     private float _turnDirectionSpeed = 1f;
-    private float waitTime = 0.2f;
-    private float lerpDirectionTime = 10f;
+
+    // Collision Parameters
+    [SerializeField] private List<GameObject> _collidingObjects;
+    [SerializeField] private List<Tuple<int, int>> _contactPoints;
 
     private void Start() {
         _rigidbody = GetComponent<Rigidbody>();
+        _collidingObjects = new List<GameObject>();
+        _contactPoints = new List<Tuple<int, int>>();
     }
 
     private void OnEnable() {
@@ -54,37 +58,31 @@ public class PlayerController : Singleton<PlayerController> {
     private void InputUtility_OnJumpPerformed(object sender, PlayerInputManager.OnJumpPerformedEventArgs e){
         if(IsGrounded()) _isJumping = e.jump;
     }
-    private void Update() { 
+    private void Update() {
         ControlDirection(); // Turning the player
-        ControlMovement(); // Moving the player
         ClampPlayerVelocity(); //Clamp Velocity of Player Rigidbody to limits
         BroadCastMotionStatus(); //Broadcast to Animator State
-        BroadCastVelocity(); //Broadcast Rigidbody Velocity (along with ground state)    
+        BroadCastVelocity(); //Broadcast Rigidbody Velocity (along with ground state)
+        if(_rigidbody.velocity.y > 1f || _rigidbody.velocity.y < -1f) _isGrounded = false;
     }
 
-    private void OnCollisionEnter(Collision other){
-        //_isGrounded = true;
+    private void FixedUpdate(){   
+        ControlMovement(); // Moving the player
     }
+
     private void OnCollisionStay(Collision other){
-        bool state = CheckGrounded(other.contacts);
-        //Debug.Log("Check Grounded" + state);
-        _isGrounded = state;
-        _isJumping = !state;
-        if (_isJumping){
-            if (Mathf.Abs(_rigidbody.velocity.y) < 0.25f){
-                _isGrounded = true;
-                _isJumping = false;
-            }
-        }
+        TryAddCollidingElement(other.gameObject);
+        ComputeGroundedPoints(other);
+        CheckGroundedWithCollidingObjects();
 
+        //Attempt to interact with Interactables
         if (other.gameObject.TryGetComponent(out IInteractable interactable)){
             interactable?.Interact(gameObject);
         }
     }
 
     private void OnCollisionExit(Collision other){
-        if(_rigidbody.velocity.y > 0.5f) _isGrounded = false;
-        transform.parent = null;
+        TryRemoveCollidingElement(other.gameObject);
 
         //Attempt to cancel Interaction with Interactables
         if (other.gameObject.TryGetComponent(out IInteractable interactable)){
@@ -92,31 +90,66 @@ public class PlayerController : Singleton<PlayerController> {
         }
     }
 
-    private void ClampPlayerVelocity()
-    {
-        _rigidbody.velocity = new Vector3(Mathf.Clamp(_rigidbody.velocity.x, -50f, 50f),
-                                          Mathf.Clamp(_rigidbody.velocity.y, -10f, 10f),
-                                          Mathf.Clamp(_rigidbody.velocity.z, -50f, 50f));
+    private void TryAddCollidingElement(GameObject go){
+        if (!_collidingObjects.Contains(go)){
+            //add 1st time.
+            _collidingObjects.Add(go);
+            _contactPoints.Add(new Tuple<int, int>(0, 0));
+        }
+        else{
+            //existing
+            int collidingIndex = _collidingObjects.IndexOf(go);
+            _contactPoints[collidingIndex] = new Tuple<int, int>(0, 0);
+        }
+    }
+    private void TryRemoveCollidingElement(GameObject go){
+        if (_collidingObjects.Contains(go)){
+            //remove when collision stops entirely.
+            int index = _collidingObjects.IndexOf(go);
+            _collidingObjects.RemoveAt(index);
+            _contactPoints.RemoveAt(index);
+        }
+    }
 
-        if (_rigidbody.velocity.y == 50f) _isJumping = false;
+    //computes the contact points from incoming collision whether the angle difference is between 0-60 or more
+    private void ComputeGroundedPoints(Collision other){
+        int groundedPointsCount = 0, rest = 0;
+        int index = _collidingObjects.IndexOf(other.gameObject);
+        for (int i = 0; i < other.GetContacts(other.contacts); i++){
+            float angle = Mathf.Abs(Vector3.SignedAngle(other.contacts[i].normal, transform.up, Vector3.up));
+            if (angle >= 0f && angle < 60f){
+                //Debug.DrawRay(other.contacts[i].point, normal * 3f, Color.green, 2f);
+                groundedPointsCount++;
+            }
+            else{
+                //Debug.DrawRay(other.contacts[i].point, normal * 3f, Color.red, 2f);
+                rest++;
+            }
+        }
+        _contactPoints[index] = new Tuple<int, int>(groundedPointsCount, rest);
+    }
+    private void CheckGroundedWithCollidingObjects(){
+        int timesFoundCollisionWithGround = 0;
+        for (int i = 0; i < _collidingObjects.Count; i++){
+            if (_contactPoints[i].Item1 > 0) timesFoundCollisionWithGround += 1;
+        }
+        _isGrounded = (timesFoundCollisionWithGround > 0) ? true : false;
+    }
+
+    private void ClampPlayerVelocity(){
+        _rigidbody.velocity = new Vector3(Mathf.Clamp(_rigidbody.velocity.x, -15f, 15f),
+                                          Mathf.Clamp(_rigidbody.velocity.y, -10f, 10f),
+                                          Mathf.Clamp(_rigidbody.velocity.z, -15f, 15f));
     }
     public bool HasMovingDirection() => (_direction != Vector3.zero) ? true : false;
     public bool IsSprinting() => (IsWalking() && _isSprinting) ? true : false;
     public bool IsWalking() => (_direction != Vector3.zero) ? true : false;
     public bool IsJumping() => _isJumping;
     public bool IsGrounded() => _isGrounded;
-    public bool IsFalling() =>  (_rigidbody.velocity.y < -0.1f) ? true : false;
+    public bool IsFalling(){
 
-    private bool CheckGrounded(ContactPoint[] contactPoints){
-        bool state = false;
-        foreach(ContactPoint point in contactPoints){
-            float angle = Mathf.Abs(Vector3.SignedAngle(transform.position, point.point, Vector3.up));
-            //Debug.Log("Angle" + angle);
-            if (angle >=0f && angle <=60f) state = true;
-            else state = false;
-        }
-
-        return state;
+        if (_rigidbody.velocity.y > 1f || _rigidbody.velocity.y < -1f) Debug.Log("Fall: (Velocity (Y) ):" +_rigidbody.velocity.y);
+        return (_rigidbody.velocity.y < - 1f) ? true : false;
     }
     private void BroadCastVelocity(){
         OnVelocityChanged?.Invoke(this, new OnVelocityChangedEventArgs{
@@ -150,19 +183,22 @@ public class PlayerController : Singleton<PlayerController> {
         if (HasMovingDirection()) Turn();
     }
     private void Jump(){
-        if (IsGrounded() && IsJumping()) _rigidbody.AddExplosionForce(_jumpForce, transform.position, 1f, 1f, ForceMode.Impulse);
+        if (IsGrounded() && IsJumping()){
+            _rigidbody.AddExplosionForce(_jumpForce, transform.position, 1f, 1f, ForceMode.Impulse);
+            _isJumping = false;
+        }
     }
     private void Move(){
         if (HasMovingDirection() && IsGrounded() && !IsJumping()){
             UpdateMovementSpeed();
-            _rigidbody.velocity = new Vector3(transform.forward.x * _movementSpeed * Time.deltaTime,
+            _rigidbody.velocity = new Vector3(transform.forward.x * _movementSpeed * Time.fixedDeltaTime,
                                             _rigidbody.velocity.y,
-                                            transform.forward.z * _movementSpeed * Time.deltaTime);
+                                            transform.forward.z * _movementSpeed * Time.fixedDeltaTime);
         }
         else
         {
-            if (!HasMovingDirection()) _rigidbody.velocity = Vector3.Lerp(_rigidbody.velocity, Vector3.zero, 1f * Time.deltaTime);
-            if (IsJumping()) _rigidbody.velocity = Vector3.Lerp(_rigidbody.velocity, new Vector3(_rigidbody.velocity.x, 0f,_rigidbody.velocity.z), 1f * Time.deltaTime);
+            if (!HasMovingDirection()) _rigidbody.velocity = Vector3.LerpUnclamped(_rigidbody.velocity, Vector3.zero, 0.1f * Time.fixedDeltaTime);
+            if (IsJumping()) _rigidbody.velocity = Vector3.LerpUnclamped(_rigidbody.velocity, new Vector3(_rigidbody.velocity.x, 0f,_rigidbody.velocity.z), 0.1f * Time.fixedDeltaTime);
         }
     }
     private void UpdateMovementSpeed(){
@@ -198,16 +234,5 @@ public class PlayerController : Singleton<PlayerController> {
                 else return CameraFollow.Instance.GetCameraBackLeft();
             }
         }
-    }
-
-    private IEnumerator DelayDirection(){
-        _direction = Vector3.zero;
-        yield return new WaitForSeconds(waitTime);
-        StartCoroutine(LerpDirection());
-    }
-
-    private IEnumerator LerpDirection(){
-        _direction = Vector3.Lerp(_direction, PlayerInputManager.Instance.GetLastKnownDirection(), lerpDirectionTime);
-        yield return new WaitForSeconds(lerpDirectionTime);
     }
 }
