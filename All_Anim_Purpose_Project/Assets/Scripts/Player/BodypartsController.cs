@@ -18,27 +18,27 @@ public class BodypartsController : MonoBehaviour{
     }
 
     private void OnEnable(){
-        CameraFollow.OnDirectionChanged += CameraFollow_OnDirectionChanged;
+        CameraController.OnDirectionChanged += CameraFollow_OnDirectionChanged;
     }
 
     private void OnDisable()
     {
-        CameraFollow.OnDirectionChanged -= CameraFollow_OnDirectionChanged;
+        CameraController.OnDirectionChanged -= CameraFollow_OnDirectionChanged;
     }
 
     private void CameraFollow_OnDirectionChanged(object sender, EventArgs e) => _bodyPart(_bodyPartTransform);
 
     private void FaceDirection(Transform bodypart){
         if (isHandled){
-            Vector3 lookAtForwardDirection = CameraFollow.Instance.GetCameraForward();
+            Vector3 lookAtForwardDirection = CameraController.Instance.GetCameraForward();
             Vector3 lookAtUp = transform.up; 
 
             float dotProductPlayerCamera = Mathf.Round(Vector3.Dot(lookAtForwardDirection, transform.parent.forward));
 
             if (PlayerController.Instance.HasMovingDirection()) bodypart.LookAt(transform.position + transform.parent.forward, transform.parent.up);
             else{
-                if(dotProductPlayerCamera == 1) lastKnownDirection = CameraFollow.Instance.GetCameraForward();
-                else if(dotProductPlayerCamera == -1) lastKnownDirection = CameraFollow.Instance.GetCameraBack();
+                if(dotProductPlayerCamera == 1) lastKnownDirection = CameraController.Instance.GetCameraForward();
+                else if(dotProductPlayerCamera == -1) lastKnownDirection = CameraController.Instance.GetCameraBack();
 
                 bodypart.LookAt(transform.position + lastKnownDirection, lookAtUp);
 

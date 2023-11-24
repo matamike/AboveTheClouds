@@ -18,10 +18,7 @@ public class GridManager : Singleton<GridManager>{
     private void Update(){
         //Create
         if (Input.GetKeyDown(KeyCode.F1)){
-            if (grid is null){
-                baseOffset = CalculateBasePositionOffset();
-                grid = new TileGrid(gridSizeX, gridSizeY, baseOffset + extraOffset, true, prefabPool, startingGridPosition);
-            }
+            CreateGrid(gridSizeX, gridSizeY);
         }
         //Update Offset
         if (Input.GetKeyDown(KeyCode.F2)) {
@@ -41,6 +38,31 @@ public class GridManager : Singleton<GridManager>{
             grid = null;
             GC.Collect();
         }
+    }
+
+    public void CreateGrid(int sizeX = 0, int sizeY = 0){
+        if (grid is null){
+            if (sizeX == 0) sizeX = UnityEngine.Random.Range(2, 21);
+            if (sizeY == 0) sizeY = UnityEngine.Random.Range(2, 21);
+            baseOffset = CalculateBasePositionOffset();
+            grid = new TileGrid(sizeX, sizeY, baseOffset + extraOffset, true, prefabPool, startingGridPosition);
+            CreateGridEndPoint();
+        }
+    }
+
+    private void CreateGridEndPoint(){
+        if(grid is not null){
+            Vector2 gridSize = grid.GetGridSize();
+            float tileSize = grid.GetGridTileSize();
+
+            GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            float depthOffset = 6f;
+            float sideSizeOffset = (gridSize.x * tileSize);
+            go.transform.position = startingGridPosition + new Vector3((gridSize.x * tileSize)/2f, 0f, depthOffset + (gridSize.y * tileSize));
+            go.transform.localScale = new Vector3(sideSizeOffset, 1f, depthOffset);
+            go.AddComponent<CheckPoint>();
+        }
+
     }
 
     private float CalculateBasePositionOffset(){

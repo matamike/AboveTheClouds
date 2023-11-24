@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraFollow : Singleton<CameraFollow>{
+public class CameraController : Singleton<CameraController>{
     public static event EventHandler OnDirectionChanged;
 
     [SerializeField] private Transform _rotateAroundTransform;
@@ -24,6 +24,7 @@ public class CameraFollow : Singleton<CameraFollow>{
     private Vector3 _cameraUp, _cameraDown;
 
 
+
     private void Start(){
         _targetVelocity = Vector3.zero;
         CalculateOffset();
@@ -36,6 +37,16 @@ public class CameraFollow : Singleton<CameraFollow>{
     private void LateUpdate(){
         FollowTarget();
         UpdateDirections();
+    }
+
+    public void AssignFollowTransform(Transform followTransform){
+        if (followTransform == null) return;
+        _followFocusTransform = followTransform;
+    }
+
+    public void AssignRotateAroundTransform(Transform rotateAroundTransform){
+        if (rotateAroundTransform == null) return;
+        _rotateAroundTransform = rotateAroundTransform;
     }
 
     private void UpdateDirections(){
@@ -66,11 +77,16 @@ public class CameraFollow : Singleton<CameraFollow>{
     public Vector3 GetCameraBackRight() => _cameraBackRight;
 
     private void FollowTarget(){
+        if (_followFocusTransform == null) return;
         Vector3 targetPosition = _followFocusTransform.position + _calculatedOffset;
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _targetVelocity, followSpeed);
     }
-    private void CalculateOffset() => _calculatedOffset = (transform.position - _followFocusTransform.position).normalized * followDistance;
+    private void CalculateOffset(){
+        if (_followFocusTransform == null) return;
+        _calculatedOffset = (transform.position - _followFocusTransform.position).normalized * followDistance;
+    }
     private void RotateAroundTarget(){
+        if (_rotateAroundTransform == null) return;
         CalculateOffset();
         //Retrieve normalized mouse X,Y Axis Values
         _lastKnownMousePositionXAxis = MouseUtility.GetMouseXNormalized();

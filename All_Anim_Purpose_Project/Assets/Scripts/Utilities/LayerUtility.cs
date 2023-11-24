@@ -9,9 +9,9 @@ public static class LayerUtility{
         return mask;
     }
 
-    public static bool LayerIsName(int layer, string[] lookUpNames){
-        for(int i = 0; i<lookUpNames.Length; i++){
-            if(LayerMask.LayerToName(layer) == lookUpNames[i]) return true;
+    public static bool LayerIsName(int layer, string[] lookUpLayerNames){
+        for(int i = 0; i<lookUpLayerNames.Length; i++){
+            if(LayerMask.LayerToName(layer) == lookUpLayerNames[i]) return true;
         }  
         return false;
     }

@@ -21,7 +21,9 @@ public class Drop : MonoBehaviour, IInteractable{
             if (fallDownTimer > fallDownWaitTime){
                 _rigidbody.isKinematic = false;
                 fallDownTimer = 0.0f;
-                _isLoosened = false;               
+                GetComponent<Collider>().enabled = false;
+                _isLoosened = false;
+                Destroy(gameObject, 5f);
             }
         }
     }

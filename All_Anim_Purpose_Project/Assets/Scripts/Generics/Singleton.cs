@@ -9,7 +9,7 @@ public class Singleton<T> :MonoBehaviour where T : MonoBehaviour{
     private void InitializeSingleton(){
         if (_instance == null) _instance = FindObjectOfType<T>();
         else if (_instance != FindObjectOfType<T>()) Destroy(FindObjectOfType<T>());
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
         Instance = _instance;
     }
 }

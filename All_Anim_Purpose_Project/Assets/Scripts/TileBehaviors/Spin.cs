@@ -22,11 +22,8 @@ public class Spin : MonoBehaviour, IInteractable{
 
     private void RotatingProcess(){
         if (isRotating){
-            //Transform Rotation
-            gameObject.transform.root.transform.eulerAngles += new Vector3(0, rotateDuration * rotateTimeElapsed, 0) * speed;
-
-            //Apply force to player Rigidbody
-            ApplyForceToTarget();
+            RotateTileTransform();
+            ApplyConstantForceToTarget();
 
             // Progression of time.
             rotateTimeElapsed += Time.deltaTime;
@@ -36,13 +33,14 @@ public class Spin : MonoBehaviour, IInteractable{
                 isRotating = false;
                 isInCooldown = true;
                 rotateTimeElapsed = 0.0f;
+                speed = 1f;
             }
         }
     }
 
     private void Cooldown(){
         if (isInCooldown){
-            gameObject.transform.eulerAngles = Vector3.Lerp(gameObject.transform.transform.eulerAngles, Vector3.zero, 1f);
+            ResetTileTransformRotation();
             rotateTimeElapsed += Time.deltaTime;
             if (rotateTimeElapsed > rotateCooldown){
                 isInCooldown = false;
@@ -51,7 +49,11 @@ public class Spin : MonoBehaviour, IInteractable{
         }  
     }
 
-    private void ApplyForceToTarget(){
+    private void RotateTileTransform() => transform.eulerAngles += new Vector3(0, rotateDuration * rotateTimeElapsed, 0) * speed;
+    private void ResetTileTransformRotation(){
+        if(transform.eulerAngles != Vector3.zero) transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, Vector3.zero, 1f);
+    }
+    private void ApplyConstantForceToTarget(){
         speed = Mathf.Lerp(speed, 10f, speed * Time.deltaTime);
         float velocityXAxis = Mathf.Sin(2f * Mathf.PI * rotateTimeElapsed * Time.deltaTime) * speed;
         float velocityZAxis = Mathf.Sin(2f * Mathf.PI * rotateTimeElapsed * Time.deltaTime) * speed;
@@ -61,19 +63,27 @@ public class Spin : MonoBehaviour, IInteractable{
             playerRB.transform.eulerAngles = transform.eulerAngles;
         }
     }
+    private void ApplyInstantForceToTarget(){
+        if (playerRB != null){
+            Vector3 playerForward = playerRB.gameObject.transform.forward;
+            Vector3 direction = new Vector3(playerForward.x, 1f, playerForward.z);
+            playerRB.AddForce(direction * speed, ForceMode.Impulse);
+        }
+    }
+
+    private void AssignTarget(GameObject target) => playerRB = target.GetComponent<Rigidbody>();
+    private void RemoveTarget() => playerRB = null;
 
     //IInteractable Interface
     public void Interact(GameObject invokeSource){
         if (LayerUtility.LayerIsName(invokeSource.layer, layerNames)){
-            if (!isInCooldown){
-                playerRB = invokeSource.GetComponent<Rigidbody>();
-                isRotating = true;
-            }
+            AssignTarget(invokeSource);
+            if (!isInCooldown) isRotating = true;
         }
     }
 
     public void CancelInteracion(GameObject invokeSource){
-        if (playerRB != null) playerRB.AddForce(Vector3.up * speed, ForceMode.Impulse);
-        playerRB = null;
+        if (!isInCooldown) ApplyInstantForceToTarget();
+        RemoveTarget();
     }
 }

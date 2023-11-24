@@ -6,8 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Scenes/Hub.unity
+    guid: 4320f19c94750754b8de616c41ae2b31
+  - enabled: 1
+    path: Assets/Scenes/ObstacleCourse_Random.unity
+    guid: 4c590ac6dfcb50f4bb316b95c8f008bb
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 1b8fa3cbe98f1a241bf0b33f135a7d43,
       type: 2}

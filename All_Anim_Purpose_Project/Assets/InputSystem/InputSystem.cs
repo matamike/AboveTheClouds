@@ -53,6 +53,42 @@ public partial class @InputSystem : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SpecialMove_1"",
+                    ""type"": ""Button"",
+                    ""id"": ""cddbf314-3c58-43e9-8d41-a82e9d47f245"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SpecialMove_2"",
+                    ""type"": ""Button"",
+                    ""id"": ""74a01402-30f0-460f-beab-83cdea3ab47c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SpecialMove_3"",
+                    ""type"": ""Button"",
+                    ""id"": ""e41f3be8-2958-4f6b-82a9-cddd535a461f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SpecialMove_4"",
+                    ""type"": ""Button"",
+                    ""id"": ""b76652d0-8605-4f7c-833c-4f023c477e69"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -132,6 +168,50 @@ public partial class @InputSystem : IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a13bc713-888e-41da-8090-222e603da53a"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SpecialMove_1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b48a1426-740c-48fb-b0ef-f2503d1f396b"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SpecialMove_2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5ccc1e70-2b20-47a1-9232-e7a04bb63df4"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SpecialMove_3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1bdf6cdb-ec6b-4f53-b94f-77e4b7c318b7"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SpecialMove_4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -143,6 +223,10 @@ public partial class @InputSystem : IInputActionCollection2, IDisposable
         m_Game_Move = m_Game.FindAction("Move", throwIfNotFound: true);
         m_Game_Sprint = m_Game.FindAction("Sprint", throwIfNotFound: true);
         m_Game_Jump = m_Game.FindAction("Jump", throwIfNotFound: true);
+        m_Game_SpecialMove_1 = m_Game.FindAction("SpecialMove_1", throwIfNotFound: true);
+        m_Game_SpecialMove_2 = m_Game.FindAction("SpecialMove_2", throwIfNotFound: true);
+        m_Game_SpecialMove_3 = m_Game.FindAction("SpecialMove_3", throwIfNotFound: true);
+        m_Game_SpecialMove_4 = m_Game.FindAction("SpecialMove_4", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -205,6 +289,10 @@ public partial class @InputSystem : IInputActionCollection2, IDisposable
     private readonly InputAction m_Game_Move;
     private readonly InputAction m_Game_Sprint;
     private readonly InputAction m_Game_Jump;
+    private readonly InputAction m_Game_SpecialMove_1;
+    private readonly InputAction m_Game_SpecialMove_2;
+    private readonly InputAction m_Game_SpecialMove_3;
+    private readonly InputAction m_Game_SpecialMove_4;
     public struct GameActions
     {
         private @InputSystem m_Wrapper;
@@ -212,6 +300,10 @@ public partial class @InputSystem : IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Game_Move;
         public InputAction @Sprint => m_Wrapper.m_Game_Sprint;
         public InputAction @Jump => m_Wrapper.m_Game_Jump;
+        public InputAction @SpecialMove_1 => m_Wrapper.m_Game_SpecialMove_1;
+        public InputAction @SpecialMove_2 => m_Wrapper.m_Game_SpecialMove_2;
+        public InputAction @SpecialMove_3 => m_Wrapper.m_Game_SpecialMove_3;
+        public InputAction @SpecialMove_4 => m_Wrapper.m_Game_SpecialMove_4;
         public InputActionMap Get() { return m_Wrapper.m_Game; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -230,6 +322,18 @@ public partial class @InputSystem : IInputActionCollection2, IDisposable
                 @Jump.started -= m_Wrapper.m_GameActionsCallbackInterface.OnJump;
                 @Jump.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnJump;
                 @Jump.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnJump;
+                @SpecialMove_1.started -= m_Wrapper.m_GameActionsCallbackInterface.OnSpecialMove_1;
+                @SpecialMove_1.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnSpecialMove_1;
+                @SpecialMove_1.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnSpecialMove_1;
+                @SpecialMove_2.started -= m_Wrapper.m_GameActionsCallbackInterface.OnSpecialMove_2;
+                @SpecialMove_2.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnSpecialMove_2;
+                @SpecialMove_2.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnSpecialMove_2;
+                @SpecialMove_3.started -= m_Wrapper.m_GameActionsCallbackInterface.OnSpecialMove_3;
+                @SpecialMove_3.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnSpecialMove_3;
+                @SpecialMove_3.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnSpecialMove_3;
+                @SpecialMove_4.started -= m_Wrapper.m_GameActionsCallbackInterface.OnSpecialMove_4;
+                @SpecialMove_4.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnSpecialMove_4;
+                @SpecialMove_4.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnSpecialMove_4;
             }
             m_Wrapper.m_GameActionsCallbackInterface = instance;
             if (instance != null)
@@ -243,6 +347,18 @@ public partial class @InputSystem : IInputActionCollection2, IDisposable
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
+                @SpecialMove_1.started += instance.OnSpecialMove_1;
+                @SpecialMove_1.performed += instance.OnSpecialMove_1;
+                @SpecialMove_1.canceled += instance.OnSpecialMove_1;
+                @SpecialMove_2.started += instance.OnSpecialMove_2;
+                @SpecialMove_2.performed += instance.OnSpecialMove_2;
+                @SpecialMove_2.canceled += instance.OnSpecialMove_2;
+                @SpecialMove_3.started += instance.OnSpecialMove_3;
+                @SpecialMove_3.performed += instance.OnSpecialMove_3;
+                @SpecialMove_3.canceled += instance.OnSpecialMove_3;
+                @SpecialMove_4.started += instance.OnSpecialMove_4;
+                @SpecialMove_4.performed += instance.OnSpecialMove_4;
+                @SpecialMove_4.canceled += instance.OnSpecialMove_4;
             }
         }
     }
@@ -252,5 +368,9 @@ public partial class @InputSystem : IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnSpecialMove_1(InputAction.CallbackContext context);
+        void OnSpecialMove_2(InputAction.CallbackContext context);
+        void OnSpecialMove_3(InputAction.CallbackContext context);
+        void OnSpecialMove_4(InputAction.CallbackContext context);
     }
 }

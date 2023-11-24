@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9119927901272667393}
-  - component: {fileID: 9119927901272667406}
+  - component: {fileID: 7346438576710370153}
   m_Layer: 0
   m_Name: CameraHandler
   m_TagString: Untagged
@@ -33,7 +33,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9119927901272667406
+--- !u!114 &7346438576710370153
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,16 +42,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 9119927901272667407}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e5122fef34bb6e498ba07c54996cce4, type: 3}
+  m_Script: {fileID: 11500000, guid: c41c4df30d398c0409b5de3582fa38dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _rotateAroundTransform: {fileID: 0}
-  rotationSpeed: 5
+  rotationSpeed: 2.56
   _followFocusTransform: {fileID: 0}
   followSpeed: 0.25
   followDistance: 6
-  _XAxisAngleMinThreshold: -50
-  _XAxisAngleMaxThreshold: 50
+  _XAxisAngleMinThreshold: -35
+  _XAxisAngleMaxThreshold: 35
 --- !u!1 &9119927901948312033
 GameObject:
   m_ObjectHideFlags: 0
@@ -96,7 +96,7 @@ Camera:
   m_GameObject: {fileID: 9119927901948312033}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0.8117648, g: 0.8745099, b: 0.9176471, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -169,7 +169,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0

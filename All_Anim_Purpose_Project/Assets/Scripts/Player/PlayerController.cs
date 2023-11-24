@@ -5,7 +5,6 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : Singleton<PlayerController> {
-    public static event EventHandler<OnStatusChangedEventArgs> OnStatusChanged;
     public static event EventHandler<OnVelocityChangedEventArgs> OnVelocityChanged;
 
     //Event Args Templates
@@ -19,20 +18,25 @@ public class PlayerController : Singleton<PlayerController> {
 
     private Rigidbody _rigidbody;
     private bool _isSprinting;
-    [SerializeField] private bool _isGrounded;
-    [SerializeField] private bool _isJumping;
+    private bool _isGrounded;
+    private bool _isJumping;
     private Vector3 _direction; //calculated
     private float _movementSpeed; // calculated
+
+    //Variables for checking fall and wait time before next motion
+    //private bool fallState = false;
+    private bool waitBeforeMovingAgain = false;
 
     //Parameters
     private float _jumpForce = 8f;
     private float _walkForce = 140f;
     private float _sprintForce = 340f;
     private float _turnDirectionSpeed = 1f;
+    
 
     // Collision Parameters
-    [SerializeField] private List<GameObject> _collidingObjects;
-    [SerializeField] private List<Tuple<int, int>> _contactPoints;
+    private List<GameObject> _collidingObjects;
+    private List<Tuple<int, int>> _contactPoints;
 
     private void Start() {
         _rigidbody = GetComponent<Rigidbody>();
@@ -41,33 +45,43 @@ public class PlayerController : Singleton<PlayerController> {
     }
 
     private void OnEnable() {
-        PlayerInputManager.OnMovePerformed += InputUtility_OnMovePerformed;
-        PlayerInputManager.OnSprintPerformed += InputUtility_OnSprintPerformed;
-        PlayerInputManager.OnJumpPerformed += InputUtility_OnJumpPerformed;
+        InputManager.OnMovePerformed += InputUtility_OnMovePerformed;
+        InputManager.OnSprintPerformed += InputUtility_OnSprintPerformed;
+        InputManager.OnJumpPerformed += InputUtility_OnJumpPerformed;
+        InputManager.OnSpecialMovePerformed += InputUtility_OnSpecialMovePerformed;
     }
 
+
+
     private void OnDisable() {
-        PlayerInputManager.OnMovePerformed -= InputUtility_OnMovePerformed;
-        PlayerInputManager.OnSprintPerformed -= InputUtility_OnSprintPerformed;
-        PlayerInputManager.OnJumpPerformed -= InputUtility_OnJumpPerformed;
+        InputManager.OnMovePerformed -= InputUtility_OnMovePerformed;
+        InputManager.OnSprintPerformed -= InputUtility_OnSprintPerformed;
+        InputManager.OnJumpPerformed -= InputUtility_OnJumpPerformed;
+        InputManager.OnSpecialMovePerformed -= InputUtility_OnSpecialMovePerformed;
     }
 
     //Event Hook Callbacks
-    private void InputUtility_OnSprintPerformed(object sender, PlayerInputManager.OnSprintPerformedEventArgs e) => _isSprinting = e.sprint;
-    private void InputUtility_OnMovePerformed(object sender, PlayerInputManager.OnMovePerformedEventArgs e) => _direction = e.direction.normalized;
-    private void InputUtility_OnJumpPerformed(object sender, PlayerInputManager.OnJumpPerformedEventArgs e){
+    private void InputUtility_OnSprintPerformed(object sender, InputManager.OnSprintPerformedEventArgs e) => _isSprinting = e.sprint;
+    private void InputUtility_OnMovePerformed(object sender, InputManager.OnMovePerformedEventArgs e) => _direction = e.direction.normalized;
+    private void InputUtility_OnJumpPerformed(object sender, InputManager.OnJumpPerformedEventArgs e){
         if(IsGrounded()) _isJumping = e.jump;
     }
-    private void Update() {
+    private void InputUtility_OnSpecialMovePerformed(object sender, InputManager.OnSpecialMovePerformedEventArgs e){
+        Debug.Log("Special Move ID: " + e.special_id);
+        //TODO IMPLEMENT FUTURE !!!
+    }
+    private void Update() {  
         ControlDirection(); // Turning the player
         ClampPlayerVelocity(); //Clamp Velocity of Player Rigidbody to limits
-        BroadCastMotionStatus(); //Broadcast to Animator State
-        BroadCastVelocity(); //Broadcast Rigidbody Velocity (along with ground state)
-        if(_rigidbody.velocity.y > 1f || _rigidbody.velocity.y < -1f) _isGrounded = false;
+        
+        //Timeout after Fall Process
+        //PostFallTimeOut();
     }
 
-    private void FixedUpdate(){   
+    private void FixedUpdate(){
         ControlMovement(); // Moving the player
+        BroadCastVelocity(); //Broadcast Rigidbody Velocity (along with ground state)
+        if (_rigidbody.velocity.y > 1f || _rigidbody.velocity.y < -1f) _isGrounded = false; //airborne (falling or jumping -> any case)
     }
 
     private void OnCollisionStay(Collision other){
@@ -80,6 +94,13 @@ public class PlayerController : Singleton<PlayerController> {
             interactable?.Interact(gameObject);
         }
     }
+
+    //private void PostFallTimeOut(){
+    //    if (fallState != IsFalling()){
+    //        fallState = IsFalling();
+    //        if (!IsFalling()) StartCoroutine(DelayMotion());
+    //    }
+    //}
 
     private void OnCollisionExit(Collision other){
         TryRemoveCollidingElement(other.gameObject);
@@ -135,7 +156,6 @@ public class PlayerController : Singleton<PlayerController> {
         }
         _isGrounded = (timesFoundCollisionWithGround > 0) ? true : false;
     }
-
     private void ClampPlayerVelocity(){
         _rigidbody.velocity = new Vector3(Mathf.Clamp(_rigidbody.velocity.x, -15f, 15f),
                                           Mathf.Clamp(_rigidbody.velocity.y, -10f, 10f),
@@ -146,38 +166,18 @@ public class PlayerController : Singleton<PlayerController> {
     public bool IsWalking() => (_direction != Vector3.zero) ? true : false;
     public bool IsJumping() => _isJumping;
     public bool IsGrounded() => _isGrounded;
-    public bool IsFalling(){
-
-        if (_rigidbody.velocity.y > 1f || _rigidbody.velocity.y < -1f) Debug.Log("Fall: (Velocity (Y) ):" +_rigidbody.velocity.y);
-        return (_rigidbody.velocity.y < - 1f) ? true : false;
-    }
+    public bool IsFalling() => (_rigidbody.velocity.y < - 1f) ? true : false;  
     private void BroadCastVelocity(){
         OnVelocityChanged?.Invoke(this, new OnVelocityChangedEventArgs{
             velocity = _rigidbody.velocity,
             grounded = _isGrounded
         });
     }
-    private void BroadCastMotionStatus(){
-        // Jump State
-        if (IsJumping() || IsFalling()){
-            OnStatusChanged?.Invoke(this, new OnStatusChangedEventArgs { state = 3 });
-            return;
-        }
-
-        // Walk / Run
-        if (IsWalking())
-        {
-            if(IsSprinting()) OnStatusChanged?.Invoke(this, new OnStatusChangedEventArgs { state = 2 });
-            else OnStatusChanged?.Invoke(this, new OnStatusChangedEventArgs { state = 1 });
-        }
-        else{
-            //Idle
-            OnStatusChanged?.Invoke(this, new OnStatusChangedEventArgs { state = 0 });
-        }
-    }
     private void ControlMovement(){
-        Move();
-        Jump();
+        if (!waitBeforeMovingAgain){
+            Move();
+            Jump();
+        }
     }
     private void ControlDirection(){
         if (HasMovingDirection()) Turn();
@@ -215,24 +215,30 @@ public class PlayerController : Singleton<PlayerController> {
     {
         if (_direction == Vector3.zero) return Vector3.zero;
 
-        if (_direction == Vector3.forward) return CameraFollow.Instance.GetCameraForward();
-        else if (_direction == Vector3.back) return CameraFollow.Instance.GetCameraBack();
-        else if (_direction == Vector3.up) return CameraFollow.Instance.GetCameraUp();
-        else if (_direction == Vector3.down) return CameraFollow.Instance.GetCameraDown();
-        else if (_direction == Vector3.right) return CameraFollow.Instance.GetCameraRight();
-        else if (_direction == Vector3.left) return CameraFollow.Instance.GetCameraLeft();
+        if (_direction == Vector3.forward) return CameraController.Instance.GetCameraForward();
+        else if (_direction == Vector3.back) return CameraController.Instance.GetCameraBack();
+        else if (_direction == Vector3.up) return CameraController.Instance.GetCameraUp();
+        else if (_direction == Vector3.down) return CameraController.Instance.GetCameraDown();
+        else if (_direction == Vector3.right) return CameraController.Instance.GetCameraRight();
+        else if (_direction == Vector3.left) return CameraController.Instance.GetCameraLeft();
         else
         {
             if (_direction.z > 0)
             {
-                if (_direction.x > 0) return CameraFollow.Instance.GetCameraForwardRight();
-                else return CameraFollow.Instance.GetCameraForwardLeft();
+                if (_direction.x > 0) return CameraController.Instance.GetCameraForwardRight();
+                else return CameraController.Instance.GetCameraForwardLeft();
             }
             else
             {
-                if (_direction.x > 0) return CameraFollow.Instance.GetCameraBackRight();
-                else return CameraFollow.Instance.GetCameraBackLeft();
+                if (_direction.x > 0) return CameraController.Instance.GetCameraBackRight();
+                else return CameraController.Instance.GetCameraBackLeft();
             }
         }
     }
+
+    //IEnumerator DelayMotion(){
+    //    waitBeforeMovingAgain = true;
+    //    yield return new WaitForSeconds(0.25f);
+    //    waitBeforeMovingAgain = false;
+    //}
 }

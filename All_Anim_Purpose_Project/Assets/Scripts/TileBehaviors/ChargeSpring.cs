@@ -30,8 +30,8 @@ public class ChargeSpring : MonoBehaviour, IInteractable{
     private void Charge(){
         if (!isCharged){
             chargingTimeElapsed += Time.deltaTime;
-            springJoint.spring = Mathf.Lerp(springJoint.spring, 100f, chargingTimeElapsed * 3f);
-            springJoint.tolerance = Mathf.Lerp(springJoint.tolerance, 0.75f, chargingTimeElapsed * 3f);
+            springJoint.spring = Mathf.LerpUnclamped(springJoint.spring, 100f, chargingTimeElapsed * 3f);
+            springJoint.tolerance = Mathf.LerpUnclamped(springJoint.tolerance, 0.75f, chargingTimeElapsed * 3f);
             
             if (chargingTimeElapsed >= chargeTime){
                 isCharged = true;

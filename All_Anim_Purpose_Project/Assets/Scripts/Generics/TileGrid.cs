@@ -78,6 +78,11 @@ public class TileGrid{
     }
 
     public void UpdateStartingPosition(Vector3 newStartingPosition) => _startingPosition = newStartingPosition;
+
+    public Vector2 GetGridSize() => new Vector2(_width, _height);
+
+    public float GetGridTileSize() => (_gridArray[0, 0].transform.lossyScale.x + _gridArray[0, 0].transform.lossyScale.z) / 2f;
+
     public void DestroyGridElements(){
         foreach (var item in _gridArray){
             if (item != null) UnityEngine.Object.Destroy(item.gameObject);
