@@ -49,7 +49,7 @@ MonoBehaviour:
   rotationSpeed: 2.56
   _followFocusTransform: {fileID: 0}
   followSpeed: 0.25
-  followDistance: 6
+  followDistance: 7
   _XAxisAngleMinThreshold: -35
   _XAxisAngleMaxThreshold: 35
 --- !u!1 &9119927901948312033

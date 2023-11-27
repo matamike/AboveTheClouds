@@ -4,61 +4,92 @@ using UnityEngine;
 
 public class ChargeSpring : MonoBehaviour, IInteractable{
     [SerializeField] private SpringJoint springJoint;
+    //Interacting Layers
     private string[] layerNames = { "Player", "DroppedObject" };
+
+    //Timers
     private float cooldownTimeElapsed = 0f;
     private float chargingTimeElapsed = 0f;
-    private bool chargingEnabled = false;
-    private bool isCharged = false;
+    private float restPositionTimer = 0f;
+
+    //Conditions
     private bool isInCooldown = false;
+    private bool hasObjectInteracting = false;
 
     //Parameters
-    private float chargeTime = 2f;
-    private float cooldown = 2f;
+    private float chargeTime = 5f;
+    private float cooldown = 3f;
 
     private void Update(){
-        if (!isInCooldown){
-            if (chargingEnabled) Charge(); //Charge the Spring
+        if (CanCharge()){
+            Charge();
+            if (chargingTimeElapsed >= chargeTime) FireSpring(); //Fire Spring
         }
-        else Cooldown();
+        else{
+            if (!IsInRestPosition()) ResetSpring();
+            else restPositionTimer = 0f;
+        }
+        Cooldown();
+    }
+    private bool CanCharge() => hasObjectInteracting && !isInCooldown;
+
+    //Drops the spring for X time before releasing it.
+    private void Charge(){
+        chargingTimeElapsed += Time.deltaTime;
+        springJoint.spring = Mathf.LerpUnclamped(springJoint.spring, 100f, chargingTimeElapsed);
+        springJoint.tolerance = Mathf.LerpUnclamped(springJoint.tolerance, 0.75f, chargingTimeElapsed);
     }
 
     private void Cooldown(){
-        cooldownTimeElapsed += Time.deltaTime;
-        if (cooldownTimeElapsed > cooldown) isInCooldown = false;
-    }
-
-    private void Charge(){
-        if (!isCharged){
-            chargingTimeElapsed += Time.deltaTime;
-            springJoint.spring = Mathf.LerpUnclamped(springJoint.spring, 100f, chargingTimeElapsed * 3f);
-            springJoint.tolerance = Mathf.LerpUnclamped(springJoint.tolerance, 0.75f, chargingTimeElapsed * 3f);
-            
-            if (chargingTimeElapsed >= chargeTime){
-                isCharged = true;
-                ResetSpring(); //Fire and Reset
+        if (isInCooldown){
+            chargingTimeElapsed = 0f;
+            cooldownTimeElapsed += Time.deltaTime;
+            if (cooldownTimeElapsed > cooldown){
+                ToggleCooldown(false);
+                cooldownTimeElapsed = 0f;
             }
         }
     }
 
     private void ResetSpring(){
-        chargingTimeElapsed = 0f; //reset charging time.
-        isInCooldown = true; //enable cooldown before reusing
-        //Fire and Reset Spring properties.
-        springJoint.tolerance = 0.01f;
-        springJoint.spring = 100000f;
-        //Reset charging states
-        isCharged = false;
-        chargingEnabled = false;
-        cooldownTimeElapsed = 0f;//Reset cooldown timer.
+        //Fire Spring
+        restPositionTimer += Time.deltaTime;
+        springJoint.tolerance = Mathf.Lerp(springJoint.tolerance, 0.01f, restPositionTimer);
+        springJoint.spring = Mathf.Lerp(springJoint.spring, 100000f, restPositionTimer);
     }
 
+    private void FireSpring(){
+        //Fire Spring
+        springJoint.tolerance = 0.01f;
+        springJoint.spring = 100000f;
+
+        //Reset Timers and activate cooldown
+        ResetSpringValues();
+    }
+
+    private void ResetSpringValues(){
+        // Reset Charging/Cooldown timers
+        chargingTimeElapsed = 0f;
+        cooldownTimeElapsed = 0f;
+
+        //Enable Cooldown
+        ToggleCooldown(true);
+    }
+
+    private void ToggleCooldown(bool flag) => isInCooldown = flag;
+
+    private void ToggleObjectInteracting(bool flag) => hasObjectInteracting = flag;
+
+    private bool IsInRestPosition() => (springJoint.tolerance == 0.01f && springJoint.spring == 100000f) ? true : false;
+
     public void Interact(GameObject invokeSource){
-        if (LayerUtility.LayerIsName(invokeSource.layer, layerNames)){
-            if (!isInCooldown) chargingEnabled = true;
-        }
+        if (LayerUtility.LayerIsName(invokeSource.layer, layerNames)) ToggleObjectInteracting(true);
     }
 
     public void CancelInteracion(GameObject invokeSource){
-        Debug.Log(invokeSource.name + "stopped interacting with " + gameObject.name);
+        if (LayerUtility.LayerIsName(invokeSource.layer, layerNames)){
+            ToggleObjectInteracting(false);
+            chargingTimeElapsed = 0f;
+        }
     }
 }
