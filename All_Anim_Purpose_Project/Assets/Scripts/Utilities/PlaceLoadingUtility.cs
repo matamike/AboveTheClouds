@@ -1,57 +1,48 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public static class PlaceLoadingUtility{
-    //Contains all the active to the build scenes
-    private static readonly string[] _sceneNames = new string[] {
-        "Hub",
-        "ObstacleCourse_Random",
-    };
+namespace Utility.PlaceUtility
+{
 
-    public static Place _currentPlace = Place.Hub; 
-
-    public enum Place{
-        None,
-        Hub,
-        ObstacleCourseRandom_Any,
-        ObstacleCourseRandom_Easy,
-        ObstacleCourseRandom_Medium,
-        ObstacleCourseRandom_Hard,
-    }
-
-
-    public static void MoveToPlace(Place place){
-        if (_currentPlace == place || place == Place.None) return;
-        else _currentPlace = place;
-
-        switch (place)
-        {
-            case Place.Hub:
-                SceneManager.LoadScene(GetSceneNameByBuildIndex(0));
-                _currentPlace = Place.Hub;
-                break;
-            case Place.ObstacleCourseRandom_Any:
-                SceneManager.LoadScene(GetSceneNameByBuildIndex(1));
-                _currentPlace = Place.ObstacleCourseRandom_Any;
-                break;
-            case Place.ObstacleCourseRandom_Easy:
-                SceneManager.LoadScene(GetSceneNameByBuildIndex(1));
-                _currentPlace = Place.ObstacleCourseRandom_Easy;
-                break;
-            case Place.ObstacleCourseRandom_Medium:
-                SceneManager.LoadScene(GetSceneNameByBuildIndex(1));
-                _currentPlace = Place.ObstacleCourseRandom_Medium;
-                break;
-            case Place.ObstacleCourseRandom_Hard:
-                SceneManager.LoadScene(GetSceneNameByBuildIndex(1));
-                _currentPlace = Place.ObstacleCourseRandom_Hard;
-                break;
+    public static class PlaceLoadingUtility
+    {
+        //Contains all the active to the build scenes
+        private static readonly string[] _sceneNames = new string[] {
+            "Hub",
+            "ObstacleCourse_Random",
+        };
+        
+        public enum Place{
+            None,
+            Hub,
+            ObstacleCourseRandom,
+            ObstacleCourseUserDefined,
+            LevelCreator,
         }
+
+        public static Place _currentPlace = Place.Hub;
+        private static Dictionary<Place, int> _placeToBuildIndex = new Dictionary<Place, int>(){
+            {Place.None, -1},
+            {Place.Hub, 0},
+            {Place.ObstacleCourseRandom, 1},
+            //{Place.ObstacleCourseUserDefined, 2} - TODO Implement (Same structure as 1) ~maybe will keep 1 index (will see)
+            //{Place.LevelCreator, 3}, - TODO Implement (Creator Scene will be index 2)
+        };
+
+        public static void MoveToPlace(Place place){
+            if (_currentPlace == place || place == Place.None) return;
+            else _currentPlace = place;
+
+            int buildIndex = _placeToBuildIndex[place];
+            SceneManager.LoadScene(GetSceneNameByBuildIndex(buildIndex));
+            _currentPlace = place;
+        }
+
+        public static Place GetCurrentPlace() => _currentPlace;
+
+        public static string GetSceneNameByBuildIndex(int index) => _sceneNames[index];
     }
-
-    public static Place GetCurrentPlace() => _currentPlace;
-
-    public static string GetSceneNameByBuildIndex(int index) => _sceneNames[index];
 }

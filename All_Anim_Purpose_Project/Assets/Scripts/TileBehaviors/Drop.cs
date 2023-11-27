@@ -39,6 +39,5 @@ public class Drop : MonoBehaviour, IInteractable{
     }
 
     public void CancelInteracion(GameObject invokeSource){
-        Debug.Log(invokeSource.name + "stopped interacting with " + gameObject.name);
     }
 }

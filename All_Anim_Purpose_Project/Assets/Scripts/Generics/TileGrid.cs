@@ -1,11 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.VisualScripting;
 using UnityEngine;
 using URandom = UnityEngine.Random;
 
 public class TileGrid{
-    public static event EventHandler<OnPositionChangedEventArgs> OnPositionChanged;
+    public event EventHandler<OnPositionChangedEventArgs> OnPositionChanged;
+    public event EventHandler OnGridDestroying;
 
     public class OnPositionChangedEventArgs: EventArgs
     {
@@ -53,6 +60,8 @@ public class TileGrid{
     private GameObject CreateGridElement(GameObject prefab, int x, int y){
         GameObject element = UnityEngine.Object.Instantiate(prefab, _startingPosition, Quaternion.identity);
         element.name = prefab.name+"("+ x +"_"+ y +")";
+        element.GetComponent<Tile>().AssignTileGrid(this);
+        element.GetComponent<Move>().AssignTileGrid(this);
         return element;
     }
 
@@ -84,10 +93,10 @@ public class TileGrid{
     public float GetGridTileSize() => (_gridArray[0, 0].transform.lossyScale.x + _gridArray[0, 0].transform.lossyScale.z) / 2f;
 
     public void DestroyGridElements(){
-        foreach (var item in _gridArray){
-            if (item != null) UnityEngine.Object.Destroy(item.gameObject);
-        }
+        OnGridDestroying?.Invoke(this, EventArgs.Empty);
     }
+
+
     private void MoveGridElementToPosition(int x, int y, bool isSmooth = default){
         if (!isSmooth) _gridArray[x, y].gameObject.transform.position = _startingPosition + new Vector3(x * _tileOffset, 0f, y * _tileOffset);
         else{

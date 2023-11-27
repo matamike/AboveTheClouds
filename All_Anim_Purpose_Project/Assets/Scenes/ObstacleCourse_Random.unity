@@ -508,8 +508,6 @@ MonoBehaviour:
   - {fileID: 2433740071778271901, guid: 163eac2e2d9e8ea49a94add8c9bc18db, type: 3}
   - {fileID: 3090737146204188562, guid: 98261a0712fb85c44baa02b510692989, type: 3}
   - {fileID: 9062003268259108038, guid: 9b47f61e24febbf4faee0b50ec122a3c, type: 3}
-  gridSizeX: 10
-  gridSizeY: 10
   startingGridPosition: {x: 0, y: 0, z: 10}
 --- !u!1 &1648375643
 GameObject:
@@ -687,31 +685,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7940606206383339803, guid: 1d990ecaaa3e7a547b6921699697fe4c,
-        type: 3}
-      propertyPath: _removeablesLayMaskList.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7940606206383339803, guid: 1d990ecaaa3e7a547b6921699697fe4c,
-        type: 3}
-      propertyPath: _respawnablesLayerMaskList.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7940606206383339803, guid: 1d990ecaaa3e7a547b6921699697fe4c,
-        type: 3}
-      propertyPath: _removeablesLayMaskList.Array.data[0].m_Bits
-      value: 128
-      objectReference: {fileID: 0}
-    - target: {fileID: 7940606206383339803, guid: 1d990ecaaa3e7a547b6921699697fe4c,
-        type: 3}
-      propertyPath: _removeablesLayMaskList.Array.data[1].m_Bits
-      value: 256
-      objectReference: {fileID: 0}
-    - target: {fileID: 7940606206383339803, guid: 1d990ecaaa3e7a547b6921699697fe4c,
-        type: 3}
-      propertyPath: _respawnablesLayerMaskList.Array.data[0].m_Bits
-      value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 7940606206383339806, guid: 1d990ecaaa3e7a547b6921699697fe4c,
         type: 3}

@@ -4,13 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Tile : MonoBehaviour{
-    public static event EventHandler<OnDestroyTileEventArgs> OnDestroyTile;
-    public class OnDestroyTileEventArgs : EventArgs{
-        public GameObject tile;
+    private TileGrid _tileGridAssigned;
+
+    private void OnDisable(){
+        _tileGridAssigned.OnGridDestroying -= TileGrid_OnGridDestroying;
     }
-    private void OnDestroy(){
-        OnDestroyTile?.Invoke(this, new OnDestroyTileEventArgs{
-            tile = gameObject
-        });
+
+    private void TileGrid_OnGridDestroying(object sender, EventArgs e) => Destroy(gameObject);
+
+    public void AssignTileGrid(TileGrid tileGrid){
+        _tileGridAssigned = tileGrid;
+        _tileGridAssigned.OnGridDestroying += TileGrid_OnGridDestroying;
     }
 }

@@ -7,12 +7,10 @@ public class Move : MonoBehaviour{
     [SerializeField] [Range(1f,10f)]private float resetDuration = 5f;
     private Vector3 targetPosition;
     private float timer = 0f;
+    private TileGrid _tileGridAssigned;
 
-    private void OnEnable(){
-        TileGrid.OnPositionChanged += MyGrid_OnPositionChanged;
-    }
     private void OnDisable(){
-        TileGrid.OnPositionChanged -= MyGrid_OnPositionChanged;
+        _tileGridAssigned.OnPositionChanged -= MyGrid_OnPositionChanged;
     }
 
     private void MyGrid_OnPositionChanged(object sender, TileGrid.OnPositionChangedEventArgs e){
@@ -24,6 +22,11 @@ public class Move : MonoBehaviour{
 
     private void Update(){
         MoveTile();
+    }
+
+    public void AssignTileGrid(TileGrid tileGrid){
+        _tileGridAssigned = tileGrid;
+        _tileGridAssigned.OnPositionChanged += MyGrid_OnPositionChanged;
     }
 
     private void MoveTile(){

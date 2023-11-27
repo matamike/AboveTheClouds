@@ -1,22 +1,41 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using static Utility.PlaceUtility.PlaceLoadingUtility;
 
 public class MyGameManager : Singleton<MyGameManager> {
+    //Hooks to prefabs
     [SerializeField] GameObject inputPrefab;
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject cameraPrefab;
 
+    //1st Load Parameters
     [SerializeField] Vector3 playerSpawnPointPositionOffset;
     [SerializeField] Vector3 cameraSpawnPointOffset;
     private Transform spawnPoint;
+    
+    //Game Over Criteria.
     private int playerTimesRespawned = 0;
     private int maxPlayerTimesRespawn = 3;
 
     private void Start(){
         spawnPoint = GameObject.Find("SpawnPoint").transform;
         InitializeCoreComponents();
-        InitializePlaceComponents();
-        TogglePlayerControlsLocked(false);
+        InputManager.Instance.SetControlLockStatus(false);
+    }
+
+    private void OnEnable(){
+        SceneManager.sceneLoaded += SceneManager_OnSceneLoaded;
+    }
+
+    private void OnDisable(){
+        SceneManager.sceneLoaded -= SceneManager_OnSceneLoaded;
+    }
+
+    //Hook to SceneLoading Event
+    private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1){
+        Debug.Log("GameManager: Scene Loaded -> " + arg0.name);
+        // we maybe do not need to initialize player or camera in Creator scene.
     }
 
     private void InitializeCoreComponents(){
@@ -29,41 +48,7 @@ public class MyGameManager : Singleton<MyGameManager> {
         Transform cameraFocusTransform = playerInstance.transform.Find("Focus"); 
         CameraController.Instance.AssignFollowTransform(cameraFocusTransform); 
         CameraController.Instance.AssignRotateAroundTransform(cameraFocusTransform);
-        TogglePlayerControlsLocked(true);
-    }
-
-    private void InitializePlaceComponents(){
-        PlaceLoadingUtility.Place place = PlaceLoadingUtility.GetCurrentPlace();
-
-        switch (place){
-            case PlaceLoadingUtility.Place.None:
-                Debug.Log("Place loaded: (None)");
-                break;
-            case PlaceLoadingUtility.Place.Hub:
-                Debug.Log("Place loaded: (Hub)");
-                break;
-            case PlaceLoadingUtility.Place.ObstacleCourseRandom_Any:
-                Debug.Log("Place loaded: (ObstacleCourseRandom_Any)");
-                GridManager.Instance.CreateGrid(); //Generate a tilemap (RandomSize)
-                break;
-            case PlaceLoadingUtility.Place.ObstacleCourseRandom_Easy:
-                Debug.Log("Place loaded: (ObstacleCourseRandom_Easy)");
-                GridManager.Instance.CreateGrid(4, 4); //Generate a tilemap (RandomSize)
-                break;
-            case PlaceLoadingUtility.Place.ObstacleCourseRandom_Medium:
-                Debug.Log("Place loaded: (ObstacleCourseRandom_Medium)");
-                GridManager.Instance.CreateGrid(8, 8); //Generate a tilemap (RandomSize)
-                break;
-            case PlaceLoadingUtility.Place.ObstacleCourseRandom_Hard:
-                Debug.Log("Place loaded: (ObstacleCourseRandom_Hard)");
-                GridManager.Instance.CreateGrid(10, 10); //Generate a tilemap (RandomSize)
-                break;
-        }
-        
-    }
-
-    private void TogglePlayerControlsLocked(bool flag){
-        InputManager.Instance.SetControlLockStatus(flag);
+        InputManager.Instance.SetControlLockStatus(true);
     }
 
     public void RequestRespawnPlayer(){
@@ -73,19 +58,12 @@ public class MyGameManager : Singleton<MyGameManager> {
             PlayerController.Instance.transform.position = spawnPoint.transform.position + playerSpawnPointPositionOffset;
             playerTimesRespawned++;
         }
-        else
-        {
+        else{
             Debug.Log("Game Over");
-            PlaceLoadingUtility.MoveToPlace(PlaceLoadingUtility.Place.Hub);
+            //TODO Add a game over sequence (UI / Sound etc...)
+            MoveToPlace(Place.Hub);
         }
     }
 
     public void ChangeRespawnPoint(Transform checkpoint) => spawnPoint = checkpoint;
-
-    //IEnumerator WaitTime()
-    //{
-    //    Debug.Log("Wait for Core Modules to load");
-    //    yield return new WaitForSeconds(4f);
-    //    Debug.Log("Proceeding");
-    //}
 }

@@ -17,4 +17,4 @@ MonoBehaviour:
   - {fileID: 2433740071778271901, guid: 163eac2e2d9e8ea49a94add8c9bc18db, type: 3}
   gridSizeX: 10
   gridSizeY: 10
-  gridCount: 1
+  gridCount: 2
