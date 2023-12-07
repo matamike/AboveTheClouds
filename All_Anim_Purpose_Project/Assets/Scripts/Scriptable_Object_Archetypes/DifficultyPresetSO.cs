@@ -14,7 +14,7 @@ public class DifficultyPresetSO : ScriptableObject{
     [SerializeField][Range(1, 10)] private int gridCount;
     
     public List<GameObject> GetTilePool() => tilePool;
-    public int GetGridSizeX() => gridSizeX;
-    public int GetGridSizeY() => gridSizeY;
-    public int GetGridCount() => gridCount;
+    public int GetGridSizeX() => (gridSizeX <= 0) ? 2 :gridSizeX;
+    public int GetGridSizeY() => (gridSizeY <= 0) ? 2 : gridSizeY;
+    public int GetGridCount() => (gridCount <= 0) ? 1 : gridCount;
 }

@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using static Utility.PlaceUtility.PlaceLoadingUtility;
 
 public class GridManager : Singleton<GridManager>{
-    [SerializeField][Range(0f, 10f)] private float extraOffset = 1f;
+    [Range(0f, 10f)] private float extraOffset = 1f;
     [SerializeField] private GameObject[] prefabPool;
     [SerializeField] private Vector3 startingGridPosition;
     private List<TileGrid> _grids = new List<TileGrid>();
@@ -29,29 +29,32 @@ public class GridManager : Singleton<GridManager>{
     }
 
     private void Update(){
+        //if (Input.GetKeyDown(KeyCode.R)) UpdateGrid(0);
     }
 
     //Event Hooks
     private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1){
         switch (GetCurrentPlace()){
-            case Place.ObstacleCourseRandom:
+            case Place.ObstacleCourse:
                 DifficultyPresetSO difficultyPresetSO = LevelUtility.GetActiveDifficultyPreset();
-                _finalGridCount = difficultyPresetSO.GetGridCount(); //The length of the list (to have). 
-                prefabPool = difficultyPresetSO.GetTilePool().ToArray();
-                Debug.Log("Number of TileGrids for this run : " + _finalGridCount);
-                Debug.Log("Sample Pool Size: " + prefabPool.Length);
-                Debug.Log("Preset Size X: " + difficultyPresetSO.GetGridSizeX());
-                Debug.Log("Preset Size Y: " + difficultyPresetSO.GetGridSizeY());
-                CreateGrid(difficultyPresetSO.GetGridSizeX(), difficultyPresetSO.GetGridSizeY());
+                if (difficultyPresetSO != null){
+                    _finalGridCount = difficultyPresetSO.GetGridCount(); //The length of the list (to have). 
+                    prefabPool = difficultyPresetSO.GetTilePool().ToArray();
+                    if (prefabPool.Length == 0) return;
+                    CreateGrid(difficultyPresetSO.GetGridSizeX(), difficultyPresetSO.GetGridSizeY());
+                    return;
+                }
+                UserDefinedMappedDifficultySO userDefinedMappedDifficultySO = LevelUtility.GetActiveUserDefinedMappedDifficulty();
+                if (userDefinedMappedDifficultySO != null){
+                    _finalGridCount = userDefinedMappedDifficultySO.GetTemplateGridCount();
+                    GameObject[,] mapping = userDefinedMappedDifficultySO.GetConvertedTileMapToGameObjects();
+                    CreatePredefinedGrid(mapping);
+                    return;
+                }
                 break;
-                //    case Place.ObstacleCourseUserDefined:
-                //        //TODO Implement
-                //        break;
-                //    case Place.LevelCreator:
-                //        //TODO Implement
-                //        break;
         }
     }
+
     private void CheckPoint_OnCheckPointReached(object sender, CheckPoint.OnCheckPointReachedEventArgs e) {
         startingGridPosition += e.self.position;
         _checkPointReached = e.index;
@@ -63,7 +66,7 @@ public class GridManager : Singleton<GridManager>{
         }
         else if(_checkPointReached == (_finalGridCount - 1)){
             Debug.Log("Won");
-            //Update Game Manager of the achievement.
+            MyGameManager.Instance.TeleportPlayerBackToHub();
             DestroyAllGrids();
         }
     }
@@ -72,13 +75,8 @@ public class GridManager : Singleton<GridManager>{
     //Member Functions
 
     private void DestroyAllGrids(){
-        if(_grids.Count > 0){
-            for(int i = _grids.Count - 1; i >= 0; i--){
-                _grids[i].DestroyGridElements();
-                _grids.Remove(_grids[i]);
-                GC.Collect();
-            }
-        }
+        if (_grids.Count == 0) return;
+        for(int i = _grids.Count - 1; i >= 0; i--) DestroyGrid(i);
     }
 
     private void DestroyGrid(int gridIndex){
@@ -88,11 +86,18 @@ public class GridManager : Singleton<GridManager>{
             GC.Collect();
         }
     }
-    public void CreateGrid(int sizeX, int sizeY){
+    public void CreateGrid(int sizeX, int sizeY, bool hasCheckPoint = true){
         baseOffset = CalculateBasePositionOffset();
         TileGrid tileGrid = new TileGrid(sizeX, sizeY, baseOffset + extraOffset, true, prefabPool, startingGridPosition);
         _grids.Add(tileGrid);
-        CreateGridCheckpoint(_grids.Count-1);
+        if(hasCheckPoint) CreateGridCheckpoint(_grids.Count-1); 
+    }
+
+    public void CreatePredefinedGrid(GameObject[,] userDefinedTileMapping, bool hasCheckPoint = true){
+        baseOffset = CalculateBasePositionOffset();
+        TileGrid tileGrid = new TileGrid(baseOffset + extraOffset, true, userDefinedTileMapping, startingGridPosition);
+        _grids.Add(tileGrid);
+        if (hasCheckPoint) CreateGridCheckpoint(_grids.Count - 1);
     }
 
     private void CreateGridCheckpoint(int index = -1){
@@ -104,19 +109,19 @@ public class GridManager : Singleton<GridManager>{
             float depthOffset = 6f;
             float sideSizeOffset = (gridSize.x * tileSize);
             go.transform.localScale = new Vector3(sideSizeOffset, 1f, depthOffset);
-            go.transform.position = startingGridPosition + new Vector3((gridSize.x * tileSize) / 2f, 0f, depthOffset + (gridSize.y * tileSize));
+            go.transform.position = startingGridPosition + new Vector3((gridSize.x * tileSize) / 2f, 0f, baseOffset + depthOffset + (gridSize.y * tileSize));
             CheckPoint checkpoint = go.AddComponent<CheckPoint>();
             checkpoint.SetCheckPointIndex(_checkPointReached + 1);
         }
     }
 
-    //private void UpdateGrid(int index = -1){
-    //    if (_grids[index] is not null){
-    //        baseOffset = CalculateBasePositionOffset();
-    //        _grids[index].UpdateStartingPosition(startingGridPosition);
-    //        _grids[index].UpdateGridOffset(baseOffset + extraOffset, true);
-    //    }
-    //}
+    private void UpdateGrid(int index = -1){
+        if (_grids[index] is not null){
+            baseOffset = CalculateBasePositionOffset();
+            _grids[index].UpdateStartingPosition(startingGridPosition);
+            _grids[index].UpdateGridOffset(baseOffset + extraOffset, true);
+        }
+    }
 
     private float CalculateBasePositionOffset(){
         float averageOffset = 0f;

@@ -139,8 +139,12 @@ PrefabInstance:
         type: 3}
       propertyPath: _targetDifficultyPresetSO
       value: 
-      objectReference: {fileID: 11400000, guid: 8e5e8f8825266eb47adfd4467e5b75eb,
-        type: 2}
+      objectReference: {fileID: 0}
+    - target: {fileID: 8397884645175976017, guid: 538d1f37c2b4f4c4d96ba2cbadb53157,
+        type: 3}
+      propertyPath: _userDefinedMappedDifficultySO
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8397884645175976019, guid: 538d1f37c2b4f4c4d96ba2cbadb53157,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -159,7 +163,7 @@ PrefabInstance:
     - target: {fileID: 8397884645175976029, guid: 538d1f37c2b4f4c4d96ba2cbadb53157,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -20.54
+      value: -1.7
       objectReference: {fileID: 0}
     - target: {fileID: 8397884645175976029, guid: 538d1f37c2b4f4c4d96ba2cbadb53157,
         type: 3}
@@ -169,7 +173,7 @@ PrefabInstance:
     - target: {fileID: 8397884645175976029, guid: 538d1f37c2b4f4c4d96ba2cbadb53157,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -37.5
       objectReference: {fileID: 0}
     - target: {fileID: 8397884645175976029, guid: 538d1f37c2b4f4c4d96ba2cbadb53157,
         type: 3}
@@ -727,7 +731,7 @@ PrefabInstance:
     - target: {fileID: 8397884645175976017, guid: 538d1f37c2b4f4c4d96ba2cbadb53157,
         type: 3}
       propertyPath: targetPlace
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8397884645175976017, guid: 538d1f37c2b4f4c4d96ba2cbadb53157,
         type: 3}
@@ -802,6 +806,37 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 538d1f37c2b4f4c4d96ba2cbadb53157, type: 3}
+--- !u!1 &1478124091
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1478124092}
+  m_Layer: 0
+  m_Name: TileSpawnerExecutor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1478124092
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1478124091}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1814422878
 GameObject:
   m_ObjectHideFlags: 0
@@ -893,7 +928,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1814422878}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -20.54, y: 1, z: 0}
+  m_LocalPosition: {x: -1.7000008, y: 1, z: -37.5}
   m_LocalScale: {x: 3.9, y: 0.1, z: 3.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1008,7 +1043,7 @@ PrefabInstance:
     - target: {fileID: 8397884645175976017, guid: 538d1f37c2b4f4c4d96ba2cbadb53157,
         type: 3}
       propertyPath: targetPlace
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8397884645175976017, guid: 538d1f37c2b4f4c4d96ba2cbadb53157,
         type: 3}
@@ -1190,7 +1225,7 @@ PrefabInstance:
     - target: {fileID: 8397884645175976017, guid: 538d1f37c2b4f4c4d96ba2cbadb53157,
         type: 3}
       propertyPath: targetPlace
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8397884645175976017, guid: 538d1f37c2b4f4c4d96ba2cbadb53157,
         type: 3}

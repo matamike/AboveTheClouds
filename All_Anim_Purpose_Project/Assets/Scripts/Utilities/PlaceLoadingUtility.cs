@@ -12,34 +12,33 @@ namespace Utility.PlaceUtility
         //Contains all the active to the build scenes
         private static readonly string[] _sceneNames = new string[] {
             "Hub",
-            "ObstacleCourse_Random",
+            "ObstacleCourse",
+            "LevelCreator",
         };
         
         public enum Place{
-            None,
             Hub,
-            ObstacleCourseRandom,
-            ObstacleCourseUserDefined,
+            ObstacleCourse,
             LevelCreator,
         }
 
         public static Place _currentPlace = Place.Hub;
         private static Dictionary<Place, int> _placeToBuildIndex = new Dictionary<Place, int>(){
-            {Place.None, -1},
             {Place.Hub, 0},
-            {Place.ObstacleCourseRandom, 1},
-            //{Place.ObstacleCourseUserDefined, 2} - TODO Implement (Same structure as 1) ~maybe will keep 1 index (will see)
-            //{Place.LevelCreator, 3}, - TODO Implement (Creator Scene will be index 2)
+            {Place.ObstacleCourse, 1},
+            {Place.LevelCreator, 2},      
         };
 
         public static void MoveToPlace(Place place){
-            if (_currentPlace == place || place == Place.None) return;
+            if (_currentPlace == place) return;
             else _currentPlace = place;
 
             int buildIndex = _placeToBuildIndex[place];
             SceneManager.LoadScene(GetSceneNameByBuildIndex(buildIndex));
             _currentPlace = place;
         }
+
+        public static bool IsPlace(int buildIndex, Place comparePlace) => ((int)comparePlace == buildIndex) ? true : false;
 
         public static Place GetCurrentPlace() => _currentPlace;
 

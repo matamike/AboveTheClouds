@@ -27,7 +27,7 @@ public class TileGrid{
     private Vector3 _startingPosition;
 
     public TileGrid(int xSize, int ySize , float offset, bool isSmooth, GameObject[] prefabs, Vector3 startingPosition = default) {
-        if (xSize < 0 || ySize < 0) return;
+        if (xSize <= 0 || ySize <= 0) return;
         if (prefabs == null || prefabs.Length == 0) return;
         _width = xSize;
         _height = ySize;
@@ -37,47 +37,69 @@ public class TileGrid{
         CreateGrid(prefabs, isSmooth);
     }
 
-    ~TileGrid(){
-        Debug.Log("DESTRUCTOR FOR TILEGRID WAS CALLED DAMN IT!");
-        foreach(var item in _gridArray) UnityEngine.Object.Destroy(item.gameObject);
+    public TileGrid(float offset, bool isSmooth, GameObject[,] mapping, Vector3 startingPosition = default)
+    {
+        if(mapping.GetLength(0) <=0 || mapping.GetLength(1) <=0) return;
+        _width = mapping.GetLength(0);
+        _height = mapping.GetLength(1);
+        _gridArray = new GameObject[_width, _height];
+        _tileOffset = offset;
+        _startingPosition = startingPosition;
+        CreateGrid(mapping, isSmooth);
     }
 
-    private void CreateGrid(GameObject[] prefabs, bool isSmooth = false)
-    {
+    ~TileGrid(){
+        Debug.Log("DESTRUCTOR FOR TILEGRID WAS CALLED");
+        _gridArray = null;
+    }
+
+    private void CreateGrid(GameObject[] prefabs, bool isSmooth = false){
         int seed = URandom.Range(-9999, 9999);
         URandom.InitState(seed);
-
-        for (int x = 0; x < _width; x++){
-            for(int y = 0; y < _height; y++){
+        for (int y = 0; y < _height; y++){
+            for (int x = 0; x < _width; x++){
                 URandom.State newState = URandom.state;
-                GameObject prefab = prefabs[URandom.Range(0, prefabs.Length)];
-                _gridArray[x, y] = CreateGridElement(prefab,x, y);
+                int randIndex = URandom.Range(0, prefabs.Length + 1);
+                GameObject prefab = null;
+                if (randIndex < prefabs.Length) prefab = prefabs[randIndex];
+                CreateGridElement(prefab, x, y);
                 MoveGridElementToPosition(x, y, isSmooth);
             }
         }
     }
 
-    private GameObject CreateGridElement(GameObject prefab, int x, int y){
-        GameObject element = UnityEngine.Object.Instantiate(prefab, _startingPosition, Quaternion.identity);
-        element.name = prefab.name+"("+ x +"_"+ y +")";
-        element.GetComponent<Tile>().AssignTileGrid(this);
-        element.GetComponent<Move>().AssignTileGrid(this);
-        return element;
-    }
-
-    public bool GridElementExists(int x, int y) => (_gridArray[x, y] is not null) ? true : false;
-
-    public Vector2Int GetTileIndices(GameObject element){
-        for(int x= 0; x < _width; x++){
-            for(int y=0; y < _height; y++){
-                if (_gridArray[x, y] != null && _gridArray[x, y] == element) return new Vector2Int(x, y);
+    private void CreateGrid(GameObject[,] mapping, bool isSmooth = false){
+        for (int x = 0; x < _width; x++){
+            for (int y = 0; y < _height; y++){
+                CreateGridElement(mapping[x,y], x, y);
+                MoveGridElementToPosition(x, y, isSmooth);
             }
         }
-        return new Vector2Int(-1, -1);
     }
 
-    public void UpdateGridOffset(float offset, bool isSmoothChange = false)
-    {
+    private void CreateGridElement(GameObject selected, int x, int y){
+        GameObject element = null;
+        if(selected != null) {
+            element = UnityEngine.Object.Instantiate(selected, _startingPosition, Quaternion.identity);
+            element.name = selected.name+"("+ x +"_"+ y +")";
+            element.GetComponent<Tile>().AssignTileGrid(this);
+            element.GetComponent<Move>().AssignTileGrid(this);
+        }
+        _gridArray[x, y] = element;
+    }
+
+    //public bool GridElementExists(int x, int y) => (_gridArray[x, y] is not null) ? true : false;
+
+    //public Vector2Int GetTileIndices(GameObject element){
+    //    for(int x= 0; x < _width; x++){
+    //        for(int y=0; y < _height; y++){
+    //            if (_gridArray[x, y] != null && _gridArray[x, y] == element) return new Vector2Int(x, y);
+    //        }
+    //    }
+    //    return new Vector2Int(-1, -1);
+    //}
+
+    public void UpdateGridOffset(float offset, bool isSmoothChange = false){
         _tileOffset = offset;
         for (int x = 0; x < _width; x++){
             for (int y = 0; y < _height; y++){
@@ -90,12 +112,14 @@ public class TileGrid{
 
     public Vector2 GetGridSize() => new Vector2(_width, _height);
 
-    public float GetGridTileSize() => (_gridArray[0, 0].transform.lossyScale.x + _gridArray[0, 0].transform.lossyScale.z) / 2f;
-
-    public void DestroyGridElements(){
-        OnGridDestroying?.Invoke(this, EventArgs.Empty);
+    public float GetGridTileSize(){
+        foreach(var element in _gridArray){
+            if(element == null) continue;
+            else return (element.transform.lossyScale.x + element.transform.lossyScale.z) / 2f;
+        }
+        return 0f;
     }
-
+    public void DestroyGridElements() => OnGridDestroying?.Invoke(this, EventArgs.Empty);
 
     private void MoveGridElementToPosition(int x, int y, bool isSmooth = default){
         if (!isSmooth) _gridArray[x, y].gameObject.transform.position = _startingPosition + new Vector3(x * _tileOffset, 0f, y * _tileOffset);

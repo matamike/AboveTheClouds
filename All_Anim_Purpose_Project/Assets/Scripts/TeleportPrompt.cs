@@ -7,6 +7,7 @@ public class TeleportPrompt : MonoBehaviour{
     private string[] layerNames = {"Player"};
     [SerializeField] Place targetPlace;
     [SerializeField] DifficultyPresetSO _targetDifficultyPresetSO;
+    [SerializeField] UserDefinedMappedDifficultySO _userDefinedMappedDifficultySO;
     
     //Player Components Ref
     private Rigidbody targetRb;
@@ -21,11 +22,18 @@ public class TeleportPrompt : MonoBehaviour{
     private void OnTriggerEnter(Collider other){
         if (LayerUtility.LayerIsName(other.gameObject.layer, layerNames)){
             if (!teleportStarted){
+                //Prepare LevelUtility before teleporting to handle the mode difficulty.
+                if (_targetDifficultyPresetSO is not null) LevelUtility.SetDifficultyModeWithRandomPlacement(_targetDifficultyPresetSO);
+                else if (_userDefinedMappedDifficultySO is not null) LevelUtility.SetUserDefinedMappedDifficulty(_userDefinedMappedDifficultySO);
+                else{
+                    if (targetPlace != Place.LevelCreator) return;
+                }
+
+                //Prepare for Teleport
                 InputManager.Instance.SetControlLockStatus(true);
                 targetRb = other.gameObject.GetComponent<Rigidbody>();
                 targetGo = other.gameObject;
                 teleportStarted = true;
-                LevelUtility.SetDifficultyModeWithRandomPlacement(_targetDifficultyPresetSO);
                 StartCoroutine(WaitForTeleport());
             }
         }
@@ -34,7 +42,6 @@ public class TeleportPrompt : MonoBehaviour{
     private void OnTriggerExit(Collider other){
         if (teleportStarted){
             InputManager.Instance.SetControlLockStatus(false);
-            //LevelUtility.SetDifficultyModeWithRandomPlacement(null);
             teleportStarted = false;
             StopCoroutine(WaitForTeleport());
         }

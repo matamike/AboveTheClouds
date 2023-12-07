@@ -10,8 +10,10 @@ public class Tile : MonoBehaviour{
         _tileGridAssigned.OnGridDestroying -= TileGrid_OnGridDestroying;
     }
 
-    private void TileGrid_OnGridDestroying(object sender, EventArgs e) => Destroy(gameObject);
-
+    private void TileGrid_OnGridDestroying(object sender, EventArgs e){
+        gameObject.SetActive(false);
+        Destroy(gameObject, UnityEngine.Random.Range(10, 16));
+    }
     public void AssignTileGrid(TileGrid tileGrid){
         _tileGridAssigned = tileGrid;
         _tileGridAssigned.OnGridDestroying += TileGrid_OnGridDestroying;

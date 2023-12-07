@@ -61,9 +61,11 @@ public class MyGameManager : Singleton<MyGameManager> {
         else{
             Debug.Log("Game Over");
             //TODO Add a game over sequence (UI / Sound etc...)
-            MoveToPlace(Place.Hub);
+            TeleportPlayerBackToHub();
         }
     }
+
+    public void TeleportPlayerBackToHub() => MoveToPlace(Place.Hub);
 
     public void ChangeRespawnPoint(Transform checkpoint) => spawnPoint = checkpoint;
 }
