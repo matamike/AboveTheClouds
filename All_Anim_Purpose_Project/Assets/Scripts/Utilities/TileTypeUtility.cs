@@ -12,4 +12,5 @@ public static class TileTypeUtility {
     };
 
     public static Color GetTypeColor(TileType.Type type) => _TypeColorEncoding[type];
+    public static Dictionary<TileType.Type, Color> GetTileTypeDictionary() => _TypeColorEncoding;
 }

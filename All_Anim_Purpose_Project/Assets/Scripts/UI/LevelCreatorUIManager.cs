@@ -43,14 +43,8 @@ public class LevelCreatorUIManager : Singleton<LevelCreatorUIManager> {
             _hasInitialized = true;
             tileGroupGridLayoutRectTransform = tileGroupGridLayout.GetComponent<RectTransform>();
             PopulateUserDefinedDifficultySOsList();
-            StartCoroutine(Wait(5));
+            CreateTemplateList();
         }
-    }
-
-
-    IEnumerator Wait(int delay) {
-        yield return new WaitForSeconds(delay);
-        CreateTemplateList();     
     }
 
     private void CreateTemplateList(){
@@ -72,15 +66,14 @@ public class LevelCreatorUIManager : Singleton<LevelCreatorUIManager> {
 
     private void CreateUIGrid(int index){
         ClearChilds(tileGroupGridLayout.gameObject);
-        //later we will pass the size from arguments and use SetUIGridSize(x,y) instead
-        ComputeGridCellSize(targetGridSize.x, targetGridSize.y); //this is encapsulated into SetUIGridSize so it will be removed.
+        ComputeGridCellSize(targetGridSize.x, targetGridSize.y);
         //Create 
         for (int x = 0; x < targetGridSize.x; x++){
             for (int y = 0; y < targetGridSize.y; y++){
                 TileType.Type tileType = _userDifficultySOs[index].GetGridTileMapValue(x, y);
 
                 Color color = _userDifficultySOs[index].GetGridTileMapColor(x, y);
-                CreateTileGridButton(x, y, tileType.ToString(), color);
+                CreateTileGridButton(x, y, tileType, color);
             }
         }
     }
@@ -93,20 +86,20 @@ public class LevelCreatorUIManager : Singleton<LevelCreatorUIManager> {
         } 
     }
 
-    private void CreateTileGridButton(int x, int y, string tileType, Color tileTypeColor){
+    private void CreateTileGridButton(int x, int y, TileType.Type tileType, Color tileTypeColor){
         GameObject item = Instantiate(tileUIPrefabButton, tileGroupGridLayout.transform);
         item.name = "[" + x + "," + y + "]";
-        item.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = tileType + "\n" + item.name;
+        item.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = tileType.ToString() + "\n" + item.name;
         item.GetComponent<Image>().color = tileTypeColor;
-        // and an interaction to press the tile button and change the property.
+        UIGridTile uiGridTile = item.GetComponent<UIGridTile>();
+        uiGridTile.SetIndices(x, y);
+        uiGridTile.SetTileType(tileType);
+
+        //Listener for each Grid Tile Button
         item.GetComponent<Button>().onClick.AddListener(() =>{
-            Debug.Log("Attempt to change TileType for [" + x + "," + y + "] element!");
-            //todo make sure we toggle a gui that will receive on toggle the x,y. 
-            //the gui will need to have initialized the color coding for the specific tile received and mark the option currently as set (highlighted)
-            //then each button will have on init a listener that will pick a type specifically and will attempt to chane the type in the visual as well as the SO it self.
-            // maybe rethink it if needed.
+            TileTypeUIManager.Instance.EnableTileTypePanel();
+            TileTypeUIManager.Instance.SetSelectedGridTile(uiGridTile);
         });
-        
     }
 
     private GameObject CreateTemplateListButton(string name, int xCapacity,  int yCapacity){
