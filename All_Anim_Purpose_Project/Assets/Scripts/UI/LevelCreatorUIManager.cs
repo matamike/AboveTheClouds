@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -5,14 +6,30 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class LevelCreatorUIManager : Singleton<LevelCreatorUIManager> {
+    public event EventHandler<OnTemplateChangedEventArgs> OnTemplateChanged;
+    public event EventHandler<OnTemplateRequestSaveArgs> OnTemplateRequestSave;
+
+    public class OnTemplateRequestSaveArgs : EventArgs {
+        public List<Tuple<Vector2Int, TileType.Type>> changes;
+    }
+
+
+    public class OnTemplateChangedEventArgs : EventArgs{
+        public int templateIndex;
+    }
+
     [SerializeField] GridLayoutGroup tileGroupGridLayout;
     [SerializeField] VerticalLayoutGroup templateGroupVerticalLayout;
     [SerializeField] GameObject tileUIPrefabButton,templateUIPrefabButton;
     [SerializeField] GameObject toggleButton, toggleEntity;
+    [SerializeField] GameObject saveChangesButton;
     [SerializeField] Vector2Int targetGridSize;
     private List<UserDefinedMappedDifficultySO> _userDifficultySOs = new List<UserDefinedMappedDifficultySO>();
     private bool _hasInitialized = false;
     private RectTransform tileGroupGridLayoutRectTransform;
+
+    // Variables
+    private List<Tuple<Vector2Int, TileType.Type>> _unsavedChanges = new List<Tuple<Vector2Int, TileType.Type>>();
 
     private void Start(){
         InitializeToggle();
@@ -38,12 +55,52 @@ public class LevelCreatorUIManager : Singleton<LevelCreatorUIManager> {
     }
 
     private void ToggleUI(){
+        //On Close Toggle(OFF) Levelcreator GUI
+        if (_hasInitialized && toggleEntity.activeInHierarchy){
+            if (HasPendingChanges()){
+                Debug.Log("Found Pending Changes (Unsaved)");
+
+                //Set Callback for ContinueWithSave Button
+                NotificationUIAlertController.Instance.SetCallbackActionContinueWithSave(() => {
+                    OnTemplateRequestSave?.Invoke(this, new OnTemplateRequestSaveArgs { changes = _unsavedChanges });
+                    ResetGUIElementsToDefaultState();
+                    toggleEntity.SetActive(!toggleEntity.activeInHierarchy);
+                });
+
+                //Set Callback for ContinueWithoutSave Button
+                NotificationUIAlertController.Instance.SetCallbackActionContinueWithoutSave(() => {
+                    ResetGUIElementsToDefaultState();
+                    toggleEntity.SetActive(!toggleEntity.activeInHierarchy);
+                });
+
+                //Enable Notification Alert
+                NotificationUIAlertController.Instance.ToggleAlertNotificationUI(true);
+            }
+            else{
+                Debug.Log("Didn't find any pending changes moving on!");
+                ResetGUIElementsToDefaultState();
+                toggleEntity.SetActive(!toggleEntity.activeInHierarchy);
+            }
+            return;
+        }
+
         toggleEntity.SetActive(!toggleEntity.activeInHierarchy);
+
+        //1st time initilization (save templates setup)
         if (!_hasInitialized && toggleEntity.activeInHierarchy){
             _hasInitialized = true;
             tileGroupGridLayoutRectTransform = tileGroupGridLayout.GetComponent<RectTransform>();
             PopulateUserDefinedDifficultySOsList();
             CreateTemplateList();
+
+            //Save Button Listener
+            saveChangesButton.GetComponent<Button>().onClick.AddListener(() => {
+                if (_unsavedChanges.Count > 0){
+                    OnTemplateRequestSave?.Invoke(this, new OnTemplateRequestSaveArgs { changes = _unsavedChanges });
+                    ToggleSaveChangesButton(false);
+                    ClearChanges();
+                }
+            });
         }
     }
 
@@ -58,10 +115,18 @@ public class LevelCreatorUIManager : Singleton<LevelCreatorUIManager> {
             //Template Button Listener (Switch Grid and Template Activator)
             int index = x;
             button.GetComponent<Button>().onClick.AddListener(() =>{
+                OnTemplateChanged?.Invoke(this, new OnTemplateChangedEventArgs { templateIndex = index });
                 SetUIGridSize(grid.GetLength(0), grid.GetLength(1));
                 CreateUIGrid(index);
             });
         }
+    }
+
+    private void ResetGUIElementsToDefaultState(){
+        ToggleSaveChangesButton(false);
+        ClearChanges();
+        TileTypeUIManager.Instance.DisableTileTypePanel();
+        ClearChilds(tileGroupGridLayout.gameObject);
     }
 
     private void CreateUIGrid(int index){
@@ -71,7 +136,6 @@ public class LevelCreatorUIManager : Singleton<LevelCreatorUIManager> {
         for (int x = 0; x < targetGridSize.x; x++){
             for (int y = 0; y < targetGridSize.y; y++){
                 TileType.Type tileType = _userDifficultySOs[index].GetGridTileMapValue(x, y);
-
                 Color color = _userDifficultySOs[index].GetGridTileMapColor(x, y);
                 CreateTileGridButton(x, y, tileType, color);
             }
@@ -93,14 +157,18 @@ public class LevelCreatorUIManager : Singleton<LevelCreatorUIManager> {
         item.GetComponent<Image>().color = tileTypeColor;
         UIGridTile uiGridTile = item.GetComponent<UIGridTile>();
         uiGridTile.SetIndices(x, y);
-        uiGridTile.SetTileType(tileType);
+        uiGridTile.SetInitialTileType(tileType);
 
         //Listener for each Grid Tile Button
         item.GetComponent<Button>().onClick.AddListener(() =>{
             TileTypeUIManager.Instance.EnableTileTypePanel();
+            //todo clear temp save (todo throw an alert before attempting to close) and prompt user to decide whether to save or not (same thing needs to happen in
+            //template change
             TileTypeUIManager.Instance.SetSelectedGridTile(uiGridTile);
         });
     }
+
+    public void ToggleSaveChangesButton(bool toggle) => saveChangesButton.SetActive(toggle);
 
     private GameObject CreateTemplateListButton(string name, int xCapacity,  int yCapacity){
         GameObject item = Instantiate(templateUIPrefabButton, templateGroupVerticalLayout.transform);
@@ -124,4 +192,12 @@ public class LevelCreatorUIManager : Singleton<LevelCreatorUIManager> {
         //Assign new Cell Size
         tileGroupGridLayout.cellSize = newCellSize;
     }
+    
+    //Change based functions
+    public bool HasPendingChanges() => (_unsavedChanges.Count > 0) ? true : false;
+    public void AddPendingSaveChange(Tuple<Vector2Int, TileType.Type> change){
+        _unsavedChanges.Add(change);
+    }
+    public void ClearChanges() => _unsavedChanges.Clear();
+    public List<Tuple<Vector2Int, TileType.Type>> GetChanges() => _unsavedChanges;
 }
