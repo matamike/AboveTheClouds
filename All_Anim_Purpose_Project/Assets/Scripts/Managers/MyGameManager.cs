@@ -65,6 +65,8 @@ public class MyGameManager : Singleton<MyGameManager> {
         }
     }
 
+    public void SimplePlayerRespawn() => PlayerController.Instance.transform.position = spawnPoint.transform.position + playerSpawnPointPositionOffset;
+
     public void TeleportPlayerBackToHub() => MoveToPlace(Place.Hub);
 
     public void ChangeRespawnPoint(Transform checkpoint) => spawnPoint = checkpoint;

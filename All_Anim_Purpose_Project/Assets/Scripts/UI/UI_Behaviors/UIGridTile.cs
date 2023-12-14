@@ -13,6 +13,7 @@ public class UIGridTile : MonoBehaviour{
             Debug.Log("Add change to unsaved");
             tileType = tempTileType;
             LevelCreatorUIManager.Instance.AddPendingSaveChange(new Tuple<Vector2Int, TileType.Type>(indices, tileType));
+            LevelCreatorUIManager.Instance.ToggleSaveChangesButton(true);
         }
     }
     public void ResetUnconfirmedTileType() => tempTileType = tileType;

@@ -6,15 +6,6 @@ using Utility.PlaceUtility;
 
 public class UserDefinedDifficultyTemplatesController : Singleton<UserDefinedDifficultyTemplatesController> {
     [SerializeField] private List<UserDefinedMappedDifficultySO> userDefinedMappedDifficultySOs;
-
-    //struct UserDefinedDifficultyTemplateHolder{
-    //    public GameObject[,] _tempMapping;
-    //    public UserDefinedDifficultyTemplateHolder(int sizeX, int sizeY) => _tempMapping = new GameObject[sizeX, sizeY];
-    //    public void ModifyMapping(GameObject[,] newMapping) => _tempMapping = newMapping;
-    //    public void ModifyMapping(GameObject go, int x, int y) => _tempMapping[x,y] = go;
-    //    public GameObject[,] GetActiveTemplateHolderMapping() => _tempMapping;
-    //}
-
     private int activeTemplateIndex = -1; 
 
     private void OnEnable(){
@@ -26,6 +17,7 @@ public class UserDefinedDifficultyTemplatesController : Singleton<UserDefinedDif
     private void OnDisable(){
         SceneManager.sceneLoaded -= SceneManager_OnSceneLoaded;
         LevelCreatorUIManager.Instance.OnTemplateChanged -= LevelCreatorUIManager_OnTemplateChanged;
+        LevelCreatorUIManager.Instance.OnTemplateRequestSave -= LevelCreatorUIManager_OnTemplateRequestSave;
     }
 
     //Event Hooks
@@ -46,8 +38,10 @@ public class UserDefinedDifficultyTemplatesController : Singleton<UserDefinedDif
         }
     }
 
-    private void LevelCreatorUIManager_OnTemplateChanged(object sender, LevelCreatorUIManager.OnTemplateChangedEventArgs e) => activeTemplateIndex = e.templateIndex;
-
+    private void LevelCreatorUIManager_OnTemplateChanged(object sender, LevelCreatorUIManager.OnTemplateChangedEventArgs e){
+        activeTemplateIndex = e.templateIndex;
+        Debug.Log("Template Index Changed to : " + activeTemplateIndex);
+    }
     //Member Functions
     private void InitializeTemplates(){
         foreach (UserDefinedMappedDifficultySO userDefinedMappedDifficultySO in userDefinedMappedDifficultySOs){
@@ -56,25 +50,8 @@ public class UserDefinedDifficultyTemplatesController : Singleton<UserDefinedDif
     }
     public List<UserDefinedMappedDifficultySO> GetAllTemplates() => userDefinedMappedDifficultySOs;
 
-    //public  void LoadTemplate(int index) => SetActiveTemplate(CorrectIndex(index));
-
-    //public void SaveChangesToTemplate(){
-    //    GameObject[,] latestUpdatedMapping = _activeMappedDifficultyContainer.GetActiveTemplateHolderMapping();
-    //    userDefinedMappedDifficultySOs[activeTemplateIndex].SaveTemplateMapping(latestUpdatedMapping);
-    //}
-
-    //public void UpdateActiveTemplate(GameObject[,] tileMapping) => _activeMappedDifficultyContainer.ModifyMapping(tileMapping);
-
-    //public GameObject[,] GetActiveTemplateMapping() => _activeMappedDifficultyContainer.GetActiveTemplateHolderMapping();
-
-    //private void SetActiveTemplate(int index){
-    //  activeTemplateIndex = CorrectIndex(index);
-    //  _activeMappedDifficultyContainer.ModifyMapping(userDefinedMappedDifficultySOs[activeTemplateIndex].GetConvertedTileMapToGameObjects());
-    //}
-
-    //private int CorrectIndex(int index) {
-    //    if (index >= userDefinedMappedDifficultySOs.Count) index = 0;
-    //    else if (index < 0) index = userDefinedMappedDifficultySOs.Count - 1;
-    //    return index;
-    //}
+    public UserDefinedMappedDifficultySO GetActiveTemplate() {
+        if (activeTemplateIndex < 0 || activeTemplateIndex > (userDefinedMappedDifficultySOs.Count - 1)) return null;
+        return userDefinedMappedDifficultySOs[activeTemplateIndex];
+    } 
 }

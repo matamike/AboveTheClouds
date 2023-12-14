@@ -18,10 +18,6 @@ public class UserDefinedMappedDifficultySO : ScriptableObject {
 
     public int GetTemplateGridCount() => (gridCount <= 0) ? 1 : gridCount; //default (1)
 
-    //Create/Get enum 2d Array mapping
-    //public void SetGridTileMap(int w, int h) => tileMappingTileTypes = new TileType.Type[w, h];
-    //public TileType.Type[,] GetGridTileMap() => tileMappingTileTypes;
-
     //Set/Get Specific index in enum 2d Array mapping
     public void SaveNewGridTileMapValue(int xPosition, int yPosition, TileType.Type value){
         //save to permanent mapping.
@@ -54,43 +50,7 @@ public class UserDefinedMappedDifficultySO : ScriptableObject {
         }   
         return tileMappingGameObjects;
     }
-    //public void SaveTemplateMapping(GameObject[,] mapping){
-    //    Debug.Log("Attempt to save changes");
-    //    tileMappingGameObjects = mapping; //save mapping to GOs
 
-    //    // Assign to types
-    //    for(int x = 0; x < tileMappingGameObjects.GetLength(0); x++){
-    //        for(int y= 0; y < tileMappingGameObjects.GetLength(1); y++){
-    //            int indexOfPool = tilePool.IndexOf(tileMappingGameObjects[x, y]);
-    //            tileMappingTileTypes[x, y] = (TileType.Type)indexOfPool;
-    //        }
-    //    }
-    //    //Save changes from 2D array to containers.
-    //    SaveMapping();
-    //}
-    //private void SaveMapping(){
-    //    if (tileMappingTileTypes != null){
-    //        Debug.Log("Save changes to mapping " + this.name);
-    //        //Clear only if it contains something before assigning the newly updated mapping.
-    //        if (gridTileIndices.Count > 0) gridTileIndices.Clear();
-    //        if (gridTileTypes.Count > 0) gridTileTypes.Clear();
-
-    //        //assign new size of the 2d array of TileType.Type enum
-    //        tileMapSizeX = tileMappingTileTypes.GetLength(0);
-    //        tileMapSizeY = tileMappingTileTypes.GetLength(1);
-
-    //        //Store the new values in the 2d array into the containers respectively.
-    //        for (int x = 0; x < tileMapSizeX; x++){
-    //            for (int y = 0; y < tileMapSizeY; y++){
-    //                gridTileIndices.Add(new Vector2Int(x, y));
-    //                gridTileTypes.Add(tileMappingTileTypes[x, y]);
-    //            }
-    //        }
-    //    }
-    //    else{
-    //        Debug.Log("Uninitialized 2d array container for mappings in template : " + this.name);
-    //    }
-    //}
     private void LoadMapping(){
         //Initialize Size of actual data container that we use in the game.
         tileMappingTileTypes = new TileType.Type[tileMapSizeX, tileMapSizeY];

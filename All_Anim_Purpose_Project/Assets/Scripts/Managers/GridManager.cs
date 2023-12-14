@@ -28,10 +28,6 @@ public class GridManager : Singleton<GridManager>{
         DestroyAllGrids();
     }
 
-    private void Update(){
-        //if (Input.GetKeyDown(KeyCode.R)) UpdateGrid(0);
-    }
-
     //Event Hooks
     private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1){
         switch (GetCurrentPlace()){
@@ -80,12 +76,15 @@ public class GridManager : Singleton<GridManager>{
     }
 
     private void DestroyGrid(int gridIndex){
-        if (_grids[gridIndex] != null){
+        if (_grids.Count > 0 && _grids[gridIndex] != null){
             _grids[gridIndex].DestroyGridElements();
             _grids.RemoveAt(gridIndex);
             GC.Collect();
         }
     }
+
+    public void RequestDestroyGrid(int index) => DestroyGrid(index);
+
     public void CreateGrid(int sizeX, int sizeY, bool hasCheckPoint = true){
         baseOffset = CalculateBasePositionOffset();
         TileGrid tileGrid = new TileGrid(sizeX, sizeY, baseOffset + extraOffset, true, prefabPool, startingGridPosition);
