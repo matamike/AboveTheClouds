@@ -5,7 +5,7 @@ using UnityEngine;
 using URandom = UnityEngine.Random;
 
 public class DroppableSpawnManager : Singleton<DroppableSpawnManager>{
-    [SerializeField] private GameObject[] droppables;
+    [SerializeField] private GridPoolObjectSO[] droppables;
     [SerializeField] private Transform spawnPoint;
 
     private void Update(){
@@ -24,7 +24,7 @@ public class DroppableSpawnManager : Singleton<DroppableSpawnManager>{
             //Random Sample Droppable
             URandom.State newState = URandom.state;
             int index = URandom.Range(0, droppables.Length);
-            Instantiate(droppables[index].gameObject, GetSpawnPosition(hit), Quaternion.identity);
+            Instantiate(droppables[index].PoolObject, GetSpawnPosition(hit), Quaternion.identity);
         }
     }
 

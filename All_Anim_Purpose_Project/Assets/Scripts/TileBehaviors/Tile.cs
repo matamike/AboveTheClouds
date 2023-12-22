@@ -7,7 +7,7 @@ public class Tile : MonoBehaviour{
     private TileGrid _tileGridAssigned;
 
     private void OnDisable(){
-        _tileGridAssigned.OnGridDestroying -= TileGrid_OnGridDestroying;
+       if(_tileGridAssigned is not null) _tileGridAssigned.OnGridDestroying -= TileGrid_OnGridDestroying;
     }
 
     private void TileGrid_OnGridDestroying(object sender, EventArgs e){

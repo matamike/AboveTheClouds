@@ -6,7 +6,7 @@ using UnityEngine;
 using Unity.Jobs;
 using Unity.Burst;
 
-public class TestStuff : MonoBehaviour{
+public class TestUnityJobs : MonoBehaviour{
     [SerializeField] private bool useJobs = false;
 
     private void Update(){

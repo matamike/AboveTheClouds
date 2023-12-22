@@ -7,7 +7,7 @@ using static Utility.PlaceUtility.PlaceLoadingUtility;
 
 public class GridManager : Singleton<GridManager>{
     [Range(0f, 10f)] private float extraOffset = 1f;
-    [SerializeField] private GameObject[] prefabPool;
+    [SerializeField] private GridPoolObjectSO[] gridPoolObjectList; //change to accept GridPoolObjectSO instead of GO
     [SerializeField] private Vector3 startingGridPosition;
     private List<TileGrid> _grids = new List<TileGrid>();
     private float baseOffset;
@@ -32,14 +32,16 @@ public class GridManager : Singleton<GridManager>{
     private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1){
         switch (GetCurrentPlace()){
             case Place.ObstacleCourse:
+                //Difficulty Based (Random)
                 DifficultyPresetSO difficultyPresetSO = LevelUtility.GetActiveDifficultyPreset();
                 if (difficultyPresetSO != null){
-                    _finalGridCount = difficultyPresetSO.GetGridCount(); //The length of the list (to have). 
-                    prefabPool = difficultyPresetSO.GetTilePool().ToArray();
-                    if (prefabPool.Length == 0) return;
+                    _finalGridCount = difficultyPresetSO.GetGridCount(); //The length of the list (to have).
+                    gridPoolObjectList = difficultyPresetSO.GetGridPoolObjectSOList().ToArray();
+                    if (gridPoolObjectList.Length == 0) return;
                     CreateGrid(difficultyPresetSO.GetGridSizeX(), difficultyPresetSO.GetGridSizeY());
                     return;
                 }
+                //User Defined Difficulty Custom Template
                 UserDefinedMappedDifficultySO userDefinedMappedDifficultySO = LevelUtility.GetActiveUserDefinedMappedDifficulty();
                 if (userDefinedMappedDifficultySO != null){
                     _finalGridCount = userDefinedMappedDifficultySO.GetTemplateGridCount();
@@ -57,7 +59,7 @@ public class GridManager : Singleton<GridManager>{
         DestroyGrid(0);
         if (_checkPointReached < (_finalGridCount - 1)) {
             DifficultyPresetSO difficultyPresetSO = LevelUtility.GetActiveDifficultyPreset();
-            prefabPool = difficultyPresetSO.GetTilePool().ToArray();
+            gridPoolObjectList = difficultyPresetSO.GetGridPoolObjectSOList().ToArray();
             CreateGrid(difficultyPresetSO.GetGridSizeX(), difficultyPresetSO.GetGridSizeY());
         }
         else if(_checkPointReached == (_finalGridCount - 1)){
@@ -87,7 +89,10 @@ public class GridManager : Singleton<GridManager>{
 
     public void CreateGrid(int sizeX, int sizeY, bool hasCheckPoint = true){
         baseOffset = CalculateBasePositionOffset();
-        TileGrid tileGrid = new TileGrid(sizeX, sizeY, baseOffset + extraOffset, true, prefabPool, startingGridPosition);
+        List<GameObject> pool = new List<GameObject>();
+        foreach (GridPoolObjectSO gridPoolObjectSO in gridPoolObjectList) pool.Add(gridPoolObjectSO.PoolObject);
+
+        TileGrid tileGrid = new TileGrid(sizeX, sizeY, baseOffset + extraOffset, true, pool.ToArray(), startingGridPosition);
         _grids.Add(tileGrid);
         if(hasCheckPoint) CreateGridCheckpoint(_grids.Count-1); 
     }
@@ -114,22 +119,24 @@ public class GridManager : Singleton<GridManager>{
         }
     }
 
-    private void UpdateGrid(int index = -1){
-        if (_grids[index] is not null){
-            baseOffset = CalculateBasePositionOffset();
-            _grids[index].UpdateStartingPosition(startingGridPosition);
-            _grids[index].UpdateGridOffset(baseOffset + extraOffset, true);
-        }
-    }
+    //private void UpdateGrid(int index = -1){
+    //    if (_grids[index] is not null){
+    //        baseOffset = CalculateBasePositionOffset();
+    //        _grids[index].UpdateStartingPosition(startingGridPosition);
+    //        _grids[index].UpdateGridOffset(baseOffset + extraOffset, true);
+    //    }
+    //}
 
     private float CalculateBasePositionOffset(){
         float averageOffset = 0f;
-        if (prefabPool.Length > 0){
-            foreach (GameObject item in prefabPool){
-                float scaleSize = (item.transform.lossyScale.x + item.transform.lossyScale.z) / 2;
+        if (gridPoolObjectList.Length > 0){
+            foreach (GridPoolObjectSO gridPoolObjectSO in gridPoolObjectList){
+                GameObject item = gridPoolObjectSO.PoolObject;
+                float scaleSize = 0.0f;
+                if (item != null) scaleSize = (item.transform.lossyScale.x + item.transform.lossyScale.z) / 2;
                 averageOffset += scaleSize;
             }
-            averageOffset /= prefabPool.Length;
+            averageOffset /= gridPoolObjectList.Length;
         }
         return averageOffset;
     }

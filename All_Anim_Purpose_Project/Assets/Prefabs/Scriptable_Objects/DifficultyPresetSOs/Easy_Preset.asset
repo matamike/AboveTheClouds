@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Easy_Preset
   m_EditorClassIdentifier: 
   tilePool:
-  - {fileID: 7626841272474536630, guid: 25d5b8022ae7f2e47806e7e0459f7271, type: 3}
-  - {fileID: 2433740071778271901, guid: 163eac2e2d9e8ea49a94add8c9bc18db, type: 3}
+  - {fileID: 11400000, guid: bc35bf0895f96904bb717a1f08c07060, type: 2}
+  - {fileID: 11400000, guid: 6addba58ac3b335438f58779318e91ad, type: 2}
   gridSizeX: 10
   gridSizeY: 10
   gridCount: 2

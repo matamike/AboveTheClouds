@@ -9,6 +9,7 @@ public class Drop : MonoBehaviour, IInteractable{
     [SerializeField] private float fallDownTimer = 0.0f, fallDownWaitTime= 3f;
     private string[] lookUpNames = { "Player", "DroppedObject" };
     private float speed = 0.5f;
+    private GameObject entityActivator; 
 
     private void Update(){
         DropBehavior();
@@ -24,6 +25,7 @@ public class Drop : MonoBehaviour, IInteractable{
                 GetComponent<Collider>().enabled = false;
                 _isLoosened = false;
                 Destroy(gameObject, 5f);
+                DispatcherUtility.RequestBroadcast(gameObject, entityActivator);
             }
         }
     }
@@ -32,6 +34,7 @@ public class Drop : MonoBehaviour, IInteractable{
     //IInteractable Interface
     public void Interact(GameObject invokeSource){
         if (!_isLoosened && LayerUtility.LayerIsName(invokeSource.layer, lookUpNames)){
+            entityActivator = invokeSource;
             startPosition = transform.position;
             endPosition = transform.position + (Vector3.down * 0.3f);
             _isLoosened = true;

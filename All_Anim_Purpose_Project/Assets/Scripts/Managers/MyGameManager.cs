@@ -13,29 +13,15 @@ public class MyGameManager : Singleton<MyGameManager> {
     [SerializeField] Vector3 playerSpawnPointPositionOffset;
     [SerializeField] Vector3 cameraSpawnPointOffset;
     private Transform spawnPoint;
-    
+
     //Game Over Criteria.
+    [SerializeField] private GameOverCriteriaSO gameOverCriteriaSO;
     private int playerTimesRespawned = 0;
-    private int maxPlayerTimesRespawn = 3;
 
     private void Start(){
         spawnPoint = GameObject.Find("SpawnPoint").transform;
         InitializeCoreComponents();
         InputManager.Instance.SetControlLockStatus(false);
-    }
-
-    private void OnEnable(){
-        SceneManager.sceneLoaded += SceneManager_OnSceneLoaded;
-    }
-
-    private void OnDisable(){
-        SceneManager.sceneLoaded -= SceneManager_OnSceneLoaded;
-    }
-
-    //Hook to SceneLoading Event
-    private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1){
-        Debug.Log("GameManager: Scene Loaded -> " + arg0.name);
-        // we maybe do not need to initialize player or camera in Creator scene.
     }
 
     private void InitializeCoreComponents(){
@@ -52,15 +38,16 @@ public class MyGameManager : Singleton<MyGameManager> {
     }
 
     public void RequestRespawnPlayer(){
-        //we need a way to decide the spawn point (when in hub) / (when in game) etc. -> We need to retrieve it (in case of game the starting is always the same)
-        //once we reach a certain checkpoint we need to alter the spawnpoint inside the level accordingly.
-        if (playerTimesRespawned < maxPlayerTimesRespawn){
-            PlayerController.Instance.transform.position = spawnPoint.transform.position + playerSpawnPointPositionOffset;
+        int playerLifes = 1000; //default
+        if (gameOverCriteriaSO is not null) playerLifes = gameOverCriteriaSO.GetGameOverCriteria();
+
+        if (playerTimesRespawned < playerLifes){
+            SimplePlayerRespawn();
             playerTimesRespawned++;
         }
         else{
-            Debug.Log("Game Over");
             //TODO Add a game over sequence (UI / Sound etc...)
+            Debug.Log("Game Over");
             TeleportPlayerBackToHub();
         }
     }

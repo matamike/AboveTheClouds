@@ -10,7 +10,7 @@ public class Move : MonoBehaviour{
     private TileGrid _tileGridAssigned;
 
     private void OnDisable(){
-        _tileGridAssigned.OnPositionChanged -= MyGrid_OnPositionChanged;
+        if (_tileGridAssigned is not null) _tileGridAssigned.OnPositionChanged -= MyGrid_OnPositionChanged;
     }
 
     private void MyGrid_OnPositionChanged(object sender, TileGrid.OnPositionChangedEventArgs e){

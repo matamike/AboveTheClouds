@@ -59,7 +59,7 @@ public class TileGrid{
         for (int y = 0; y < _height; y++){
             for (int x = 0; x < _width; x++){
                 URandom.State newState = URandom.state;
-                int randIndex = URandom.Range(0, prefabs.Length + 1);
+                int randIndex = URandom.Range(0, prefabs.Length);
                 GameObject prefab = null;
                 if (randIndex < prefabs.Length) prefab = prefabs[randIndex];
                 CreateGridElement(prefab, x, y);

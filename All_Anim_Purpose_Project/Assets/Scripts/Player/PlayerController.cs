@@ -35,7 +35,7 @@ public class PlayerController : Singleton<PlayerController> {
     
 
     // Collision Parameters
-    private List<GameObject> _collidingObjects;
+    [SerializeField]private List<GameObject> _collidingObjects;
     private List<Tuple<int, int>> _contactPoints;
 
     private void Start() {
@@ -45,15 +45,17 @@ public class PlayerController : Singleton<PlayerController> {
     }
 
     private void OnEnable() {
+        DispatcherUtility.OnRemoveRequest += DispatcherUtility_OnSpecificMemberRequest;
         InputManager.OnMovePerformed += InputUtility_OnMovePerformed;
         InputManager.OnSprintPerformed += InputUtility_OnSprintPerformed;
         InputManager.OnJumpPerformed += InputUtility_OnJumpPerformed;
         InputManager.OnSpecialMovePerformed += InputUtility_OnSpecialMovePerformed;
     }
 
-
+    
 
     private void OnDisable() {
+        DispatcherUtility.OnRemoveRequest -= DispatcherUtility_OnSpecificMemberRequest;
         InputManager.OnMovePerformed -= InputUtility_OnMovePerformed;
         InputManager.OnSprintPerformed -= InputUtility_OnSprintPerformed;
         InputManager.OnJumpPerformed -= InputUtility_OnJumpPerformed;
@@ -61,6 +63,9 @@ public class PlayerController : Singleton<PlayerController> {
     }
 
     //Event Hook Callbacks
+    private void DispatcherUtility_OnSpecificMemberRequest(object sender, DispatcherUtility.SpecificMemberEventArgs e){
+        if (e._receiver == gameObject) ForceRemoveCollidingElement(e._sender);
+    }
     private void InputUtility_OnSprintPerformed(object sender, InputManager.OnSprintPerformedEventArgs e) => _isSprinting = e.sprint;
     private void InputUtility_OnMovePerformed(object sender, InputManager.OnMovePerformedEventArgs e) => _direction = e.direction.normalized;
     private void InputUtility_OnJumpPerformed(object sender, InputManager.OnJumpPerformedEventArgs e){
@@ -73,9 +78,6 @@ public class PlayerController : Singleton<PlayerController> {
     private void Update() {  
         ControlDirection(); // Turning the player
         ClampPlayerVelocity(); //Clamp Velocity of Player Rigidbody to limits
-        
-        //Timeout after Fall Process
-        //PostFallTimeOut();
     }
 
     private void FixedUpdate(){
@@ -84,8 +86,11 @@ public class PlayerController : Singleton<PlayerController> {
         if (_rigidbody.velocity.y > 1f || _rigidbody.velocity.y < -1f) _isGrounded = false; //airborne (falling or jumping -> any case)
     }
 
-    private void OnCollisionStay(Collision other){
+    private void OnCollisionEnter(Collision other){
         TryAddCollidingElement(other.gameObject);
+    }
+
+    private void OnCollisionStay(Collision other){
         ComputeGroundedPoints(other);
         CheckGroundedWithCollidingObjects();
 
@@ -94,13 +99,6 @@ public class PlayerController : Singleton<PlayerController> {
             interactable?.Interact(gameObject);
         }
     }
-
-    //private void PostFallTimeOut(){
-    //    if (fallState != IsFalling()){
-    //        fallState = IsFalling();
-    //        if (!IsFalling()) StartCoroutine(DelayMotion());
-    //    }
-    //}
 
     private void OnCollisionExit(Collision other){
         TryRemoveCollidingElement(other.gameObject);
@@ -111,9 +109,11 @@ public class PlayerController : Singleton<PlayerController> {
         }
     }
 
+    public void ForceRemoveCollidingElement(GameObject source) => TryRemoveCollidingElement(source);
     private void TryAddCollidingElement(GameObject go){
         if (!_collidingObjects.Contains(go)){
             //add 1st time.
+            Debug.Log("Adding Collision Member:  " + go.name);
             _collidingObjects.Add(go);
             _contactPoints.Add(new Tuple<int, int>(0, 0));
         }
@@ -126,24 +126,26 @@ public class PlayerController : Singleton<PlayerController> {
     private void TryRemoveCollidingElement(GameObject go){
         if (_collidingObjects.Contains(go)){
             //remove when collision stops entirely.
+            Debug.Log("Removing Collision Member:  " + go.name);
             int index = _collidingObjects.IndexOf(go);
             _collidingObjects.RemoveAt(index);
             _contactPoints.RemoveAt(index);
         }
     }
 
-    //computes the contact points from incoming collision whether the angle difference is between 0-60 or more
+    //computes the contact points from incoming collision whether the angle difference is between 0-60 or more 
     private void ComputeGroundedPoints(Collision other){
         int groundedPointsCount = 0, rest = 0;
         int index = _collidingObjects.IndexOf(other.gameObject);
         for (int i = 0; i < other.GetContacts(other.contacts); i++){
-            float angle = Mathf.Abs(Vector3.SignedAngle(other.contacts[i].normal, transform.up, Vector3.up));
+            Vector3 normal = other.contacts[i].normal;
+            float angle = Mathf.Abs(Vector3.SignedAngle(normal, transform.up, Vector3.up));
             if (angle >= 0f && angle < 60f){
-                //Debug.DrawRay(other.contacts[i].point, normal * 3f, Color.green, 2f);
+                Debug.DrawRay(other.contacts[i].point, normal * 3f, Color.green, 2f);
                 groundedPointsCount++;
             }
             else{
-                //Debug.DrawRay(other.contacts[i].point, normal * 3f, Color.red, 2f);
+                Debug.DrawRay(other.contacts[i].point, normal * 3f, Color.red, 2f);
                 rest++;
             }
         }
@@ -235,10 +237,4 @@ public class PlayerController : Singleton<PlayerController> {
             }
         }
     }
-
-    //IEnumerator DelayMotion(){
-    //    waitBeforeMovingAgain = true;
-    //    yield return new WaitForSeconds(0.25f);
-    //    waitBeforeMovingAgain = false;
-    //}
 }

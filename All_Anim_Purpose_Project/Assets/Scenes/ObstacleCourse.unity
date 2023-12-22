@@ -272,6 +272,7 @@ MonoBehaviour:
     type: 3}
   playerSpawnPointPositionOffset: {x: 0, y: 0, z: 0}
   cameraSpawnPointOffset: {x: 0, y: 40, z: -40}
+  gameOverCriteriaSO: {fileID: 11400000, guid: eda7e277e382aa14ba4e467adad0bc51, type: 2}
 --- !u!4 &801438195
 Transform:
   m_ObjectHideFlags: 0
@@ -502,7 +503,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d3871f281052b7429d8abd52ac8e352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  extraOffset: 0.1
   prefabPool:
   - {fileID: 7626841272474536630, guid: 25d5b8022ae7f2e47806e7e0459f7271, type: 3}
   - {fileID: 2433740071778271901, guid: 163eac2e2d9e8ea49a94add8c9bc18db, type: 3}
