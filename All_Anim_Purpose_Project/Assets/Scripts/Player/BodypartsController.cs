@@ -7,8 +7,16 @@ public class BodypartsController : MonoBehaviour{
     [SerializeField] Transform _bodyPartTransform;
     [SerializeField] bool isHandled = false; //default false
     private Vector3 lastKnownDirection;
-    [SerializeField] private Vector2 xAxisDeadZone;
-    [SerializeField] private Vector2 yAxisDeadZone;
+    [SerializeField][Range(-179.9f, 179.9f)] private float minYAxisClampAngle;
+    [SerializeField][Range(-179.9f, 179.9f)] private float maxYAxisClampAngle;
+    [SerializeField][Range(-179.9f, 179.9f)] private float minXAxisClampAngle;
+    [SerializeField][Range(-179.9f, 179.9f)] private float maxXAxisClampAngle;
+    [SerializeField][Range(-179.9f, 179.9f)] private float minZAxisClampAngle;
+    [SerializeField][Range(-179.9f, 179.9f)] private float maxZAxisClampAngle;
+
+    private void Start(){
+        RotationConstraintUtility.CalibrateStartingLockLimits(ref minXAxisClampAngle, ref maxXAxisClampAngle, ref minYAxisClampAngle, ref maxYAxisClampAngle, ref minZAxisClampAngle, ref maxZAxisClampAngle, gameObject.transform);
+    }
 
     private void OnEnable(){
         CameraController.OnDirectionChanged += CameraFollow_OnDirectionChanged;
@@ -32,61 +40,8 @@ public class BodypartsController : MonoBehaviour{
                 if (dotProductPlayerCamera == 1) lastKnownDirection = CameraController.Instance.GetCameraForward();
                 else if (dotProductPlayerCamera == -1) lastKnownDirection = CameraController.Instance.GetCameraBack();
 
-                //bodypart.rotation = Quaternion.LookRotation(lastKnownDirection, lookAtUp);
                 bodypart.LookAt(transform.position + lastKnownDirection, lookAtUp);
-
-                //Rotation Deadzone Check
-                //float newRotXEuler =0f, newRotYEuler=0f,newRotZEuler = 0f;
-                //X Axis               
-                //if (bodypart.localEulerAngles.x < Mathf.Abs(xAxisDeadZone.x - 360f) && bodypart.localEulerAngles.x > xAxisDeadZone.y)
-                //{
-                //    Debug.Log("Clamp X Axis Rotation!");
-                //    //Snap to nearest limit
-                //    float upperLimit = Mathf.Abs(bodypart.localEulerAngles.x - Mathf.Abs(xAxisDeadZone.x - 360f));
-                //    Debug.Log("UpperLimit: " + upperLimit);
-                //    float lowerLimit = Mathf.Abs(bodypart.localEulerAngles.x - xAxisDeadZone.y);
-                //    Debug.Log("LowerLimit: " + lowerLimit);
-                //    if (upperLimit > lowerLimit){
-                //        newRotXEuler = Mathf.Abs(xAxisDeadZone.x - 360f);
-                //    }
-                //    else{ 
-                //        newRotXEuler = xAxisDeadZone.y;
-                //    }
-                //}
-
-                //Y Axis
-                //if (bodypart.localEulerAngles.y < Mathf.Abs(yAxisDeadZone.x - 360f) && bodypart.localEulerAngles.y > yAxisDeadZone.y)
-                //{
-                //    //Snap to nearest limit
-                //    float upperLimit = Mathf.Abs(bodypart.localEulerAngles.y - Mathf.Abs(yAxisDeadZone.x - 360f));
-                //    float lowerLimit = Mathf.Abs(bodypart.localEulerAngles.x - yAxisDeadZone.y);
-                //    if (upperLimit > lowerLimit) newRotYEuler = Mathf.Abs(yAxisDeadZone.x - 360f);
-                //    else newRotYEuler = yAxisDeadZone.y;
-                //}
-
-                ////Z Axis
-                //if ((bodypart.localEulerAngles.z - zAxisMirroredLimit) > 0)
-                //{
-                //    newRotZEuler = zAxisMirroredLimit;
-                //}
-                //else if ((360f - zAxisMirroredLimit) < bodypart.localEulerAngles.z)
-                //{
-                //    newRotZEuler = 360f - zAxisMirroredLimit;
-                //}
-                //newRotZEuler = zAxisMirroredLimit; // default
-
-                //if(newRotXEuler != 0f) {
-                //bodypart.localEulerAngles = new Vector3(newRotXEuler, bodypart.localEulerAngles.y, bodypart.localEulerAngles.z);
-                //}
-                //if(newRotYEuler != 0f){
-                //  bodypart.localEulerAngles = new Vector3(bodypart.localEulerAngles.x, newRotYEuler, bodypart.localEulerAngles.z);
-                //}
-                //if(newRotZEuler != 0f)
-                //{
-                //  bodypart.localEulerAngles = new Vector3(bodypart.localEulerAngles.x, bodypart.localEulerAngles.y, newRotZEuler);
-                //}
-                //Debug.Log(bodypart.name + " has rotation(Euler): " + bodypart.transform.eulerAngles);
-                //Debug.Log(bodypart.name + " has rotation(Quaternion): " + bodypart.rotation.eulerAngles);
+                gameObject.transform.localEulerAngles = RotationConstraintUtility.GetConstainedRotation(minXAxisClampAngle, maxXAxisClampAngle, minYAxisClampAngle, maxYAxisClampAngle, minZAxisClampAngle, maxZAxisClampAngle, gameObject.transform);
             }
         }
     }

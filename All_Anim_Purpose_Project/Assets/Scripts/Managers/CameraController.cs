@@ -23,6 +23,9 @@ public class CameraController : Singleton<CameraController>{
     private Vector3 _cameraBackLeft, _cameraBackRight;
     private Vector3 _cameraUp, _cameraDown;
 
+    private string[] LookUpLayerNames = {"Player"};
+    private float blockedViewFollowDistance = 2f;
+
 
 
     private void Start(){
@@ -83,7 +86,38 @@ public class CameraController : Singleton<CameraController>{
     }
     private void CalculateOffset(){
         if (_followFocusTransform == null) return;
-        _calculatedOffset = (transform.position - _followFocusTransform.position).normalized * followDistance;
+        float calculatedFollowDistance = CalculateClippingDistanceToTarget();
+
+        _calculatedOffset = (transform.position - _followFocusTransform.position).normalized * calculatedFollowDistance;
+    }
+
+    private float CalculateClippingDistanceToTarget(){
+        Ray ray = new Ray(transform.position, GetCameraForward());
+        Debug.DrawRay(ray.origin, ray.direction * followDistance, Color.red);
+        
+        //Get All Object in the Raycast Line (through distance
+        RaycastHit[] hits = Physics.RaycastAll(ray, followDistance + 0.1f);
+        foreach(RaycastHit hit in hits )  Debug.Log("Hit: " + hit.collider.gameObject.name);
+        
+        if(hits.Length > 1){
+            Debug.Log("Overlapping. Move Closer!");
+            return blockedViewFollowDistance;
+        }
+        else if(hits.Length == 1) 
+        {
+            Debug.Log("Player Found");
+            Ray rayBack = new Ray(transform.position, GetCameraBack());
+            RaycastHit[] hitsBack = Physics.BoxCastAll(transform.position, Vector3.one * 0.25f ,GetCameraBack(), Quaternion.identity,followDistance + 0.1f);
+            if (hitsBack.Length == 0) return followDistance;
+            else return blockedViewFollowDistance;
+        }
+        else
+        {
+            Debug.Log("Raycast did not detect any target!");
+            return followDistance;
+        }
+
+        return followDistance;
     }
     private void RotateAroundTarget(){
         if (_rotateAroundTransform == null) return;
