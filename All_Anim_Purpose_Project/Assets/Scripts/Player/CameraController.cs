@@ -22,9 +22,7 @@ public class CameraController : Singleton<CameraController>{
     private Vector3 _cameraForwardLeft, _cameraForwardRight;
     private Vector3 _cameraBackLeft, _cameraBackRight;
     private Vector3 _cameraUp, _cameraDown;
-
-    private string[] LookUpLayerNames = {"Player"};
-    private float blockedViewFollowDistance = 2f;
+    [SerializeField] private float blockedViewFollowDistance = 2f;
 
 
 
@@ -40,6 +38,7 @@ public class CameraController : Singleton<CameraController>{
     private void LateUpdate(){
         FollowTarget();
         UpdateDirections();
+        CalculateOffset();
     }
 
     public void AssignFollowTransform(Transform followTransform){
@@ -86,42 +85,43 @@ public class CameraController : Singleton<CameraController>{
     }
     private void CalculateOffset(){
         if (_followFocusTransform == null) return;
-        float calculatedFollowDistance = CalculateClippingDistanceToTarget();
+        float calculatedFollowDistance = GetCalculatedClippingDistanceToTarget();
 
         _calculatedOffset = (transform.position - _followFocusTransform.position).normalized * calculatedFollowDistance;
     }
 
-    private float CalculateClippingDistanceToTarget(){
-        Ray ray = new Ray(transform.position, GetCameraForward());
-        Debug.DrawRay(ray.origin, ray.direction * followDistance, Color.red);
+    private float GetCalculatedClippingDistanceToTarget(){
+        float finalFollowDistance;
         
-        //Get All Object in the Raycast Line (through distance
-        RaycastHit[] hits = Physics.RaycastAll(ray, followDistance + 0.1f);
-        foreach(RaycastHit hit in hits )  Debug.Log("Hit: " + hit.collider.gameObject.name);
-        
-        if(hits.Length > 1){
-            Debug.Log("Overlapping. Move Closer!");
-            return blockedViewFollowDistance;
+        //Get All Object in the Raycast Line (through distance)
+        RaycastHit[] hitsFront = Physics.BoxCastAll(transform.position, Vector3.one * 0.15f, GetCameraForward(), Quaternion.identity, followDistance + 0.1f);
+        RaycastHit[] hitsBack = Physics.BoxCastAll(transform.position, Vector3.one * 0.15f, GetCameraBack(), Quaternion.identity, followDistance + 0.1f);
+        blockedViewFollowDistance = 2.0f;
+        if (hitsFront.Length > 1){
+            //Check for player clipping by other objects
+            foreach(var hit in hitsFront){
+                float distToFocus = Vector3.Distance(hit.point, _followFocusTransform.position);
+                if (distToFocus < followDistance && distToFocus < blockedViewFollowDistance) blockedViewFollowDistance = distToFocus;
+            }
+            finalFollowDistance = blockedViewFollowDistance;
+            if (finalFollowDistance < 0.5f) finalFollowDistance += 0.5f;
         }
-        else if(hits.Length == 1) 
-        {
-            Debug.Log("Player Found");
-            Ray rayBack = new Ray(transform.position, GetCameraBack());
-            RaycastHit[] hitsBack = Physics.BoxCastAll(transform.position, Vector3.one * 0.25f ,GetCameraBack(), Quaternion.identity,followDistance + 0.1f);
-            if (hitsBack.Length == 0) return followDistance;
-            else return blockedViewFollowDistance;
+        else if(hitsFront.Length == 1) {
+            if (hitsBack.Length == 0) finalFollowDistance = followDistance; //No Object is clipping the back of Camera.
+            else{
+                //Object(s) clipping camera to desired default distance (extra computing)
+                float hitAvgDistance = 0.0f;
+                foreach(RaycastHit hit in hitsBack) hitAvgDistance += hit.distance;
+                finalFollowDistance = hitAvgDistance/hitsBack.Length;
+            }
         }
-        else
-        {
-            Debug.Log("Raycast did not detect any target!");
-            return followDistance;
-        }
+        else finalFollowDistance = followDistance;
 
-        return followDistance;
+        return finalFollowDistance;
     }
     private void RotateAroundTarget(){
         if (_rotateAroundTransform == null) return;
-        CalculateOffset();
+        //CalculateOffset();
         //Retrieve normalized mouse X,Y Axis Values
         _lastKnownMousePositionXAxis = MouseUtility.GetMouseXNormalized();
         _lastKnownMousePositionYAxis = MouseUtility.GetMouseYNormalized();
