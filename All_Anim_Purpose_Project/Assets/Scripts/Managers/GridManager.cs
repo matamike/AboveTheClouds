@@ -10,9 +10,10 @@ public class GridManager : Singleton<GridManager>{
     [SerializeField] private GridPoolObjectSO[] gridPoolObjectList; //change to accept GridPoolObjectSO instead of GO
     [SerializeField] private Vector3 startingGridPosition;
     private List<TileGrid> _grids = new List<TileGrid>();
-    private float baseOffset;
+    private float baseOffset = 4.5f;
     private int _checkPointReached = -1;
     private int _finalGridCount = -1;
+    [SerializeField][Range(2,40)] private int testGridSizeX,testGridSizeY;
 
     private void OnEnable(){
         SceneManager.sceneLoaded += SceneManager_OnSceneLoaded;
@@ -28,29 +29,25 @@ public class GridManager : Singleton<GridManager>{
         DestroyAllGrids();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            CreateGrid(testGridSizeX, testGridSizeY, true);
+        }
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            UpdateGrid(0);
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            DestroyGrid(0);
+        }
+    }
+
     //Event Hooks
     private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1){
-        switch (GetCurrentPlace()){
-            case Place.ObstacleCourse:
-                //Difficulty Based (Random)
-                DifficultyPresetSO difficultyPresetSO = LevelUtility.GetActiveDifficultyPreset();
-                if (difficultyPresetSO != null){
-                    _finalGridCount = difficultyPresetSO.GetGridCount(); //The length of the list (to have).
-                    gridPoolObjectList = difficultyPresetSO.GetGridPoolObjectSOList().ToArray();
-                    if (gridPoolObjectList.Length == 0) return;
-                    CreateGrid(difficultyPresetSO.GetGridSizeX(), difficultyPresetSO.GetGridSizeY());
-                    return;
-                }
-                //User Defined Difficulty Custom Template
-                UserDefinedMappedDifficultySO userDefinedMappedDifficultySO = LevelUtility.GetActiveUserDefinedMappedDifficulty();
-                if (userDefinedMappedDifficultySO != null){
-                    _finalGridCount = userDefinedMappedDifficultySO.GetTemplateGridCount();
-                    GameObject[,] mapping = userDefinedMappedDifficultySO.GetConvertedTileMapToGameObjects();
-                    CreatePredefinedGrid(mapping);
-                    return;
-                }
-                break;
-        }
+        StartCoroutine(WaitForLoading(1.5f));
     }
 
     private void CheckPoint_OnCheckPointReached(object sender, CheckPoint.OnCheckPointReachedEventArgs e) {
@@ -88,7 +85,6 @@ public class GridManager : Singleton<GridManager>{
     public void RequestDestroyGrid(int index) => DestroyGrid(index);
 
     public void CreateGrid(int sizeX, int sizeY, bool hasCheckPoint = true){
-        baseOffset = CalculateBasePositionOffset();
         List<GameObject> pool = new List<GameObject>();
         foreach (GridPoolObjectSO gridPoolObjectSO in gridPoolObjectList) pool.Add(gridPoolObjectSO.PoolObject);
 
@@ -98,46 +94,76 @@ public class GridManager : Singleton<GridManager>{
     }
 
     public void CreatePredefinedGrid(GameObject[,] userDefinedTileMapping, bool hasCheckPoint = true){
-        baseOffset = CalculateBasePositionOffset();
         TileGrid tileGrid = new TileGrid(baseOffset + extraOffset, true, userDefinedTileMapping, startingGridPosition);
         _grids.Add(tileGrid);
         if (hasCheckPoint) CreateGridCheckpoint(_grids.Count - 1);
     }
 
-    private void CreateGridCheckpoint(int index = -1){
-        if (_grids[index] is not null){
-            Vector2 gridSize = _grids[index].GetGridSize();
-            float tileSize = _grids[index].GetGridTileSize();
 
-            GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            float depthOffset = 6f;
-            float sideSizeOffset = (gridSize.x * tileSize);
-            go.transform.localScale = new Vector3(sideSizeOffset, 1f, depthOffset);
-            go.transform.position = startingGridPosition + new Vector3((gridSize.x * tileSize) / 2f, 0f, baseOffset + depthOffset + (gridSize.y * tileSize));
-            CheckPoint checkpoint = go.AddComponent<CheckPoint>();
-            checkpoint.SetCheckPointIndex(_checkPointReached + 1);
+    //TODO FIX
+    private void CreateGridCheckpoint(int index = -1){
+        StartCoroutine(WaitForCheckPointCreation(3f, index));
+    }
+
+    private void UpdateGrid(int index = -1){
+        if (_grids.Count > 0 && _grids[index] != null){
+            _grids[index].UpdateStartingPosition(startingGridPosition);
+            _grids[index].UpdateGridOffset(baseOffset + extraOffset, true);
         }
     }
 
-    //private void UpdateGrid(int index = -1){
-    //    if (_grids[index] is not null){
-    //        baseOffset = CalculateBasePositionOffset();
-    //        _grids[index].UpdateStartingPosition(startingGridPosition);
-    //        _grids[index].UpdateGridOffset(baseOffset + extraOffset, true);
-    //    }
-    //}
-
-    private float CalculateBasePositionOffset(){
-        float averageOffset = 0f;
-        if (gridPoolObjectList.Length > 0){
-            foreach (GridPoolObjectSO gridPoolObjectSO in gridPoolObjectList){
-                GameObject item = gridPoolObjectSO.PoolObject;
-                float scaleSize = 0.0f;
-                if (item != null) scaleSize = (item.transform.lossyScale.x + item.transform.lossyScale.z) / 2;
-                averageOffset += scaleSize;
-            }
-            averageOffset /= gridPoolObjectList.Length;
+    IEnumerator WaitForLoading(float duration){
+        Debug.Log("Waiting for loading for Place: " + GetCurrentPlace().ToString());
+        yield return new WaitForSeconds(duration);
+        switch (GetCurrentPlace())
+        {
+            case Place.ObstacleCourse:
+                //Difficulty Based (Random)
+                DifficultyPresetSO difficultyPresetSO = LevelUtility.GetActiveDifficultyPreset();
+                if (difficultyPresetSO != null)
+                {
+                    _finalGridCount = difficultyPresetSO.GetGridCount(); //The length of the list (to have).
+                    gridPoolObjectList = difficultyPresetSO.GetGridPoolObjectSOList().ToArray();
+                    if (gridPoolObjectList.Length == 0) yield return null;
+                    CreateGrid(difficultyPresetSO.GetGridSizeX(), difficultyPresetSO.GetGridSizeY());
+                    yield return null;
+                }
+                //User Defined Difficulty Custom Template
+                UserDefinedMappedDifficultySO userDefinedMappedDifficultySO = LevelUtility.GetActiveUserDefinedMappedDifficulty();
+                if (userDefinedMappedDifficultySO != null)
+                {
+                    _finalGridCount = userDefinedMappedDifficultySO.GetTemplateGridCount();
+                    GameObject[,] mapping = userDefinedMappedDifficultySO.GetConvertedTileMapToGameObjects();
+                    CreatePredefinedGrid(mapping);
+                    yield return null;
+                }
+                break;
         }
-        return averageOffset;
+    }
+
+    IEnumerator WaitForCheckPointCreation(float duration, int index)
+    {
+        yield return new WaitForSeconds(duration);
+        if (_grids[index] is not null){
+            //Variables
+            Vector3 upperLeftCorner = _grids[index].GetUpperLeftCornerPosition();
+            Vector3 upperRightCorner = _grids[index].GetUpperRightCornerPosition();
+            
+            GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube); //Checkpoint primitive.
+
+            //Scale (Checkpoint)
+            float checkpointXAxisScale = Mathf.Abs(upperLeftCorner.x - upperRightCorner.x);
+            float checkpointZAxisScale = 6f;
+            go.transform.localScale = new Vector3(checkpointXAxisScale, 1f, checkpointZAxisScale);
+
+            //Position (Checkpoint)
+            float xPos = (upperRightCorner.x + upperLeftCorner.x)/2f;
+            float zPos = upperLeftCorner.z + baseOffset + extraOffset;
+            go.transform.position = new Vector3(xPos, 0f, zPos);
+
+            //Setup Checkpoint Component on Creation (with parameters)
+            CheckPoint checkpoint = go.AddComponent<CheckPoint>();
+            checkpoint.SetCheckPointIndex(_checkPointReached + 1);
+        }
     }
 }

@@ -117,8 +117,13 @@ public class TileGrid{
             if(element == null) continue;
             else return (element.transform.lossyScale.x + element.transform.lossyScale.z) / 2f;
         }
-        return 0f;
+        return 1f;
     }
+
+    public Vector3 GetUpperRightCornerPosition() => _startingPosition + new Vector3((_width - 1) * _tileOffset, 0f, (_height - 1) * _tileOffset);
+
+    public Vector3 GetUpperLeftCornerPosition() => _startingPosition + new Vector3(0f * _tileOffset, 0f, (_height - 1) * _tileOffset);
+
     public void DestroyGridElements() => OnGridDestroying?.Invoke(this, EventArgs.Empty);
 
     private void MoveGridElementToPosition(int x, int y, bool isSmooth = default){

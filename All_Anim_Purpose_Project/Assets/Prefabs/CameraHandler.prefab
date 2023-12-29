@@ -52,6 +52,7 @@ MonoBehaviour:
   followDistance: 7
   _XAxisAngleMinThreshold: -35
   _XAxisAngleMaxThreshold: 35
+  blockedViewFollowDistance: 2
 --- !u!1 &9119927901948312033
 GameObject:
   m_ObjectHideFlags: 0

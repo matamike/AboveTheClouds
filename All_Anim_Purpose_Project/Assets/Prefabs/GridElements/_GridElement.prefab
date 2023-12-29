@@ -128,7 +128,7 @@ BoxCollider:
   m_GameObject: {fileID: 7626841272474536630}
   m_Material: {fileID: 13400000, guid: bd8035e3bebeca94383efac3a0b52a3b, type: 2}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -162,6 +162,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isMoving: 0
   resetDuration: 5
+  interactingCollider: {fileID: 6055550786215820667}
 --- !u!114 &6111040107871998189
 MonoBehaviour:
   m_ObjectHideFlags: 0

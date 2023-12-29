@@ -10,21 +10,24 @@ public class UserDefinedDifficultyTemplatesController : Singleton<UserDefinedDif
 
     private void OnEnable(){
         SceneManager.sceneLoaded += SceneManager_OnSceneLoaded;
-        LevelCreatorUIManager.Instance.OnTemplateChanged += LevelCreatorUIManager_OnTemplateChanged;
-        LevelCreatorUIManager.Instance.OnTemplateRequestSave += LevelCreatorUIManager_OnTemplateRequestSave;
+        if (LevelCreatorUIManager.Instance != null){
+            LevelCreatorUIManager.Instance.OnTemplateChanged += LevelCreatorUIManager_OnTemplateChanged;
+            LevelCreatorUIManager.Instance.OnTemplateRequestSave += LevelCreatorUIManager_OnTemplateRequestSave;
+        }
     }
 
     private void OnDisable(){
         SceneManager.sceneLoaded -= SceneManager_OnSceneLoaded;
-        LevelCreatorUIManager.Instance.OnTemplateChanged -= LevelCreatorUIManager_OnTemplateChanged;
-        LevelCreatorUIManager.Instance.OnTemplateRequestSave -= LevelCreatorUIManager_OnTemplateRequestSave;
+        if (LevelCreatorUIManager.Instance != null){
+            LevelCreatorUIManager.Instance.OnTemplateChanged -= LevelCreatorUIManager_OnTemplateChanged;
+            LevelCreatorUIManager.Instance.OnTemplateRequestSave -= LevelCreatorUIManager_OnTemplateRequestSave;
+        }
     }
 
     //Event Hooks
     private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1){
-        if (PlaceLoadingUtility.IsPlace(arg0.buildIndex, PlaceLoadingUtility.Place.LevelCreator)){
-            InitializeTemplates();
-        }
+        if (PlaceLoadingUtility.IsPlace(arg0.buildIndex, PlaceLoadingUtility.Place.LevelCreator)) InitializeTemplates();
+        else if(PlaceLoadingUtility.IsPlace(arg0.buildIndex, PlaceLoadingUtility.Place.Hub)) InitializeTemplates();
     }
 
     private void LevelCreatorUIManager_OnTemplateRequestSave(object sender, LevelCreatorUIManager.OnTemplateRequestSaveArgs e){

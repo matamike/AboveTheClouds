@@ -1,42 +1,39 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class NotificationUIAlertController : Singleton<NotificationUIAlertController>{
     [SerializeField] private GameObject notificationAlertCanvasGO;
-    [SerializeField] private Button continueWithSaveButton, continueWithoutSaveButton;
-    private Action continueWithSaveCallback, continueWithoutSaveCallback;
+    [SerializeField] private Button acceptButton, declineButton;
+    [SerializeField] private TextMeshProUGUI alertText;
+    private Action acceptCallback, declineCallback;
 
     private void Start(){
         InitializeButtonCallbacks();
         ToggleAlertNotificationUI(false);
     }
 
-    public void SetCallbackActionContinueWithSave(Action action){
-        Debug.Log("Setting Callback (ContinueWithSave)");
-        continueWithSaveCallback = action;
-    }
-    public void SetCallbackActionContinueWithoutSave(Action action){
-        Debug.Log("Setting Callback (ContinueWithoutSave)");
-        continueWithoutSaveCallback = action;
-    }
-    public void ToggleAlertNotificationUI(bool flag){
-        Debug.Log("Canvas Enabled State -> " + flag.ToString());
-        notificationAlertCanvasGO.SetActive(flag);
-    }
+    public void SetAlertMessage(string message) => alertText.text = message;
+    public void UpdateAcceptButtonDisplayText(string displayText)=> acceptButton.GetComponentInChildren<TextMeshProUGUI>().text = displayText;
+    public void UpdateDeclineButtonDisplayText(string displayText) => declineButton.GetComponentInChildren<TextMeshProUGUI>().text = displayText;
+
+    public void SetCallbackActionContinueWithSave(Action action)=> acceptCallback = action;
+    public void SetCallbackActionContinueWithoutSave(Action action) => declineCallback = action;
+    public void ToggleAlertNotificationUI(bool flag) => notificationAlertCanvasGO.SetActive(flag);
     private void InitializeButtonCallbacks(){
-        continueWithSaveButton.onClick.AddListener(() => {
-            if (continueWithSaveCallback != null){
-                continueWithSaveCallback();
-                continueWithSaveCallback = null;
+        acceptButton.onClick.AddListener(() => {
+            if (acceptCallback != null){
+                acceptCallback();
+                acceptCallback = null;
             }
             ToggleAlertNotificationUI(false);
         });
 
-        continueWithoutSaveButton.onClick.AddListener(() =>{
-            if (continueWithoutSaveCallback != null){
-                continueWithoutSaveCallback();
-                continueWithoutSaveCallback = null;
+        declineButton.onClick.AddListener(() =>{
+            if (declineCallback != null){
+                declineCallback();
+                declineCallback = null;
             }
             ToggleAlertNotificationUI(false);
         });

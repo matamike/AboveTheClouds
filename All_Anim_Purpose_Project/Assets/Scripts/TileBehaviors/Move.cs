@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Move : MonoBehaviour{
     [SerializeField] private bool isMoving = false;
-    [SerializeField] [Range(1f,10f)]private float resetDuration = 5f;
+    [SerializeField] [Range(1f,10f)]private float resetDuration;
+    [SerializeField] Collider interactingCollider;
     private Vector3 targetPosition;
     private float timer = 0f;
     private TileGrid _tileGridAssigned;
@@ -17,6 +18,7 @@ public class Move : MonoBehaviour{
         if (e.self == gameObject){
             isMoving = true;
             targetPosition = (e.target != null)? e.target : transform.position;
+            if (interactingCollider.enabled) interactingCollider.enabled = false;
         }
     }
 
@@ -35,6 +37,7 @@ public class Move : MonoBehaviour{
             gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, targetPosition, resetDuration * Time.deltaTime);
         }
         else{
+            if(!interactingCollider.enabled) interactingCollider.enabled = true;
             isMoving = false;
             timer = 0f;
         }

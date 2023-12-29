@@ -508,7 +508,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 59.2
+  m_fontSize: 59.1
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -3780,7 +3780,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 65.85
+  m_fontSize: 65.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4878,8 +4878,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notificationAlertCanvasGO: {fileID: 648969561}
-  continueWithSaveButton: {fileID: 776662262}
-  continueWithoutSaveButton: {fileID: 1786113775}
+  acceptButton: {fileID: 776662262}
+  declineButton: {fileID: 1786113775}
+  alertText: {fileID: 1511362778}
 --- !u!4 &2093126412
 Transform:
   m_ObjectHideFlags: 0

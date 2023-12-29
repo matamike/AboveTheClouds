@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 
 namespace Utility.PlaceUtility
 {
-
     public static class PlaceLoadingUtility
     {
         //Contains all the active to the build scenes
@@ -34,6 +33,8 @@ namespace Utility.PlaceUtility
             else _currentPlace = place;
 
             int buildIndex = _placeToBuildIndex[place];
+            Debug.Log(_currentPlace.ToString());
+            Debug.Log(buildIndex);
             SceneManager.LoadScene(GetSceneNameByBuildIndex(buildIndex));
             _currentPlace = place;
         }
