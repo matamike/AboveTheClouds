@@ -29,21 +29,21 @@ public class GridManager : Singleton<GridManager>{
         DestroyAllGrids();
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            CreateGrid(testGridSizeX, testGridSizeY, true);
-        }
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            UpdateGrid(0);
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            DestroyGrid(0);
-        }
-    }
+    //private void Update()
+    //{
+        //if (Input.GetKeyDown(KeyCode.C))
+        //{
+        //    CreateGrid(testGridSizeX, testGridSizeY, true);
+        //}
+        //if (Input.GetKeyDown(KeyCode.U))
+        //{
+        //    UpdateGrid(0);
+        //}
+        //if (Input.GetKeyDown(KeyCode.R))
+        //{
+        //    DestroyGrid(0);
+        //}
+    //}
 
     //Event Hooks
     private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1){
@@ -122,6 +122,7 @@ public class GridManager : Singleton<GridManager>{
                 DifficultyPresetSO difficultyPresetSO = LevelUtility.GetActiveDifficultyPreset();
                 if (difficultyPresetSO != null)
                 {
+                    Debug.Log("Random Based Difficulty detected !! ");
                     _finalGridCount = difficultyPresetSO.GetGridCount(); //The length of the list (to have).
                     gridPoolObjectList = difficultyPresetSO.GetGridPoolObjectSOList().ToArray();
                     if (gridPoolObjectList.Length == 0) yield return null;
@@ -132,6 +133,7 @@ public class GridManager : Singleton<GridManager>{
                 UserDefinedMappedDifficultySO userDefinedMappedDifficultySO = LevelUtility.GetActiveUserDefinedMappedDifficulty();
                 if (userDefinedMappedDifficultySO != null)
                 {
+                    Debug.Log("User Defined Difficulty detected !! ");
                     _finalGridCount = userDefinedMappedDifficultySO.GetTemplateGridCount();
                     GameObject[,] mapping = userDefinedMappedDifficultySO.GetConvertedTileMapToGameObjects();
                     CreatePredefinedGrid(mapping);

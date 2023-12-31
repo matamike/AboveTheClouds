@@ -12,7 +12,7 @@ public class TeleportPrompt : MonoBehaviour{
     
     //Player Components Ref
     private Rigidbody targetRb;
-    private GameObject targetGo;
+    [SerializeField] private GameObject targetGo;
 
     //Teleporting Process parameters
     private bool teleportStarted = false;
@@ -33,41 +33,37 @@ public class TeleportPrompt : MonoBehaviour{
     }
 
     private void UserDefinedTemplateUIController_OnCustomDifficultySelected(object sender, UserDefinedTemplateUIController.OnCustomDifficultySelectedEventArgs e){
-        _userDefinedMappedDifficultySO = e.userDefinedMappedDifficultySO;
-        StartTransition(targetGo);
+        if (targetGo != null)
+        {
+            _userDefinedMappedDifficultySO = e.userDefinedMappedDifficultySO;
+            StartTransition(targetGo);
+        }
     }
 
 
     private void OnTriggerEnter(Collider other){
         if (LayerUtility.LayerIsName(other.gameObject.layer, layerNames)){
-
-            //Only for User Defined Difficulty Portal
-            if (requireCustomDifficultyUIPrompt){
-                UserDefinedTemplateUIController.Instance.ToggleCanvas();
-                return;
-            }
-
-            StartTransition(other.gameObject);
+            targetGo = other.gameObject;
+            targetRb = targetGo.GetComponent<Rigidbody>();
+            if (requireCustomDifficultyUIPrompt) UserDefinedTemplateUIController.Instance.ToggleCanvas();
+            else StartTransition(other.gameObject);
         }
     }
 
     private void OnTriggerExit(Collider other){
-        //Only for User Defined Difficulty Portal
-        if (requireCustomDifficultyUIPrompt){
-            UserDefinedTemplateUIController.Instance.ToggleCanvas();
-            return;
+        if (LayerUtility.LayerIsName(other.gameObject.layer, layerNames)){
+            if (requireCustomDifficultyUIPrompt) UserDefinedTemplateUIController.Instance.ToggleCanvas();
+            else StopTransition();
+            targetGo = null;
+            targetRb = null;
         }
-
-        StopTransition();
     }
 
     private void Update(){
         if (teleportStarted) {
             teleportTimeElapsed += Time.deltaTime;
-            if (targetGo != null){
-                targetRb.velocity = Vector3.zero;
-                targetGo.transform.Rotate(0f, eulerRotationYAxisRatio + (eulerRotationYAxisRatio * teleportTimeElapsed), 0f);
-            }
+            if (targetGo != null) targetGo.transform.Rotate(0f, eulerRotationYAxisRatio + (eulerRotationYAxisRatio * teleportTimeElapsed), 0f);
+            if(targetRb != null) targetRb.velocity = Vector3.zero;
         }
         else{
             if (teleportTimeElapsed != 0f) teleportTimeElapsed = 0f;
@@ -77,18 +73,27 @@ public class TeleportPrompt : MonoBehaviour{
     private void StartTransition(GameObject go){
         if (!teleportStarted){
             //Prepare LevelUtility before teleporting to handle the mode difficulty.
-            if (_targetDifficultyPresetSO is not null) LevelUtility.SetDifficultyModeWithRandomPlacement(_targetDifficultyPresetSO);
-            else if (_userDefinedMappedDifficultySO is not null) LevelUtility.SetUserDefinedMappedDifficulty(_userDefinedMappedDifficultySO);
-            else{
+            if (_targetDifficultyPresetSO is not null)
+            {
+                Debug.Log("Found Random Based Difficulty Preset SO");
+                LevelUtility.SetDifficultyModeWithRandomPlacement(_targetDifficultyPresetSO);
+            }
+            else if (_userDefinedMappedDifficultySO is not null){
+                Debug.Log("Found User Defined Difficulty Mapping SO");
+                LevelUtility.SetUserDefinedMappedDifficulty(_userDefinedMappedDifficultySO);
+            }
+            else
+            {
+                Debug.Log("Didn't find any level setting!");
                 if (targetPlace != Place.LevelCreator) return;
             }
 
             //Prepare for Teleport
             InputManager.Instance.SetControlLockStatus(true);
-            if (targetGo != null){
-                targetRb = go.gameObject.GetComponent<Rigidbody>();
-                targetGo = go.gameObject;
-            }
+            //if (targetGo != null){
+            //    targetRb = go.gameObject.GetComponent<Rigidbody>();
+            //    targetGo = go.gameObject;
+            //}
             teleportStarted = true;
             StartCoroutine(WaitForTeleport());
         }

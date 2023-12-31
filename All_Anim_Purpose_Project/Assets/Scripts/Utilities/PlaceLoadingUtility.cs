@@ -32,9 +32,13 @@ namespace Utility.PlaceUtility
             if (_currentPlace == place) return;
             else _currentPlace = place;
 
+            if(place == Place.Hub)
+            {
+                LevelUtility.SetDifficultyModeWithRandomPlacement(null);
+                LevelUtility.SetUserDefinedMappedDifficulty(null);
+            }
+
             int buildIndex = _placeToBuildIndex[place];
-            Debug.Log(_currentPlace.ToString());
-            Debug.Log(buildIndex);
             SceneManager.LoadScene(GetSceneNameByBuildIndex(buildIndex));
             _currentPlace = place;
         }
