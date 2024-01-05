@@ -18,3 +18,5 @@ MonoBehaviour:
   gridSizeX: 10
   gridSizeY: 10
   gridCount: 2
+  presetDescription: Easy random mapping
+  presetName: Easy (Random)

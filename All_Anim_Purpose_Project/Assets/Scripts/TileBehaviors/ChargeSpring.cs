@@ -83,11 +83,15 @@ public class ChargeSpring : MonoBehaviour, IInteractable{
     private bool IsInRestPosition() => (springJoint.tolerance == 0.01f && springJoint.spring == 100000f) ? true : false;
 
     public void Interact(GameObject invokeSource){
-        if (LayerUtility.LayerIsName(invokeSource.layer, layerNames)) ToggleObjectInteracting(true);
+        if (LayerUtility.LayerIsName(invokeSource.layer, layerNames)){
+            Debug.Log("Bouncy Interact with player");
+            ToggleObjectInteracting(true);
+        }
     }
 
     public void CancelInteracion(GameObject invokeSource){
         if (LayerUtility.LayerIsName(invokeSource.layer, layerNames)){
+            Debug.Log("Bouncy stopped Interact with player");
             ToggleObjectInteracting(false);
             chargingTimeElapsed = 0f;
         }

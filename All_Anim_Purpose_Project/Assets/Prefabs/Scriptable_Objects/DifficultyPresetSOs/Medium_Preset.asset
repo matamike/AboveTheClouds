@@ -19,3 +19,5 @@ MonoBehaviour:
   gridSizeX: 15
   gridSizeY: 15
   gridCount: 1
+  presetDescription: Medium random mapping
+  presetName: Medium (Random)

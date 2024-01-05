@@ -19,3 +19,5 @@ MonoBehaviour:
   gridSizeX: 25
   gridSizeY: 25
   gridCount: 1
+  presetDescription: Extreme random mapping
+  presetName: Extreme (Random)

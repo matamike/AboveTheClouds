@@ -20,3 +20,5 @@ MonoBehaviour:
   gridSizeX: 20
   gridSizeY: 20
   gridCount: 1
+  presetDescription: Hard random mapping
+  presetName: Hard (Random)
