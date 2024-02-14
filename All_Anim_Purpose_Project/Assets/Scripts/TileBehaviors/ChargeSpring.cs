@@ -6,6 +6,7 @@ public class ChargeSpring : MonoBehaviour, IInteractable{
     [SerializeField] private SpringJoint springJoint;
     //Interacting Layers
     private string[] layerNames = { "Player", "DroppedObject" };
+    private TileAudio tileAudio;
 
     //Timers
     private float cooldownTimeElapsed = 0f;
@@ -20,9 +21,14 @@ public class ChargeSpring : MonoBehaviour, IInteractable{
     private float chargeTime = 5f;
     private float cooldown = 3f;
 
+    private void Start(){
+        tileAudio = transform.root.GetComponent<TileAudio>();
+    }
+
     private void Update(){
         if (CanCharge()){
             Charge();
+            if (!tileAudio.IsPlaying()) tileAudio.PlayTileSFX(TileAudio.TILE_SFX_TYPE.Activation);
             if (chargingTimeElapsed >= chargeTime) FireSpring(); //Fire Spring
         }
         else{
@@ -83,15 +89,13 @@ public class ChargeSpring : MonoBehaviour, IInteractable{
     private bool IsInRestPosition() => (springJoint.tolerance == 0.01f && springJoint.spring == 100000f) ? true : false;
 
     public void Interact(GameObject invokeSource){
-        if (LayerUtility.LayerIsName(invokeSource.layer, layerNames)){
-            Debug.Log("Bouncy Interact with player");
+        if (LayerUtility.LayerIsName(invokeSource.layer, layerNames)){    
             ToggleObjectInteracting(true);
         }
     }
 
     public void CancelInteracion(GameObject invokeSource){
         if (LayerUtility.LayerIsName(invokeSource.layer, layerNames)){
-            Debug.Log("Bouncy stopped Interact with player");
             ToggleObjectInteracting(false);
             chargingTimeElapsed = 0f;
         }

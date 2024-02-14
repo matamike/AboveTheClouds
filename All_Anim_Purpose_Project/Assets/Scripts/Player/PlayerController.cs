@@ -83,7 +83,19 @@ public class PlayerController : Singleton<PlayerController> {
     private void FixedUpdate(){
         ControlMovement(); // Moving the player
         BroadCastVelocity(); //Broadcast Rigidbody Velocity (along with ground state)
-        if (_rigidbody.velocity.y > 1f || _rigidbody.velocity.y < -1f) _isGrounded = false; //airborne (falling or jumping -> any case)
+        if (_rigidbody.velocity.y > 1f || _rigidbody.velocity.y < -1f){
+            _isGrounded = false; //airborne (falling or jumping -> any case)
+        }
+
+        if (_rigidbody.velocity.y > 4f){
+            PlayerSoundController.Instance.PlayPlayerSFX(PlayerSoundController.PLAYER_SFX_TYPE.JUMP);
+        }
+
+
+        //TODO FIX
+        //if(_rigidbody.velocity.y < -4f){
+          //  PlayerSoundController.Instance.PlayPlayerSFX(PlayerSoundController.PLAYER_SFX_TYPE.FALL);
+        //}
     }
 
     private void OnCollisionEnter(Collision other){
@@ -112,21 +124,17 @@ public class PlayerController : Singleton<PlayerController> {
     public void ForceRemoveCollidingElement(GameObject source) => TryRemoveCollidingElement(source);
     private void TryAddCollidingElement(GameObject go){
         if (!_collidingObjects.Contains(go)){
-            //add 1st time.
-            Debug.Log("Adding Collision Member:  " + go.name);
             _collidingObjects.Add(go);
             _contactPoints.Add(new Tuple<int, int>(0, 0));
         }
-        else{
-            //existing
+        else
+        {
             int collidingIndex = _collidingObjects.IndexOf(go);
             _contactPoints[collidingIndex] = new Tuple<int, int>(0, 0);
         }
     }
     private void TryRemoveCollidingElement(GameObject go){
         if (_collidingObjects.Contains(go)){
-            //remove when collision stops entirely.
-            Debug.Log("Removing Collision Member:  " + go.name);
             int index = _collidingObjects.IndexOf(go);
             _collidingObjects.RemoveAt(index);
             _contactPoints.RemoveAt(index);
@@ -196,6 +204,7 @@ public class PlayerController : Singleton<PlayerController> {
             _rigidbody.velocity = new Vector3(transform.forward.x * _movementSpeed * Time.fixedDeltaTime,
                                             _rigidbody.velocity.y,
                                             transform.forward.z * _movementSpeed * Time.fixedDeltaTime);
+            PlayerSoundController.Instance.PlayPlayerSFX(PlayerSoundController.PLAYER_SFX_TYPE.WALK);
         }
         else
         {
@@ -206,6 +215,14 @@ public class PlayerController : Singleton<PlayerController> {
     private void UpdateMovementSpeed(){
         float targetSpeed = _isSprinting ? _sprintForce : _walkForce;
         _movementSpeed = Mathf.Lerp(_movementSpeed, targetSpeed, 2f);
+
+        //Set Audio Source Pitch Level (Walk/Sprint)
+        if(targetSpeed == _sprintForce) {
+            PlayerSoundController.Instance.SetPitch(1.2f);
+        }
+        else{
+            PlayerSoundController.Instance.SetPitch(1.0f);
+        }
     }
     private void Turn(){
         Vector3 _targetLookDirection = GetMappedCameraDirection();

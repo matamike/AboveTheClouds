@@ -7,6 +7,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1627326204391157059, guid: 25d5b8022ae7f2e47806e7e0459f7271,
+        type: 3}
+      propertyPath: sfxActivation
+      value: 
+      objectReference: {fileID: 8300000, guid: e572bddd085656e4c96fdaf097e83698, type: 3}
     - target: {fileID: 7626841272474536630, guid: 25d5b8022ae7f2e47806e7e0459f7271,
         type: 3}
       propertyPath: m_Name
@@ -67,7 +72,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4082144842139810570, guid: 25d5b8022ae7f2e47806e7e0459f7271, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 25d5b8022ae7f2e47806e7e0459f7271, type: 3}
 --- !u!1 &3090737146204188562 stripped
 GameObject:

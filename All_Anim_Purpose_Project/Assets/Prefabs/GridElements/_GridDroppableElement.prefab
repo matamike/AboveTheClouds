@@ -12,6 +12,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1627326204391157059, guid: 25d5b8022ae7f2e47806e7e0459f7271,
+        type: 3}
+      propertyPath: sfxActivation
+      value: 
+      objectReference: {fileID: 8300000, guid: f68544c90b8b82241a332d7d7075ca33, type: 3}
     - target: {fileID: 7626841272474536630, guid: 25d5b8022ae7f2e47806e7e0459f7271,
         type: 3}
       propertyPath: m_Name
@@ -91,6 +96,7 @@ PrefabInstance:
     - {fileID: 753853601327499263, guid: 25d5b8022ae7f2e47806e7e0459f7271, type: 3}
     - {fileID: 4911287627249283847, guid: 25d5b8022ae7f2e47806e7e0459f7271, type: 3}
     - {fileID: 5997113264106049054, guid: 25d5b8022ae7f2e47806e7e0459f7271, type: 3}
+    - {fileID: 4082144842139810570, guid: 25d5b8022ae7f2e47806e7e0459f7271, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 25d5b8022ae7f2e47806e7e0459f7271, type: 3}
 --- !u!1 &2433740071778271901 stripped
 GameObject:

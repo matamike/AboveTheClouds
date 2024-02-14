@@ -14,6 +14,12 @@ public class Spin : MonoBehaviour, IInteractable{
     private Rigidbody playerRB;
     private string[] layerNames = { "Player", "DroppedObject" };
 
+    private TileAudio tileAudio;
+
+    private void Start(){
+        tileAudio = transform.root.GetComponent<TileAudio>();
+    }
+
 
     private void Update(){
         if (!isInCooldown) RotatingProcess();//Rotating
@@ -24,6 +30,7 @@ public class Spin : MonoBehaviour, IInteractable{
         if (isRotating){
             RotateTileTransform();
             ApplyConstantForceToTarget();
+            
 
             // Progression of time.
             rotateTimeElapsed += Time.deltaTime;
@@ -34,6 +41,11 @@ public class Spin : MonoBehaviour, IInteractable{
                 isInCooldown = true;
                 rotateTimeElapsed = 0.0f;
                 speed = 1f;
+                tileAudio.StopTileSFX();
+            }
+            else
+            {
+                if (!tileAudio.IsPlaying()) tileAudio.PlayTileSFX(TileAudio.TILE_SFX_TYPE.Activation);
             }
         }
     }
