@@ -23,6 +23,7 @@ public class CameraController : Singleton<CameraController>{
     private Vector3 _cameraBackLeft, _cameraBackRight;
     private Vector3 _cameraUp, _cameraDown;
     [SerializeField] private float blockedViewFollowDistance = 2f;
+    private bool _rotationLocked = false;
 
 
 
@@ -32,7 +33,7 @@ public class CameraController : Singleton<CameraController>{
     }
 
     private void Update(){
-        RotateAroundTarget();
+        if(!_rotationLocked) RotateAroundTarget();
     }
 
     private void LateUpdate(){
@@ -66,6 +67,8 @@ public class CameraController : Singleton<CameraController>{
         }
         OnDirectionChanged?.Invoke(this, EventArgs.Empty);
     }
+
+    public void SetLockCameraStatus(bool flag) => _rotationLocked = flag;
 
     public Vector3 GetCameraUp() => _cameraUp;
     public Vector3 GetCameraDown() => _cameraDown;
