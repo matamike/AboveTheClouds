@@ -649,7 +649,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2686890238580844520}
   - component: {fileID: 2686890238592446898}
-  m_Layer: 0
+  - component: {fileID: 7985479282781830665}
+  m_Layer: 2
   m_Name: DummyMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -777,6 +778,19 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.002098173, y: 0, z: 0.03928837}
     m_Extent: {x: 0.98867846, y: 0.90676486, z: 0.2402491}
   m_DirtyAABB: 0
+--- !u!135 &7985479282781830665
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2686890238580944904}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 250
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &2686890238580944906
 GameObject:
   m_ObjectHideFlags: 0

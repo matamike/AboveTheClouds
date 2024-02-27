@@ -41,7 +41,7 @@ public class ChargeSpring : MonoBehaviour, IInteractable{
 
     //Drops the spring for X time before releasing it.
     private void Charge(){
-        chargingTimeElapsed += Time.deltaTime;
+        chargingTimeElapsed += Time.deltaTime * TimeMultiplierUtility.GetTimeMultiplier();
         springJoint.spring = Mathf.LerpUnclamped(springJoint.spring, 100f, chargingTimeElapsed);
         springJoint.tolerance = Mathf.LerpUnclamped(springJoint.tolerance, 0.75f, chargingTimeElapsed);
     }
@@ -49,7 +49,7 @@ public class ChargeSpring : MonoBehaviour, IInteractable{
     private void Cooldown(){
         if (isInCooldown){
             chargingTimeElapsed = 0f;
-            cooldownTimeElapsed += Time.deltaTime;
+            cooldownTimeElapsed += Time.deltaTime * TimeMultiplierUtility.GetTimeMultiplier();
             if (cooldownTimeElapsed > cooldown){
                 ToggleCooldown(false);
                 cooldownTimeElapsed = 0f;
@@ -59,7 +59,7 @@ public class ChargeSpring : MonoBehaviour, IInteractable{
 
     private void ResetSpring(){
         //Fire Spring
-        restPositionTimer += Time.deltaTime;
+        restPositionTimer += Time.deltaTime * TimeMultiplierUtility.GetTimeMultiplier();
         springJoint.tolerance = Mathf.Lerp(springJoint.tolerance, 0.01f, restPositionTimer);
         springJoint.spring = Mathf.Lerp(springJoint.spring, 100000f, restPositionTimer);
     }

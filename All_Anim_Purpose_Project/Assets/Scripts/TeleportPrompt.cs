@@ -61,7 +61,7 @@ public class TeleportPrompt : MonoBehaviour{
 
     private void Update(){
         if (teleportStarted) {
-            teleportTimeElapsed += Time.deltaTime;
+            teleportTimeElapsed += Time.deltaTime * TimeMultiplierUtility.GetTimeMultiplier();
             if (targetGo != null) targetGo.transform.Rotate(0f, eulerRotationYAxisRatio + (eulerRotationYAxisRatio * teleportTimeElapsed), 0f);
             if(targetRb != null) targetRb.velocity = Vector3.zero;
         }

@@ -7,13 +7,13 @@ using static Utility.PlaceUtility.PlaceLoadingUtility;
 
 public class GridManager : Singleton<GridManager>{
     [Range(0f, 10f)] private float extraOffset = 1f;
-    [SerializeField] private GridPoolObjectSO[] gridPoolObjectList; //change to accept GridPoolObjectSO instead of GO
+    [SerializeField] private GridPoolObjectSO[] gridPoolObjectList;
     [SerializeField] private Vector3 startingGridPosition;
     private List<TileGrid> _grids = new List<TileGrid>();
     private float baseOffset = 4.5f;
     private int _checkPointReached = -1;
     private int _finalGridCount = -1;
-    [SerializeField][Range(2,40)] private int testGridSizeX,testGridSizeY;
+    [SerializeField][Range(2,400)] private int testGridSizeX,testGridSizeY;
 
     private void OnEnable(){
         SceneManager.sceneLoaded += SceneManager_OnSceneLoaded;
@@ -29,21 +29,21 @@ public class GridManager : Singleton<GridManager>{
         DestroyAllGrids();
     }
 
-    //private void Update()
-    //{
-        //if (Input.GetKeyDown(KeyCode.C))
-        //{
-        //    CreateGrid(testGridSizeX, testGridSizeY, true);
-        //}
-        //if (Input.GetKeyDown(KeyCode.U))
-        //{
-        //    UpdateGrid(0);
-        //}
-        //if (Input.GetKeyDown(KeyCode.R))
-        //{
-        //    DestroyGrid(0);
-        //}
-    //}
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            CreateGrid(testGridSizeX, testGridSizeY, true);
+        }
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            UpdateGrid(0);
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            DestroyGrid(0);
+        }
+    }
 
     //Event Hooks
     private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1){
@@ -51,7 +51,7 @@ public class GridManager : Singleton<GridManager>{
     }
 
     private void CheckPoint_OnCheckPointReached(object sender, CheckPoint.OnCheckPointReachedEventArgs e) {
-        startingGridPosition += e.self.position;
+        startingGridPosition = e.self.position + new Vector3(0,0, baseOffset + extraOffset);
         _checkPointReached = e.index;
         DestroyGrid(0);
         if (_checkPointReached < (_finalGridCount - 1)) {
@@ -99,8 +99,6 @@ public class GridManager : Singleton<GridManager>{
         if (hasCheckPoint) CreateGridCheckpoint(_grids.Count - 1);
     }
 
-
-    //TODO FIX
     private void CreateGridCheckpoint(int index = -1){
         StartCoroutine(WaitForCheckPointCreation(3f, index));
     }

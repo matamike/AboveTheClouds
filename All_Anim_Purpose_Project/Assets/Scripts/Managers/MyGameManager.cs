@@ -46,8 +46,8 @@ public class MyGameManager : Singleton<MyGameManager> {
             playerTimesRespawned++;
         }
         else{
-            //TODO Add a game over sequence (UI / Sound etc...)
             Debug.Log("Game Over");
+            PreferencesUtility.RequestResetOneTimeForAllOfTheType(this);
             TeleportPlayerBackToHub();
         }
     }

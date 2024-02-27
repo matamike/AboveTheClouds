@@ -32,10 +32,14 @@ public class TweenHandler : Singleton<TweenHandler>{
         while (true){
             tweenParameters.TweenAll();
             timeout -= Time.deltaTime;
-            if (timeout <= 0) break;
+            if (timeout <= 0){
+                tweenParameters.ExecuteCallback();
+                break;
+            }
             await Task.Delay((int)(Time.deltaTime * 1000), c.Token);
         }
         CancelTween(tweenable);
+
     }
 
     public void CancelTween(GameObject source) => RemoveKey(source);

@@ -23,8 +23,8 @@ public class Drop : MonoBehaviour, IInteractable{
 
     private void DropBehavior(){
         if (_isLoosened){
-            fallDownTimer += Time.deltaTime;
-            transform.position = Vector3.Lerp(startPosition, endPosition, fallDownTimer * speed);  
+            fallDownTimer += Time.deltaTime * TimeMultiplierUtility.GetTimeMultiplier();
+            transform.position = Vector3.Lerp(startPosition, endPosition, fallDownTimer * speed * TimeMultiplierUtility.GetTimeMultiplier());  
             if (fallDownTimer > fallDownWaitTime){
                 _rigidbody.isKinematic = false;
                 fallDownTimer = 0.0f;

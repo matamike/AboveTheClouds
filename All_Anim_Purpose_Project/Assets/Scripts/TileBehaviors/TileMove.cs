@@ -1,14 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Move : MonoBehaviour{
-    [SerializeField] private bool isMoving = false;
+public class TileMove : MonoBehaviour{
     [SerializeField] [Range(1f,10f)]private float resetDuration;
     [SerializeField] Collider interactingCollider;
     private Vector3 targetPosition;
-    private float timer = 0f;
     private TileGrid _tileGridAssigned;
+    private Action _callback;
 
     private void OnDisable(){
         if (_tileGridAssigned is not null) _tileGridAssigned.OnPositionChanged -= MyGrid_OnPositionChanged;
@@ -16,30 +16,19 @@ public class Move : MonoBehaviour{
 
     private void MyGrid_OnPositionChanged(object sender, TileGrid.OnPositionChangedEventArgs e){
         if (e.self == gameObject){
-            isMoving = true;
             targetPosition = (e.target != null)? e.target : transform.position;
-            if (interactingCollider.enabled) interactingCollider.enabled = false;
+            DisableCollider();
+            _callback = EnableCollider;
+            TweenParameters tween = new(gameObject, targetPosition, transform.eulerAngles, transform.localScale, 6f, 2f, _callback);
+            TweenHandler.Instance.CreateTween(tween);
         }
     }
 
-    private void Update(){
-        MoveTile();
-    }
+    private void DisableCollider() => interactingCollider.enabled = false;
 
+    private void EnableCollider() => interactingCollider.enabled = true;
     public void AssignTileGrid(TileGrid tileGrid){
         _tileGridAssigned = tileGrid;
         _tileGridAssigned.OnPositionChanged += MyGrid_OnPositionChanged;
-    }
-
-    private void MoveTile(){
-        if (isMoving && timer <= resetDuration){
-            timer += Time.deltaTime;
-            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, targetPosition, resetDuration * Time.deltaTime);
-        }
-        else{
-            if(!interactingCollider.enabled) interactingCollider.enabled = true;
-            isMoving = false;
-            timer = 0f;
-        }
     }
 }

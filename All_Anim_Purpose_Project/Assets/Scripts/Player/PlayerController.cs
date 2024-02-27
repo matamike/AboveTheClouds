@@ -214,7 +214,7 @@ public class PlayerController : Singleton<PlayerController> {
     }
     private void UpdateMovementSpeed(){
         float targetSpeed = _isSprinting ? _sprintForce : _walkForce;
-        _movementSpeed = Mathf.Lerp(_movementSpeed, targetSpeed, 2f);
+        _movementSpeed = Mathf.Lerp(_movementSpeed, targetSpeed, 2f * TimeMultiplierUtility.GetTimeMultiplier());
 
         //Set Audio Source Pitch Level (Walk/Sprint)
         if(targetSpeed == _sprintForce) {
@@ -228,7 +228,7 @@ public class PlayerController : Singleton<PlayerController> {
         Vector3 _targetLookDirection = GetMappedCameraDirection();
         _targetLookDirection.y = 0f; // no movement in Y Axis
         Quaternion rotation = Quaternion.LookRotation(_targetLookDirection, transform.up);
-        transform.localRotation = Quaternion.Lerp(transform.localRotation, rotation, _turnDirectionSpeed);
+        transform.localRotation = Quaternion.Lerp(transform.localRotation, rotation, _turnDirectionSpeed * TimeMultiplierUtility.GetTimeMultiplier());
     }
     private Vector3 GetMappedCameraDirection()
     {

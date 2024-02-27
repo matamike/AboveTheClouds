@@ -27,26 +27,26 @@ public class BodypartsController : MonoBehaviour{
 
     private void LateUpdate(){
         if (directionChanged){
-            lastKnownDirection = Vector3.Lerp(lastKnownDirection, newDirection, 2f);
-            //Vector3 lerpedDirection = Vector3.LerpUnclamped(transform.forward, lastKnownDirection, 2f);
+            float speed = 2f;
+            lastKnownDirection = Vector3.Lerp(lastKnownDirection, newDirection, speed);
             transform.LookAt(transform.position  + lastKnownDirection, lookAtUp);
-            Vector3 newEuler = GetClampedPartEuler();
+            Vector3 newEuler = GetClampedPartEuler();    
 
             float lerpXAxis, lerpYAxis, lerpZAxis;
             if (newEuler.x > 180f && transform.localEulerAngles.x < 180f) {
-                lerpXAxis = Mathf.Lerp(transform.eulerAngles.x, newEuler.x - 360f, 2f);
+                lerpXAxis = Mathf.Lerp(transform.eulerAngles.x, newEuler.x - 360f, speed);
             }
-            else lerpXAxis = Mathf.Lerp(transform.eulerAngles.x, newEuler.x, 2f);
+            else lerpXAxis = Mathf.Lerp(transform.eulerAngles.x, newEuler.x, speed);
 
             if (newEuler.y > 180f && transform.localEulerAngles.y < 180f){
-                lerpYAxis = Mathf.Lerp(transform.eulerAngles.y, newEuler.y - 360f, 2f);
+                lerpYAxis = Mathf.Lerp(transform.eulerAngles.y, newEuler.y - 360f, speed);
             }
-            else lerpYAxis = Mathf.Lerp(transform.eulerAngles.y, newEuler.y, 2f);
+            else lerpYAxis = Mathf.Lerp(transform.eulerAngles.y, newEuler.y, speed);
 
             if (newEuler.z > 180f && transform.localEulerAngles.z < 180f){
-                lerpZAxis = Mathf.Lerp(transform.eulerAngles.z, newEuler.z - 360f, 2f);
+                lerpZAxis = Mathf.Lerp(transform.eulerAngles.z, newEuler.z - 360f, speed);
             }
-            else lerpZAxis = Mathf.Lerp(transform.eulerAngles.z, newEuler.z, 2f);
+            else lerpZAxis = Mathf.Lerp(transform.eulerAngles.z, newEuler.z, speed);
 
             transform.localEulerAngles = new Vector3(lerpXAxis, lerpYAxis, lerpZAxis);
         }
@@ -77,8 +77,6 @@ public class BodypartsController : MonoBehaviour{
                 directionChanged = true;
                 if (dotProductPlayerCamera == 1) newDirection = CameraController.Instance.GetCameraForward();
                 else if (dotProductPlayerCamera == -1) newDirection = CameraController.Instance.GetCameraBack();
-                //bodypart.LookAt(transform.position + lastKnownDirection, lookAtUp);
-                //bodypart.transform.localEulerAngles = GetClampedPartEuler();
             }
         }
     }

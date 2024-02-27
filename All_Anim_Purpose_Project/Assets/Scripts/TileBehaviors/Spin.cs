@@ -33,7 +33,7 @@ public class Spin : MonoBehaviour, IInteractable{
             
 
             // Progression of time.
-            rotateTimeElapsed += Time.deltaTime;
+            rotateTimeElapsed += Time.deltaTime * TimeMultiplierUtility.GetTimeMultiplier();
 
             //Duration Exceeded
             if (rotateTimeElapsed > rotateDuration){
@@ -53,7 +53,7 @@ public class Spin : MonoBehaviour, IInteractable{
     private void Cooldown(){
         if (isInCooldown){
             ResetTileTransformRotation();
-            rotateTimeElapsed += Time.deltaTime;
+            rotateTimeElapsed += Time.deltaTime * TimeMultiplierUtility.GetTimeMultiplier();
             if (rotateTimeElapsed > rotateCooldown){
                 isInCooldown = false;
                 rotateTimeElapsed = 0.0f;
@@ -63,12 +63,12 @@ public class Spin : MonoBehaviour, IInteractable{
 
     private void RotateTileTransform() => transform.eulerAngles += new Vector3(0, rotateDuration * rotateTimeElapsed, 0) * speed;
     private void ResetTileTransformRotation(){
-        if(transform.eulerAngles != Vector3.zero) transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, Vector3.zero, 1f);
+        if(transform.eulerAngles != Vector3.zero) transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, Vector3.zero, 1f * TimeMultiplierUtility.GetTimeMultiplier());
     }
     private void ApplyConstantForceToTarget(){
-        speed = Mathf.Lerp(speed, 10f, speed * Time.deltaTime);
-        float velocityXAxis = Mathf.Sin(2f * Mathf.PI * rotateTimeElapsed * Time.deltaTime) * speed;
-        float velocityZAxis = Mathf.Sin(2f * Mathf.PI * rotateTimeElapsed * Time.deltaTime) * speed;
+        speed = Mathf.Lerp(speed, 10f, speed * Time.deltaTime * TimeMultiplierUtility.GetTimeMultiplier());
+        float velocityXAxis = Mathf.Sin(2f * Mathf.PI * rotateTimeElapsed * Time.deltaTime * TimeMultiplierUtility.GetTimeMultiplier()) * speed;
+        float velocityZAxis = Mathf.Sin(2f * Mathf.PI * rotateTimeElapsed * Time.deltaTime * TimeMultiplierUtility.GetTimeMultiplier()) * speed;
         Vector3 targetVelocity = new Vector3(velocityXAxis, 0f, velocityZAxis);
         if (playerRB != null){
             playerRB.velocity = targetVelocity;

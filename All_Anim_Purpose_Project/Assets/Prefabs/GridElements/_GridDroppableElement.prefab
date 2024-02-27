@@ -122,6 +122,26 @@ MonoBehaviour:
   endPosition: {x: 0, y: 0, z: 0}
   fallDownTimer: 0
   fallDownWaitTime: 3
+--- !u!114 &8858858360305070100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433740071778271901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectedTip: 0
+  selectedNotification: 0
+  selectedTutorial: 0
+  isTip: 1
+  isNotification: 0
+  isTutorial: 0
+  isOneTimeForAllInstancesOfSameType: 1
+  uxEntityType: 2
 --- !u!54 &3466385349662340334 stripped
 Rigidbody:
   m_CorrespondingSourceObject: {fileID: 8649876761848691909, guid: 25d5b8022ae7f2e47806e7e0459f7271,

@@ -53,7 +53,7 @@ public class TileGrid{
         _gridArray = null;
     }
 
-    private void CreateGrid(GameObject[] prefabs, bool isSmooth = false){
+    private async void CreateGrid(GameObject[] prefabs, bool isSmooth = false){
         int seed = URandom.Range(-9999, 9999);
         URandom.InitState(seed);
         for (int y = 0; y < _height; y++){
@@ -64,6 +64,7 @@ public class TileGrid{
                 if (randIndex < prefabs.Length) prefab = prefabs[randIndex];
                 CreateGridElement(prefab, x, y);
                 MoveGridElementToPosition(x, y, isSmooth);
+                await Task.Delay(10000/(_height * _width));
             }
         }
     }
@@ -77,15 +78,16 @@ public class TileGrid{
         }
     }
 
-    private void CreateGridElement(GameObject selected, int x, int y){
+    private async void CreateGridElement(GameObject selected, int x, int y){
         GameObject element = null;
         if(selected != null) {
             element = UnityEngine.Object.Instantiate(selected, _startingPosition, Quaternion.identity);
             element.name = selected.name+"("+ x +"_"+ y +")";
             element.GetComponent<Tile>().AssignTileGrid(this);
-            element.GetComponent<Move>().AssignTileGrid(this);
+            element.GetComponent<TileMove>().AssignTileGrid(this);
         }
         _gridArray[x, y] = element;
+        await Task.Delay(10000 / (_height * _width));
     }
 
     //public bool GridElementExists(int x, int y) => (_gridArray[x, y] is not null) ? true : false;
