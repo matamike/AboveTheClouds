@@ -91,11 +91,7 @@ public class PlayerController : Singleton<PlayerController> {
             PlayerSoundController.Instance.PlayPlayerSFX(PlayerSoundController.PLAYER_SFX_TYPE.JUMP);
         }
 
-
-        //TODO FIX
-        //if(_rigidbody.velocity.y < -4f){
-          //  PlayerSoundController.Instance.PlayPlayerSFX(PlayerSoundController.PLAYER_SFX_TYPE.FALL);
-        //}
+        ControlVelocity();
     }
 
     private void OnCollisionEnter(Collision other){
@@ -188,6 +184,13 @@ public class PlayerController : Singleton<PlayerController> {
             Move();
             Jump();
         }
+    }
+
+    private void ControlVelocity(){
+        float currentMultiplier = TimeMultiplierUtility.GetTimeMultiplier();
+        _rigidbody.velocity *= currentMultiplier;
+        if(currentMultiplier == 0 && _rigidbody.useGravity) _rigidbody.useGravity = false;
+        if (currentMultiplier != 0 && !_rigidbody.useGravity) _rigidbody.useGravity = true;
     }
     private void ControlDirection(){
         if (HasMovingDirection()) Turn();

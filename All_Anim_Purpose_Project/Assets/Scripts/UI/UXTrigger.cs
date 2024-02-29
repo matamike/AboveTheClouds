@@ -54,11 +54,11 @@ public class UXTrigger : MonoBehaviour{
 
     private void OnTriggerEnter(Collider other){
         isUxGlobalEnabled = PreferencesUtility.HasUXActive();
-        if (!isUxGlobalEnabled) return; // is global enabled?
+        if (!isUxGlobalEnabled) return;
 
-        if (!LayerUtility.LayerIsName(other.gameObject.layer, layerNames)) return; //is player interacting?
+        if (!LayerUtility.LayerIsName(other.gameObject.layer, layerNames)) return;
 
-        if (!locked){
+        if (!locked && UXManager.Instance != null){
             ActivateUXPrompt();
             if (isOneTimeForAllInstancesOfSameType){
                 PreferencesUtility.RequestLockOneTimeForAllOfTheType(this, uxEntityType);

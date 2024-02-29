@@ -7,6 +7,7 @@ public class UXManager : Singleton<UXManager>{
     public enum UXType_Notification{
         Notification_GAMEWON,
         Notification_GAMELOST,
+        Notification_REACHED_WORLDBOUNDS,
     }
 
     public enum UXType_Tip{

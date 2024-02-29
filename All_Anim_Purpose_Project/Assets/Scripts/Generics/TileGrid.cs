@@ -1,12 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using Unity.Burst;
-using Unity.Collections;
-using Unity.Jobs;
-using Unity.VisualScripting;
 using UnityEngine;
 using URandom = UnityEngine.Random;
 
@@ -25,6 +18,8 @@ public class TileGrid{
     private GameObject[,] _gridArray;
     private float _tileOffset;
     private Vector3 _startingPosition;
+    private bool _creationSuspended = false;
+    private CheckPoint _checkpointAssigned = null;
 
     public TileGrid(int xSize, int ySize , float offset, bool isSmooth, GameObject[] prefabs, Vector3 startingPosition = default) {
         if (xSize <= 0 || ySize <= 0) return;
@@ -51,29 +46,39 @@ public class TileGrid{
     ~TileGrid(){
         Debug.Log("DESTRUCTOR FOR TILEGRID WAS CALLED");
         _gridArray = null;
+        _creationSuspended = true;
     }
+
+    public void RemoveCheckpoint(){
+        _checkpointAssigned?.RequestRemoval(this);
+    }
+
+    public void AssignCheckPoint(CheckPoint checkpoint) => _checkpointAssigned = checkpoint;
 
     private async void CreateGrid(GameObject[] prefabs, bool isSmooth = false){
         int seed = URandom.Range(-9999, 9999);
         URandom.InitState(seed);
         for (int y = 0; y < _height; y++){
             for (int x = 0; x < _width; x++){
+                if (_creationSuspended) return;
                 URandom.State newState = URandom.state;
                 int randIndex = URandom.Range(0, prefabs.Length);
                 GameObject prefab = null;
                 if (randIndex < prefabs.Length) prefab = prefabs[randIndex];
                 CreateGridElement(prefab, x, y);
                 MoveGridElementToPosition(x, y, isSmooth);
-                await Task.Delay(10000/(_height * _width));
+                await Task.Delay(1000/(_height * _width));
             }
         }
     }
 
-    private void CreateGrid(GameObject[,] mapping, bool isSmooth = false){
+    private async void CreateGrid(GameObject[,] mapping, bool isSmooth = false){
         for (int x = 0; x < _width; x++){
             for (int y = 0; y < _height; y++){
+                if (_creationSuspended) return;
                 CreateGridElement(mapping[x,y], x, y);
                 MoveGridElementToPosition(x, y, isSmooth);
+                await Task.Delay(1000 / (_height * _width));
             }
         }
     }
@@ -81,13 +86,13 @@ public class TileGrid{
     private async void CreateGridElement(GameObject selected, int x, int y){
         GameObject element = null;
         if(selected != null) {
-            element = UnityEngine.Object.Instantiate(selected, _startingPosition, Quaternion.identity);
+            element = UnityEngine.Object.Instantiate(selected, _startingPosition + Vector3.down * 10f, Quaternion.identity);
             element.name = selected.name+"("+ x +"_"+ y +")";
             element.GetComponent<Tile>().AssignTileGrid(this);
             element.GetComponent<TileMove>().AssignTileGrid(this);
         }
         _gridArray[x, y] = element;
-        await Task.Delay(10000 / (_height * _width));
+        await Task.Delay(100 / (_height * _width));
     }
 
     //public bool GridElementExists(int x, int y) => (_gridArray[x, y] is not null) ? true : false;

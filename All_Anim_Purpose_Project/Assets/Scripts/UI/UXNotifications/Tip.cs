@@ -12,9 +12,9 @@ public class Tip : IUXPopup{
         {UXManager.UXType_Tip.Tip_SelectMode_Random_Easy, 
             Tuple.Create("Tip", "Random Generation of Tiles Mode.\n (X,X) size of grid will be generated with specific tile types. \n <color=green>Easy Mode</color>")},
         {UXManager.UXType_Tip.Tip_SelectMode_Random_Medium,
-            Tuple.Create("Tip", "Random Generation of Tiles Mode.\n (X,X) size of grid will be generated with specific tile types. <color=yellow>Medium Mode</color>")},
+            Tuple.Create("Tip", "Random Generation of Tiles Mode.\n (X,X) size of grid will be generated with specific tile types.\n  <color=yellow>Medium Mode</color>")},
         {UXManager.UXType_Tip.Tip_SelectMode_Random_Hard,
-            Tuple.Create("Tip", "Random Generation of Tiles Mode.\n (X,X) size of grid will be generated with specific tile types. <color=red>Hard Mode </color>")},
+            Tuple.Create("Tip", "Random Generation of Tiles Mode.\n (X,X) size of grid will be generated with specific tile types.\n  <color=red>Hard Mode </color>")},
 
         {UXManager.UXType_Tip.Tip_SelectMode_UserDefined, 
             Tuple.Create("Tip", "In this mode you select one of the following templates.\n You can edit those templates in the Creator.")},

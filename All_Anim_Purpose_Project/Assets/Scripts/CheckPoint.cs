@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 public class CheckPoint : MonoBehaviour{
     public static event EventHandler<OnCheckPointReachedEventArgs> OnCheckPointReached;
     private bool hasReached = false;
+    [SerializeField] private object elementAssigned = null;
 
     public class OnCheckPointReachedEventArgs : EventArgs{
         public int index;
@@ -16,6 +17,11 @@ public class CheckPoint : MonoBehaviour{
 
     private string[] layerNames = { "Player" };
     private int checkpointIndex = -1;
+
+    private void LateUpdate()
+    {
+        if(elementAssigned == null) Destroy(gameObject);
+    }
 
     private void OnCollisionEnter(Collision collision){
         if (LayerUtility.LayerIsName(collision.gameObject.layer, layerNames)){
@@ -31,4 +37,10 @@ public class CheckPoint : MonoBehaviour{
     }
 
     public void SetCheckPointIndex(int index) => checkpointIndex = index;
+
+    public void SetElementBoundToCheckoint(object element) => elementAssigned = element;
+
+    public void RequestRemoval(object invoker){
+        if(invoker == elementAssigned) Destroy(gameObject);
+    }
 }

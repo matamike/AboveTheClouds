@@ -1,15 +1,17 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static Utility.PlaceUtility.PlaceLoadingUtility;
+using Unity.VisualScripting;
 
 public class GridManager : Singleton<GridManager>{
     [Range(0f, 10f)] private float extraOffset = 1f;
     [SerializeField] private GridPoolObjectSO[] gridPoolObjectList;
     [SerializeField] private Vector3 startingGridPosition;
-    private List<TileGrid> _grids = new List<TileGrid>();
+    [SerializeField] private List<TileGrid> _grids = new List<TileGrid>();
     private float baseOffset = 4.5f;
     private int _checkPointReached = -1;
     private int _finalGridCount = -1;
@@ -29,15 +31,15 @@ public class GridManager : Singleton<GridManager>{
         DestroyAllGrids();
     }
 
-    private void Update()
-    {
+    private void Update(){
+        //Debug Console (Testing Only)
         if (Input.GetKeyDown(KeyCode.C))
         {
             CreateGrid(testGridSizeX, testGridSizeY, true);
         }
         if (Input.GetKeyDown(KeyCode.U))
         {
-            UpdateGrid(0);
+            UpdateGrid(0); //0 1st index in the grid
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
@@ -53,7 +55,7 @@ public class GridManager : Singleton<GridManager>{
     private void CheckPoint_OnCheckPointReached(object sender, CheckPoint.OnCheckPointReachedEventArgs e) {
         startingGridPosition = e.self.position + new Vector3(0,0, baseOffset + extraOffset);
         _checkPointReached = e.index;
-        DestroyGrid(0);
+        DestroyGrid(1);
         if (_checkPointReached < (_finalGridCount - 1)) {
             DifficultyPresetSO difficultyPresetSO = LevelUtility.GetActiveDifficultyPreset();
             gridPoolObjectList = difficultyPresetSO.GetGridPoolObjectSOList().ToArray();
@@ -75,8 +77,9 @@ public class GridManager : Singleton<GridManager>{
     }
 
     private void DestroyGrid(int gridIndex){
-        if (_grids.Count > 0 && _grids[gridIndex] != null){
+        if (_grids.Count > 0 && _grids.ElementAt(gridIndex) != null){
             _grids[gridIndex].DestroyGridElements();
+            _grids[gridIndex].RemoveCheckpoint();
             _grids.RemoveAt(gridIndex);
             GC.Collect();
         }
@@ -90,21 +93,17 @@ public class GridManager : Singleton<GridManager>{
 
         TileGrid tileGrid = new TileGrid(sizeX, sizeY, baseOffset + extraOffset, true, pool.ToArray(), startingGridPosition);
         _grids.Add(tileGrid);
-        if(hasCheckPoint) CreateGridCheckpoint(_grids.Count-1); 
+        if(hasCheckPoint) CreateCheckPoint(_grids.Count-1); 
     }
 
     public void CreatePredefinedGrid(GameObject[,] userDefinedTileMapping, bool hasCheckPoint = true){
         TileGrid tileGrid = new TileGrid(baseOffset + extraOffset, true, userDefinedTileMapping, startingGridPosition);
         _grids.Add(tileGrid);
-        if (hasCheckPoint) CreateGridCheckpoint(_grids.Count - 1);
-    }
-
-    private void CreateGridCheckpoint(int index = -1){
-        StartCoroutine(WaitForCheckPointCreation(3f, index));
+        if (hasCheckPoint) CreateCheckPoint(_grids.Count - 1);
     }
 
     private void UpdateGrid(int index = -1){
-        if (_grids.Count > 0 && _grids[index] != null){
+        if (_grids.Count > 0 && _grids.ElementAt(index) != null){
             _grids[index].UpdateStartingPosition(startingGridPosition);
             _grids[index].UpdateGridOffset(baseOffset + extraOffset, true);
         }
@@ -141,14 +140,13 @@ public class GridManager : Singleton<GridManager>{
         }
     }
 
-    IEnumerator WaitForCheckPointCreation(float duration, int index)
-    {
-        yield return new WaitForSeconds(duration);
-        if (_grids[index] is not null){
+    private void CreateCheckPoint(int index = -1){
+        if (_grids.ElementAt(index) == null) return;
+        else{
             //Variables
             Vector3 upperLeftCorner = _grids[index].GetUpperLeftCornerPosition();
             Vector3 upperRightCorner = _grids[index].GetUpperRightCornerPosition();
-            
+
             GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube); //Checkpoint primitive.
 
             //Scale (Checkpoint)
@@ -157,13 +155,16 @@ public class GridManager : Singleton<GridManager>{
             go.transform.localScale = new Vector3(checkpointXAxisScale, 1f, checkpointZAxisScale);
 
             //Position (Checkpoint)
-            float xPos = (upperRightCorner.x + upperLeftCorner.x)/2f;
+            float xPos = (upperRightCorner.x + upperLeftCorner.x) / 2f;
             float zPos = upperLeftCorner.z + baseOffset + extraOffset;
             go.transform.position = new Vector3(xPos, 0f, zPos);
 
             //Setup Checkpoint Component on Creation (with parameters)
             CheckPoint checkpoint = go.AddComponent<CheckPoint>();
             checkpoint.SetCheckPointIndex(_checkPointReached + 1);
+            //Create bond between checkpoint and grid
+            checkpoint.SetElementBoundToCheckoint(_grids[index]); 
+            _grids[index].AssignCheckPoint(checkpoint);
         }
     }
 }
