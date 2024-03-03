@@ -3653,6 +3653,8 @@ MonoBehaviour:
   startingGridPosition: {x: 0, y: 0, z: 10}
   testGridSizeX: 0
   testGridSizeY: 0
+  checkpointPrefab: {fileID: 5486055944467724396, guid: b7db273c86a4bd84a94136eb1c52215c,
+    type: 3}
 --- !u!1 &1390276965
 GameObject:
   m_ObjectHideFlags: 0

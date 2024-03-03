@@ -15,6 +15,7 @@ public class GridManager : Singleton<GridManager>{
     private int _checkPointReached = -1;
     private int _finalGridCount = -1;
     [SerializeField][Range(2,400)] private int testGridSizeX,testGridSizeY;
+    [SerializeField] private GameObject checkpointPrefab;
 
     private void OnEnable(){
         SceneManager.sceneLoaded += SceneManager_OnSceneLoaded;
@@ -143,7 +144,7 @@ public class GridManager : Singleton<GridManager>{
             Vector3 upperLeftCorner = _grids[index].GetUpperLeftCornerPosition();
             Vector3 upperRightCorner = _grids[index].GetUpperRightCornerPosition();
 
-            GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube); //Checkpoint primitive.
+            GameObject go = Instantiate(checkpointPrefab);
 
             //Scale (Checkpoint)
             float checkpointXAxisScale = Mathf.Abs(upperLeftCorner.x - upperRightCorner.x);
@@ -156,7 +157,7 @@ public class GridManager : Singleton<GridManager>{
             go.transform.position = new Vector3(xPos, 0f, zPos);
 
             //Setup Checkpoint Component on Creation (with parameters)
-            CheckPoint checkpoint = go.AddComponent<CheckPoint>();
+            CheckPoint checkpoint = go.GetComponent<CheckPoint>();
             checkpoint.SetCheckPointIndex(_checkPointReached + 1);
             //Create bond between checkpoint and grid
             checkpoint.SetElementBoundToCheckoint(_grids[index]); 

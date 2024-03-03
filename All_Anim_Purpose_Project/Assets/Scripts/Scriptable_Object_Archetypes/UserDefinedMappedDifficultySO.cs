@@ -91,6 +91,8 @@ public class UserDefinedMappedDifficultySO : ScriptableObject {
     public void ActivateTemplate(){
         CreateInitialMapping();
         LoadMapping();
-        EditorUtility.SetDirty(this);
+        #if UNITY_EDITOR
+        EditorUtility.SetDirty(this); //uncomment in editor (comment in build)
+        #endif
     }
 }
