@@ -25,6 +25,11 @@ public class UXManager : Singleton<UXManager>{
     {
         Welcome_Tutorial,
         Game_Tutorial,
+        Creator_Tutorial,
+        Creator_Tutorial_TemplatesList,
+        Creator_Tutorial_TileChange,
+        Creator_Tutorial_SaveTemplate,
+        Creator_Tutorial_TestTemplate,
     }
 
     //UI Variables
@@ -104,6 +109,6 @@ public class UXManager : Singleton<UXManager>{
         CameraController.Instance.SetLockCameraStatus(true);
         TweenParameters tweeParamsFire = new(card, _uxContainer.transform.position, new Vector3(0,0,359.9f), card.transform.localScale, 12f, 2f);
         TweenHandler.Instance.CreateTween(tweeParamsFire);
-        if (postActionCallback != null) preActionCallback();
+        if (preActionCallback != null) preActionCallback();
     }
 }

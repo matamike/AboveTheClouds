@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(BoxCollider))]
 public class CheckPoint : MonoBehaviour{
@@ -18,9 +15,8 @@ public class CheckPoint : MonoBehaviour{
     private string[] layerNames = { "Player" };
     private int checkpointIndex = -1;
 
-    private void LateUpdate()
-    {
-        if(elementAssigned == null) Destroy(gameObject);
+    private void OnDestroy(){
+        if(elementAssigned != null) elementAssigned = null;
     }
 
     private void OnCollisionEnter(Collision collision){
@@ -41,6 +37,8 @@ public class CheckPoint : MonoBehaviour{
     public void SetElementBoundToCheckoint(object element) => elementAssigned = element;
 
     public void RequestRemoval(object invoker){
-        if(invoker == elementAssigned) Destroy(gameObject);
+        if (invoker == elementAssigned){
+            if(gameObject != null) Destroy(gameObject);
+        }
     }
 }

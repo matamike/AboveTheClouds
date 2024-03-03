@@ -19,7 +19,6 @@ public class TileGrid{
     private float _tileOffset;
     private Vector3 _startingPosition;
     private bool _creationSuspended = false;
-    private CheckPoint _checkpointAssigned = null;
 
     public TileGrid(int xSize, int ySize , float offset, bool isSmooth, GameObject[] prefabs, Vector3 startingPosition = default) {
         if (xSize <= 0 || ySize <= 0) return;
@@ -48,12 +47,6 @@ public class TileGrid{
         _gridArray = null;
         _creationSuspended = true;
     }
-
-    public void RemoveCheckpoint(){
-        _checkpointAssigned?.RequestRemoval(this);
-    }
-
-    public void AssignCheckPoint(CheckPoint checkpoint) => _checkpointAssigned = checkpoint;
 
     private async void CreateGrid(GameObject[] prefabs, bool isSmooth = false){
         int seed = URandom.Range(-9999, 9999);
@@ -117,15 +110,15 @@ public class TileGrid{
 
     public void UpdateStartingPosition(Vector3 newStartingPosition) => _startingPosition = newStartingPosition;
 
-    public Vector2 GetGridSize() => new Vector2(_width, _height);
+    //public Vector2 GetGridSize() => new Vector2(_width, _height);
 
-    public float GetGridTileSize(){
-        foreach(var element in _gridArray){
-            if(element == null) continue;
-            else return (element.transform.lossyScale.x + element.transform.lossyScale.z) / 2f;
-        }
-        return 1f;
-    }
+    //public float GetGridTileSize(){
+    //    foreach(var element in _gridArray){
+    //        if(element == null) continue;
+    //        else return (element.transform.lossyScale.x + element.transform.lossyScale.z) / 2f;
+    //    }
+    //    return 1f;
+    //}
 
     public Vector3 GetUpperRightCornerPosition() => _startingPosition + new Vector3((_width - 1) * _tileOffset, 0f, (_height - 1) * _tileOffset);
 

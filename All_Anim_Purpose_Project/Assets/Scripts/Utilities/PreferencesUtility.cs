@@ -10,19 +10,31 @@ public static class PreferencesUtility{
     public static event EventHandler<OnUXOneTimeForAllUnitsOfTypeEventArgs> OnUXOneTimeForAllUnitsOfTypeLock;
     public static event EventHandler<OnUXOneTimeForAllUnitsOfTypeEventArgs> OnUXOneTimeForAllUnitsOfTypeReset;
 
+    private static Dictionary<UXTrigger.UXEntityType, bool> oneTimeLocksForAllInstancesUnits = new Dictionary<UXTrigger.UXEntityType, bool>() { };
+
     public class OnUXOneTimeForAllUnitsOfTypeEventArgs : EventArgs{
         public int special_id;
     }
 
     public static void RequestLockOneTimeForAllOfTheType(object sender, UXTrigger.UXEntityType entityType) {
+        oneTimeLocksForAllInstancesUnits[entityType] = true;
+
         OnUXOneTimeForAllUnitsOfTypeLock?.Invoke(sender, new OnUXOneTimeForAllUnitsOfTypeEventArgs(){
             special_id = (int)entityType
         });
     }
 
-    public static void RequestResetOneTimeForAllOfTheType(object sender){
+    public static void RequestResetOneTimeForAllOfTheType(object sender, UXTrigger.UXEntityType entityType){
+        oneTimeLocksForAllInstancesUnits[entityType] = true;
         OnUXOneTimeForAllUnitsOfTypeReset?.Invoke(sender, new OnUXOneTimeForAllUnitsOfTypeEventArgs(){
         });
+    }
+
+    public static bool IsEntityOneTimeLocked(UXTrigger.UXEntityType entityType){
+        if (oneTimeLocksForAllInstancesUnits.ContainsKey(entityType)){
+            return oneTimeLocksForAllInstancesUnits[entityType];
+        }
+        return false;
     }
 
     public static void ToggleUX(string key, bool flag) => _uxActivation = Tuple.Create(key,flag);

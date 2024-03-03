@@ -61,7 +61,7 @@ public class Spin : MonoBehaviour, IInteractable{
         }  
     }
 
-    private void RotateTileTransform() => transform.eulerAngles += new Vector3(0, rotateDuration * rotateTimeElapsed, 0) * speed;
+    private void RotateTileTransform() => transform.eulerAngles += new Vector3(0, rotateDuration * rotateTimeElapsed, 0) * speed * TimeMultiplierUtility.GetTimeMultiplier();
     private void ResetTileTransformRotation(){
         if(transform.eulerAngles != Vector3.zero) transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, Vector3.zero, 1f * TimeMultiplierUtility.GetTimeMultiplier());
     }

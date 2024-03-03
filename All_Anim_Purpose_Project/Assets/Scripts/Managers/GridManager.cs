@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static Utility.PlaceUtility.PlaceLoadingUtility;
-using Unity.VisualScripting;
 
 public class GridManager : Singleton<GridManager>{
     [Range(0f, 10f)] private float extraOffset = 1f;
@@ -55,16 +54,15 @@ public class GridManager : Singleton<GridManager>{
     private void CheckPoint_OnCheckPointReached(object sender, CheckPoint.OnCheckPointReachedEventArgs e) {
         startingGridPosition = e.self.position + new Vector3(0,0, baseOffset + extraOffset);
         _checkPointReached = e.index;
-        DestroyGrid(1);
+        DestroyGrid(0);
         if (_checkPointReached < (_finalGridCount - 1)) {
             DifficultyPresetSO difficultyPresetSO = LevelUtility.GetActiveDifficultyPreset();
             gridPoolObjectList = difficultyPresetSO.GetGridPoolObjectSOList().ToArray();
             CreateGrid(difficultyPresetSO.GetGridSizeX(), difficultyPresetSO.GetGridSizeY());
         }
         else if(_checkPointReached == (_finalGridCount - 1)){
-            Debug.Log("Won");
-            MyGameManager.Instance.TeleportPlayerBackToHub();
             DestroyAllGrids();
+            UXManager.Instance.FireUX(UXManager.UXType_Notification.Notification_GAMEWON, null, () => { MyGameManager.Instance.TeleportPlayerBackToHub(); });            
         }
     }
     /////////////
@@ -79,7 +77,6 @@ public class GridManager : Singleton<GridManager>{
     private void DestroyGrid(int gridIndex){
         if (_grids.Count > 0 && _grids.ElementAt(gridIndex) != null){
             _grids[gridIndex].DestroyGridElements();
-            _grids[gridIndex].RemoveCheckpoint();
             _grids.RemoveAt(gridIndex);
             GC.Collect();
         }
@@ -117,8 +114,7 @@ public class GridManager : Singleton<GridManager>{
             case Place.ObstacleCourse:
                 //Difficulty Based (Random)
                 DifficultyPresetSO difficultyPresetSO = LevelUtility.GetActiveDifficultyPreset();
-                if (difficultyPresetSO != null)
-                {
+                if (difficultyPresetSO != null){
                     Debug.Log("Random Based Difficulty detected !! ");
                     _finalGridCount = difficultyPresetSO.GetGridCount(); //The length of the list (to have).
                     gridPoolObjectList = difficultyPresetSO.GetGridPoolObjectSOList().ToArray();
@@ -164,7 +160,6 @@ public class GridManager : Singleton<GridManager>{
             checkpoint.SetCheckPointIndex(_checkPointReached + 1);
             //Create bond between checkpoint and grid
             checkpoint.SetElementBoundToCheckoint(_grids[index]); 
-            _grids[index].AssignCheckPoint(checkpoint);
         }
     }
 }

@@ -9,11 +9,9 @@ public class UXTrigger : MonoBehaviour{
     [SerializeField] private bool isNotification = false;
     [SerializeField] private bool isTutorial = false;
     
-    //Is one time trigger
-    //[SerializeField] private bool isOneTime = false;
-    
     //Is one time for all
     [SerializeField] private bool isOneTimeForAllInstancesOfSameType = false;
+    [SerializeField] private bool isGUITrigger = false;
 
     public enum UXEntityType{
         None,
@@ -23,6 +21,13 @@ public class UXTrigger : MonoBehaviour{
         BouncyTile,
         Checkpoint,
         Portal,
+        Creator_StartingPoint,
+        Hub_StartingPoint,
+        Game_StartingPoint,
+        Creator_TemplateList,
+        Creator_LoadTemplate,
+        Creator_SaveTemplate,
+        Creator_TestTemplate,
     }
     [SerializeField] private UXEntityType uxEntityType;
 
@@ -32,6 +37,9 @@ public class UXTrigger : MonoBehaviour{
 
     private void Start(){
         isUxGlobalEnabled = PreferencesUtility.HasUXActive();
+        if (isOneTimeForAllInstancesOfSameType){
+            locked = PreferencesUtility.IsEntityOneTimeLocked(uxEntityType);
+        }
     }
 
     private void OnEnable(){
@@ -65,6 +73,21 @@ public class UXTrigger : MonoBehaviour{
             }
         }    
     }
+
+    public void OnPointerEnterUX(){
+        if (isGUITrigger){
+            isUxGlobalEnabled = PreferencesUtility.HasUXActive();
+            if (!isUxGlobalEnabled) return;
+
+            if (!locked && UXManager.Instance != null){
+                ActivateUXPrompt();
+                if (isOneTimeForAllInstancesOfSameType){
+                    PreferencesUtility.RequestLockOneTimeForAllOfTheType(this, uxEntityType);
+                }
+            }
+        }
+    }
+
     private void ActivateUXPrompt(){
         if (isTip) UXManager.Instance.FireUX(selectedTip, () => { TimeMultiplierUtility.PauseTime(); }, () => { TimeMultiplierUtility.ResumeTime(); });
         else if (isNotification) UXManager.Instance.FireUX(selectedNotification, () => { TimeMultiplierUtility.PauseTime(); }, () => { TimeMultiplierUtility.ResumeTime(); });

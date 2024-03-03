@@ -24,11 +24,10 @@ public class PlayerController : Singleton<PlayerController> {
     private float _movementSpeed; // calculated
 
     //Variables for checking fall and wait time before next motion
-    //private bool fallState = false;
     private bool waitBeforeMovingAgain = false;
 
     //Parameters
-    private float _jumpForce = 8f;
+    private float _jumpForce = 3f; //3f-4f (optimal range)
     private float _walkForce = 140f;
     private float _sprintForce = 340f;
     private float _turnDirectionSpeed = 1f;

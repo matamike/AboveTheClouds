@@ -1,6 +1,5 @@
-using System.Collections;
+using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using static Utility.PlaceUtility.PlaceLoadingUtility;
 
 public class MyGameManager : Singleton<MyGameManager> {
@@ -15,10 +14,14 @@ public class MyGameManager : Singleton<MyGameManager> {
     private Transform spawnPoint;
 
     //Game Over Criteria.
-    [SerializeField] private GameOverCriteriaSO gameOverCriteriaSO;
-    private int playerTimesRespawned = 0;
+    [SerializeField] private RespawnTimesSO gameOverCriteriaSO;
+    [SerializeField] private int playerTimesRemaining = 0;
+    public static EventHandler<EventArgs> OnPlayerRespawned;
 
     private void Start(){
+        //Setup Game Over Criteria (todo setup according to difficulty presets - think about it)
+        playerTimesRemaining = gameOverCriteriaSO.GetNumberOfRespawns();
+
         spawnPoint = GameObject.Find("SpawnPoint").transform;
         InitializeCoreComponents();
         InputManager.Instance.SetControlLockStatus(false);
@@ -38,23 +41,31 @@ public class MyGameManager : Singleton<MyGameManager> {
     }
 
     public void RequestRespawnPlayer(){
-        int playerLifes = 1000; //default
-        if (gameOverCriteriaSO is not null) playerLifes = gameOverCriteriaSO.GetGameOverCriteria();
+        //Early Exit if already in game over
+        if (playerTimesRemaining <= 0) return;
 
-        if (playerTimesRespawned < playerLifes){
-            SimplePlayerRespawn();
-            playerTimesRespawned++;
-        }
-        else{
-            Debug.Log("Game Over");
-            PreferencesUtility.RequestResetOneTimeForAllOfTheType(this);
-            TeleportPlayerBackToHub();
+        //Update Remaining Spawn Times and Respawn
+        playerTimesRemaining -= 1;
+        SimplePlayerRespawn();
+
+        //GAME OVER STATE
+        if (playerTimesRemaining == 0) {
+            UXManager.Instance.FireUX(UXManager.UXType_Notification.Notification_GAMELOST, null, () => { TeleportPlayerBackToHub(); });
         }
     }
 
-    public void SimplePlayerRespawn() => PlayerController.Instance.transform.position = spawnPoint.transform.position + playerSpawnPointPositionOffset;
+    public int GetRemainingLifes() => playerTimesRemaining;
 
+    public int GetStartingLifes() => gameOverCriteriaSO.GetNumberOfRespawns();
+
+    public void SimplePlayerRespawn(){
+        OnPlayerRespawned?.Invoke(this, EventArgs.Empty);
+        PlayerController.Instance.transform.position = spawnPoint.transform.position + playerSpawnPointPositionOffset;
+    }
     public void TeleportPlayerBackToHub() => MoveToPlace(Place.Hub);
 
-    public void ChangeRespawnPoint(Transform checkpoint) => spawnPoint = checkpoint;
+    public void ChangeRespawnPoint(Transform checkpoint){
+        if(spawnPoint.gameObject != null) Destroy(spawnPoint.gameObject);
+        spawnPoint = checkpoint;
+    }
 }
