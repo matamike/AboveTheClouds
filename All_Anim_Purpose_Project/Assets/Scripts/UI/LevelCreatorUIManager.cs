@@ -103,6 +103,7 @@ public class LevelCreatorUIManager : Singleton<LevelCreatorUIManager> {
                 if (_unsavedChanges.Count > 0) SaveProcess();
             });
 
+            //Test Map Button Listener
             testMapButton.GetComponent<Button>().onClick.AddListener(() => {
                 //AutoSave
                 if (_unsavedChanges.Count > 0) SaveProcess();
@@ -113,6 +114,11 @@ public class LevelCreatorUIManager : Singleton<LevelCreatorUIManager> {
                 TestMapUIManager.Instance.EnableTestUI();
                 TestMapUIManager.Instance.CreateTestLevel();
             });
+        }
+
+        //Disable TestMap Button when Toggling the main Level Creator GUI (ON)
+        if (toggleEntity.activeInHierarchy){
+            ToggleTestMapButton(false);
         }
     }
 
@@ -136,14 +142,17 @@ public class LevelCreatorUIManager : Singleton<LevelCreatorUIManager> {
                 if (_unsavedChanges.Count > 0){
                     NotificationUIAlertController.Instance.SetCallbackActionContinueWithoutSave(() =>{
                         TemplateChange(index, grid);
+                        ToggleSaveChangesButton(false);
+                        ClearChanges();
                     });
 
                     NotificationUIAlertController.Instance.SetCallbackActionContinueWithSave(() =>{
                         OnTemplateRequestSave?.Invoke(this, new OnTemplateRequestSaveArgs { changes = _unsavedChanges });
                         TemplateChange(index, grid);
+                        ToggleSaveChangesButton(false);
+                        ClearChanges();
                     });
                     NotificationUIAlertController.Instance.ToggleAlertNotificationUI(true);
-                    ClearChanges();
                 }
                 else{
                     TemplateChange(index, grid);

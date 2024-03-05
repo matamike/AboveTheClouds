@@ -18,6 +18,10 @@ public class MyGameManager : Singleton<MyGameManager> {
     [SerializeField] private int playerTimesRemaining = 0;
     public static EventHandler<EventArgs> OnPlayerRespawned;
 
+    //UX Prompt Messages SOs
+    [SerializeField] private UXTypeSO winUXSO;
+    [SerializeField] private UXTypeSO loseUXSO;
+
     private void Start(){
         //Setup Game Over Criteria (todo setup according to difficulty presets - think about it)
         playerTimesRemaining = gameOverCriteriaSO.GetNumberOfRespawns();
@@ -25,7 +29,21 @@ public class MyGameManager : Singleton<MyGameManager> {
         spawnPoint = GameObject.Find("SpawnPoint").transform;
         InitializeCoreComponents();
         InputManager.Instance.SetControlLockStatus(false);
+
+        if (GridManager.Instance != null){
+            GridManager.Instance.OnLastCheckpointReached += GridManager_OnLastCheckpointReached;
+        }
+
+        //CursorVisibilityUtility.SetCursorVisibility(false);
     }
+
+    private void OnDisable(){
+        if (GridManager.Instance != null){
+            GridManager.Instance.OnLastCheckpointReached -= GridManager_OnLastCheckpointReached;
+        }
+    }
+
+    private void GridManager_OnLastCheckpointReached(object sender, EventArgs e) => GameWon();
 
     private void InitializeCoreComponents(){
         //Generate Input System profile (events to keys/callbacks etc.)
@@ -50,8 +68,16 @@ public class MyGameManager : Singleton<MyGameManager> {
 
         //GAME OVER STATE
         if (playerTimesRemaining == 0) {
-            UXManager.Instance.FireUX(UXManager.UXType_Notification.Notification_GAMELOST, null, () => { TeleportPlayerBackToHub(); });
+            GameLost();   
         }
+    }
+
+    private void GameWon(){
+        UXManager.Instance.FireUX(winUXSO.GetUXDescription(), winUXSO.GetUXTitle(), null, () => { TeleportPlayerBackToHub(); });
+    }
+
+    private void GameLost(){
+        UXManager.Instance.FireUX(loseUXSO.GetUXDescription(), loseUXSO.GetUXTitle(), null, () => { TeleportPlayerBackToHub(); });
     }
 
     public int GetRemainingLifes() => playerTimesRemaining;

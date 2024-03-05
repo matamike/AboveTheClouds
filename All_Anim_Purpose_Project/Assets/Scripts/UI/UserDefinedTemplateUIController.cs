@@ -28,6 +28,12 @@ public class UserDefinedTemplateUIController : Singleton<UserDefinedTemplateUICo
         ToggleCanvas();
     }
 
+
+    //        ToggleUI();
+    //        CursorVisibilityUtility.SetCursorVisibility(container.activeInHierarchy);
+    //        InputManager.Instance.SetControlLockStatus(container.activeInHierarchy);
+    //        CameraController.Instance.SetLockCameraStatus(container.activeInHierarchy);
+
     private void LateUpdate(){
         if (_hasInitialized && container.activeInHierarchy) ComputeGridCellSize(targetGridSize.x, targetGridSize.y);
     }

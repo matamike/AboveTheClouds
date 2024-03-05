@@ -43,7 +43,6 @@ public class UserDefinedDifficultyTemplatesController : Singleton<UserDefinedDif
 
     private void LevelCreatorUIManager_OnTemplateChanged(object sender, LevelCreatorUIManager.OnTemplateChangedEventArgs e){
         activeTemplateIndex = e.templateIndex;
-        Debug.Log("Template Index Changed to : " + activeTemplateIndex);
     }
     //Member Functions
     private void InitializeTemplates(){

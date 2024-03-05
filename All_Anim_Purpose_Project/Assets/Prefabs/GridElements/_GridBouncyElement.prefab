@@ -200,14 +200,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 2
-  selectedNotification: 0
-  selectedTutorial: 0
-  isTip: 1
-  isNotification: 0
-  isTutorial: 0
   isOneTimeForAllInstancesOfSameType: 1
-  uxEntityType: 4
+  isGUITrigger: 0
+  uxTypeSO: {fileID: 11400000, guid: fc3a2255e3bb5f743bd1f19d81701316, type: 2}
 --- !u!1 &9062003267875099514
 GameObject:
   m_ObjectHideFlags: 0

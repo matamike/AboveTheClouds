@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 using static Utility.PlaceUtility.PlaceLoadingUtility;
 
 public class GridManager : Singleton<GridManager>{
+    public event EventHandler<EventArgs> OnLastCheckpointReached;
+
     [Range(0f, 10f)] private float extraOffset = 1f;
     [SerializeField] private GridPoolObjectSO[] gridPoolObjectList;
     [SerializeField] private Vector3 startingGridPosition;
@@ -31,21 +33,18 @@ public class GridManager : Singleton<GridManager>{
         DestroyAllGrids();
     }
 
-    private void Update(){
-        //Debug Console (Testing Only)
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            CreateGrid(testGridSizeX, testGridSizeY, true);
-        }
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            UpdateGrid(0); //0 1st index in the grid
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            DestroyGrid(0);
-        }
-    }
+    //private void Update()
+    //{
+    //    //Debug Console(Testing Only)
+    //    if (Input.GetKeyDown(KeyCode.C))
+    //    {
+    //        CreateGrid(testGridSizeX, testGridSizeY, true);
+    //    }
+    //    if (Input.GetKeyDown(KeyCode.R))
+    //    {
+    //        DestroyGrid(0);
+    //    }
+    //}
 
     //Event Hooks
     private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1){
@@ -63,18 +62,16 @@ public class GridManager : Singleton<GridManager>{
         }
         else if(_checkPointReached == (_finalGridCount - 1)){
             DestroyAllGrids();
-            UXManager.Instance.FireUX(UXManager.UXType_Notification.Notification_GAMEWON, null, () => { MyGameManager.Instance.TeleportPlayerBackToHub(); });            
+            OnLastCheckpointReached?.Invoke(this, EventArgs.Empty);
         }
     }
     /////////////
     
     //Member Functions
-
     private void DestroyAllGrids(){
         if (_grids.Count == 0) return;
         for(int i = _grids.Count - 1; i >= 0; i--) DestroyGrid(i);
     }
-
     private void DestroyGrid(int gridIndex){
         if (_grids.Count > 0 && _grids.ElementAt(gridIndex) != null){
             _grids[gridIndex].DestroyGridElements();
@@ -116,7 +113,6 @@ public class GridManager : Singleton<GridManager>{
                 //Difficulty Based (Random)
                 DifficultyPresetSO difficultyPresetSO = LevelUtility.GetActiveDifficultyPreset();
                 if (difficultyPresetSO != null){
-                    Debug.Log("Random Based Difficulty detected !! ");
                     _finalGridCount = difficultyPresetSO.GetGridCount(); //The length of the list (to have).
                     gridPoolObjectList = difficultyPresetSO.GetGridPoolObjectSOList().ToArray();
                     if (gridPoolObjectList.Length == 0) yield return null;
@@ -125,9 +121,7 @@ public class GridManager : Singleton<GridManager>{
                 }
                 //User Defined Difficulty Custom Template
                 UserDefinedMappedDifficultySO userDefinedMappedDifficultySO = LevelUtility.GetActiveUserDefinedMappedDifficulty();
-                if (userDefinedMappedDifficultySO != null)
-                {
-                    Debug.Log("User Defined Difficulty detected !! ");
+                if (userDefinedMappedDifficultySO != null){
                     _finalGridCount = userDefinedMappedDifficultySO.GetTemplateGridCount();
                     GameObject[,] mapping = userDefinedMappedDifficultySO.GetConvertedTileMapToGameObjects();
                     CreatePredefinedGrid(mapping);

@@ -969,14 +969,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 5
-  selectedNotification: 0
-  selectedTutorial: 0
-  isTip: 1
-  isNotification: 0
-  isTutorial: 0
   isOneTimeForAllInstancesOfSameType: 0
-  uxEntityType: 6
+  isGUITrigger: 0
+  uxTypeSO: {fileID: 11400000, guid: c1e63910cf7006349978654b097d9aa3, type: 2}
 --- !u!1 &284984299
 GameObject:
   m_ObjectHideFlags: 0
@@ -1142,14 +1137,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 4
-  selectedNotification: 0
-  selectedTutorial: 0
-  isTip: 1
-  isNotification: 0
-  isTutorial: 0
   isOneTimeForAllInstancesOfSameType: 0
-  uxEntityType: 6
+  isGUITrigger: 0
+  uxTypeSO: {fileID: 11400000, guid: 432e5539495119b4489afbe801ae007f, type: 2}
 --- !u!1 &299914013
 GameObject:
   m_ObjectHideFlags: 0
@@ -1646,6 +1636,8 @@ MonoBehaviour:
   cameraSpawnPointOffset: {x: 0, y: 0, z: -10}
   gameOverCriteriaSO: {fileID: 11400000, guid: 19c02f12d4fdcd04384d44e99532818e, type: 2}
   playerTimesRemaining: 0
+  winUXSO: {fileID: 11400000, guid: 86082aec6dddeb341ab924470fa31d07, type: 2}
+  loseUXSO: {fileID: 11400000, guid: cc5d73d87fa146c4f82013078406687b, type: 2}
 --- !u!4 &407028773
 Transform:
   m_ObjectHideFlags: 0
@@ -1771,14 +1763,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 0
-  selectedNotification: 2
-  selectedTutorial: 0
-  isTip: 0
-  isNotification: 1
-  isTutorial: 0
   isOneTimeForAllInstancesOfSameType: 0
-  uxEntityType: 0
+  isGUITrigger: 0
+  uxTypeSO: {fileID: 11400000, guid: 6b4a22c666c291545b743ff0ce29b826, type: 2}
 --- !u!1 &627349475
 GameObject:
   m_ObjectHideFlags: 0
@@ -2635,14 +2622,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 0
-  selectedNotification: 2
-  selectedTutorial: 0
-  isTip: 0
-  isNotification: 1
-  isTutorial: 0
   isOneTimeForAllInstancesOfSameType: 0
-  uxEntityType: 0
+  isGUITrigger: 0
+  uxTypeSO: {fileID: 11400000, guid: 6b4a22c666c291545b743ff0ce29b826, type: 2}
 --- !u!1001 &868212732
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3414,14 +3396,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 6
-  selectedNotification: 0
-  selectedTutorial: 0
-  isTip: 1
-  isNotification: 0
-  isTutorial: 0
   isOneTimeForAllInstancesOfSameType: 0
-  uxEntityType: 6
+  isGUITrigger: 0
+  uxTypeSO: {fileID: 11400000, guid: fcacd3c7dee70a84da9c81db7c1abd84, type: 2}
 --- !u!1001 &1229198884
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4129,14 +4106,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 0
-  selectedNotification: 2
-  selectedTutorial: 0
-  isTip: 0
-  isNotification: 1
-  isTutorial: 0
   isOneTimeForAllInstancesOfSameType: 0
-  uxEntityType: 0
+  isGUITrigger: 0
+  uxTypeSO: {fileID: 11400000, guid: 6b4a22c666c291545b743ff0ce29b826, type: 2}
 --- !u!1 &1371714717
 GameObject:
   m_ObjectHideFlags: 0
@@ -4760,7 +4732,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 52.7
+  m_fontSize: 52.9
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -5234,14 +5206,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 7
-  selectedNotification: 0
-  selectedTutorial: 0
-  isTip: 1
-  isNotification: 0
-  isTutorial: 0
   isOneTimeForAllInstancesOfSameType: 0
-  uxEntityType: 6
+  isGUITrigger: 0
+  uxTypeSO: {fileID: 11400000, guid: f43a2ec3d4093504eb23bd5b6d067774, type: 2}
 --- !u!1 &1826627901
 GameObject:
   m_ObjectHideFlags: 0
@@ -5438,6 +5405,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 753db93c81923ae429e5d74d2969a819, type: 2}
   - {fileID: 11400000, guid: 505480b16cbad9c4482dd44adab8266b, type: 2}
   - {fileID: 11400000, guid: 9257c67f07964d34891ac4ac220d0d27, type: 2}
+  - {fileID: 11400000, guid: ecb89decc8922594c925d9490e55a64f, type: 2}
+  - {fileID: 11400000, guid: f58f7c99047412b4fae023c115e7c8c8, type: 2}
+  - {fileID: 11400000, guid: 9aaee7ede1559dc4693b2398abe7b338, type: 2}
 --- !u!4 &1905210503
 Transform:
   m_ObjectHideFlags: 0
@@ -5765,14 +5735,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 0
-  selectedNotification: 0
-  selectedTutorial: 0
-  isTip: 0
-  isNotification: 0
-  isTutorial: 1
   isOneTimeForAllInstancesOfSameType: 1
-  uxEntityType: 9
+  isGUITrigger: 0
+  uxTypeSO: {fileID: 11400000, guid: bebbfcb13f5c6154ebc2ace89ae4f9a5, type: 2}
 --- !u!135 &1989857810
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -5897,14 +5862,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 3
-  selectedNotification: 0
-  selectedTutorial: 0
-  isTip: 1
-  isNotification: 0
-  isTutorial: 0
   isOneTimeForAllInstancesOfSameType: 0
-  uxEntityType: 6
+  isGUITrigger: 0
+  uxTypeSO: {fileID: 11400000, guid: a8b4df020f6ab844294f148ba5e55ad7, type: 2}
 --- !u!1 &2073441097
 GameObject:
   m_ObjectHideFlags: 0
@@ -6015,14 +5975,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 0
-  selectedNotification: 2
-  selectedTutorial: 0
-  isTip: 0
-  isNotification: 1
-  isTutorial: 0
   isOneTimeForAllInstancesOfSameType: 0
-  uxEntityType: 0
+  isGUITrigger: 0
+  uxTypeSO: {fileID: 11400000, guid: 6b4a22c666c291545b743ff0ce29b826, type: 2}
 --- !u!1001 &2077012368
 PrefabInstance:
   m_ObjectHideFlags: 0

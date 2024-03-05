@@ -14,10 +14,6 @@ public class NotificationUIAlertController : Singleton<NotificationUIAlertContro
         ToggleAlertNotificationUI(false);
     }
 
-    public void SetAlertMessage(string message) => alertText.text = message;
-    public void UpdateAcceptButtonDisplayText(string displayText)=> acceptButton.GetComponentInChildren<TextMeshProUGUI>().text = displayText;
-    public void UpdateDeclineButtonDisplayText(string displayText) => declineButton.GetComponentInChildren<TextMeshProUGUI>().text = displayText;
-
     public void SetCallbackActionContinueWithSave(Action action)=> acceptCallback = action;
     public void SetCallbackActionContinueWithoutSave(Action action) => declineCallback = action;
     public void ToggleAlertNotificationUI(bool flag) => notificationAlertCanvasGO.SetActive(flag);

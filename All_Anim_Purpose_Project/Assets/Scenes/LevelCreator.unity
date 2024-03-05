@@ -282,15 +282,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 0
-  selectedNotification: 0
-  selectedTutorial: 4
-  isTip: 0
-  isNotification: 0
-  isTutorial: 1
   isOneTimeForAllInstancesOfSameType: 1
   isGUITrigger: 1
-  uxEntityType: 11
+  uxTypeSO: {fileID: 11400000, guid: fc08afb02c3510c4db62d02fcccf3a71, type: 2}
 --- !u!1 &107624816
 GameObject:
   m_ObjectHideFlags: 0
@@ -604,7 +598,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 59.45
+  m_fontSize: 59.35
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -654,50 +648,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 188331027}
   m_CullTransparentMesh: 1
---- !u!1 &246415298
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 246415299}
-  - component: {fileID: 246415300}
-  m_Layer: 0
-  m_Name: TweenHandler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &246415299
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 246415298}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1247.435, y: 802.6701, z: -5.32416}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 623609390}
-  m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &246415300
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 246415298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d6d318320753984b9e4cd730dfc5ff4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &257358153
 GameObject:
   m_ObjectHideFlags: 0
@@ -743,15 +693,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 0
-  selectedNotification: 0
-  selectedTutorial: 2
-  isTip: 0
-  isNotification: 0
-  isTutorial: 1
   isOneTimeForAllInstancesOfSameType: 1
   isGUITrigger: 0
-  uxEntityType: 7
+  uxTypeSO: {fileID: 11400000, guid: c448d4599190ae84a9ff4d66ba35ca13, type: 2}
 --- !u!135 &257358156
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1367,15 +1311,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 0
-  selectedNotification: 0
-  selectedTutorial: 6
-  isTip: 0
-  isNotification: 0
-  isTutorial: 1
   isOneTimeForAllInstancesOfSameType: 1
   isGUITrigger: 1
-  uxEntityType: 13
+  uxTypeSO: {fileID: 11400000, guid: e897ba1d7a36bcf428b5a420df678bc6, type: 2}
 --- !u!114 &412009623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1903,7 +1841,6 @@ Transform:
   - {fileID: 2093126412}
   - {fileID: 1813793644}
   - {fileID: 107624818}
-  - {fileID: 246415299}
   - {fileID: 813830407}
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -1995,7 +1932,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 648969561}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
@@ -2298,6 +2235,8 @@ MonoBehaviour:
   cameraSpawnPointOffset: {x: 0, y: 0, z: -10}
   gameOverCriteriaSO: {fileID: 11400000, guid: 962586b8e97cbe042810d7e76f43ee99, type: 2}
   playerTimesRemaining: 0
+  winUXSO: {fileID: 11400000, guid: 86082aec6dddeb341ab924470fa31d07, type: 2}
+  loseUXSO: {fileID: 11400000, guid: cc5d73d87fa146c4f82013078406687b, type: 2}
 --- !u!4 &801438195
 Transform:
   m_ObjectHideFlags: 0
@@ -2478,7 +2417,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 623609390}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &813830408
 MonoBehaviour:
@@ -3394,15 +3333,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 0
-  selectedNotification: 0
-  selectedTutorial: 5
-  isTip: 0
-  isNotification: 0
-  isTutorial: 1
   isOneTimeForAllInstancesOfSameType: 1
   isGUITrigger: 1
-  uxEntityType: 12
+  uxTypeSO: {fileID: 11400000, guid: 12d261a0d073e214daa7718f2fff0831, type: 2}
 --- !u!114 &1234681067
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4351,7 +4284,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 65.8
+  m_fontSize: 65.9
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -5204,15 +5137,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 0
-  selectedNotification: 0
-  selectedTutorial: 3
-  isTip: 0
-  isNotification: 0
-  isTutorial: 1
   isOneTimeForAllInstancesOfSameType: 1
   isGUITrigger: 1
-  uxEntityType: 10
+  uxTypeSO: {fileID: 11400000, guid: 01c62155d448d0b40b53e4131f65d607, type: 2}
 --- !u!1 &2045988643
 GameObject:
   m_ObjectHideFlags: 0

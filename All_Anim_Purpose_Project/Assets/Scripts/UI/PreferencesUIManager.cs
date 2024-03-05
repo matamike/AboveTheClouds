@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -14,11 +15,39 @@ public class PreferencesUIManager : Singleton<PreferencesUIManager>{
         InitializePreferencesUI();        
     }
 
+    private void OnCursorShow(object sender, EventArgs args) {
+        Debug.Log("Show Cursor");
+        Debug.Log("Disable UI if open");
+    }
+
+    private void OnCursorHide(object sender, EventArgs args){
+        Debug.Log("Hide Cursor");
+        Debug.Log("Enable UI if closed");
+    }
+
+    private void OnEnable(){
+        IUICursorToggle.OnShow += OnCursorShow;
+        IUICursorToggle.OnHide += OnCursorHide;      
+    }
+
+    private void OnDisable(){
+        IUICursorToggle.OnShow -= OnCursorShow;
+        IUICursorToggle.OnHide -= OnCursorHide;
+    }
+
+    //        TogglePreferencesUI();
+    //        CursorVisibilityUtility.SetCursorVisibility(preferencesPanelContainer.activeInHierarchy);
+    //        InputManager.Instance.SetControlLockStatus(preferencesPanelContainer.activeInHierarchy);
+    //        CameraController.Instance.SetLockCameraStatus(preferencesPanelContainer.activeInHierarchy);
+
     private void InitializePreferencesUI(){
         //Toggle Button Setup
         togglePreferencesUIButton.onClick.RemoveAllListeners();
         togglePreferencesUIButton.onClick.AddListener(() => {
             TogglePreferencesUI();
+            //CursorVisibilityUtility.SetCursorVisibility(preferencesPanelContainer.activeInHierarchy);
+            //InputManager.Instance.SetControlLockStatus(preferencesPanelContainer.activeInHierarchy);
+            //CameraController.Instance.SetLockCameraStatus(preferencesPanelContainer.activeInHierarchy);
         });
 
         //UX Setting Setup

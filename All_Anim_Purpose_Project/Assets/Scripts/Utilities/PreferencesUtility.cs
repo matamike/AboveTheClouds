@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using static InputManager;
 
 public static class PreferencesUtility{
     //Preferences
@@ -10,13 +7,13 @@ public static class PreferencesUtility{
     public static event EventHandler<OnUXOneTimeForAllUnitsOfTypeEventArgs> OnUXOneTimeForAllUnitsOfTypeLock;
     public static event EventHandler<OnUXOneTimeForAllUnitsOfTypeEventArgs> OnUXOneTimeForAllUnitsOfTypeReset;
 
-    private static Dictionary<UXTrigger.UXEntityType, bool> oneTimeLocksForAllInstancesUnits = new Dictionary<UXTrigger.UXEntityType, bool>() { };
+    private static Dictionary<UXTypeUtility.UXType, bool> oneTimeLocksForAllInstancesUnits = new Dictionary<UXTypeUtility.UXType, bool>() { };
 
     public class OnUXOneTimeForAllUnitsOfTypeEventArgs : EventArgs{
         public int special_id;
     }
 
-    public static void RequestLockOneTimeForAllOfTheType(object sender, UXTrigger.UXEntityType entityType) {
+    public static void RequestLockOneTimeForAllOfTheType(object sender, UXTypeUtility.UXType entityType) {
         oneTimeLocksForAllInstancesUnits[entityType] = true;
 
         OnUXOneTimeForAllUnitsOfTypeLock?.Invoke(sender, new OnUXOneTimeForAllUnitsOfTypeEventArgs(){
@@ -24,13 +21,13 @@ public static class PreferencesUtility{
         });
     }
 
-    public static void RequestResetOneTimeForAllOfTheType(object sender, UXTrigger.UXEntityType entityType){
+    public static void RequestResetOneTimeForAllOfTheType(object sender, UXTypeUtility.UXType entityType){
         oneTimeLocksForAllInstancesUnits[entityType] = true;
         OnUXOneTimeForAllUnitsOfTypeReset?.Invoke(sender, new OnUXOneTimeForAllUnitsOfTypeEventArgs(){
         });
     }
 
-    public static bool IsEntityOneTimeLocked(UXTrigger.UXEntityType entityType){
+    public static bool IsEntityOneTimeLocked(UXTypeUtility.UXType entityType){
         if (oneTimeLocksForAllInstancesUnits.ContainsKey(entityType)){
             return oneTimeLocksForAllInstancesUnits[entityType];
         }

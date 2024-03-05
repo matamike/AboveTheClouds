@@ -1008,6 +1008,8 @@ MonoBehaviour:
   cameraSpawnPointOffset: {x: 0, y: 0, z: -10}
   gameOverCriteriaSO: {fileID: 11400000, guid: eda7e277e382aa14ba4e467adad0bc51, type: 2}
   playerTimesRemaining: 0
+  winUXSO: {fileID: 11400000, guid: 86082aec6dddeb341ab924470fa31d07, type: 2}
+  loseUXSO: {fileID: 11400000, guid: cc5d73d87fa146c4f82013078406687b, type: 2}
 --- !u!4 &801438195
 Transform:
   m_ObjectHideFlags: 0
@@ -1166,15 +1168,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10de1553f6faaa4991c00f60b7d34c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedTip: 0
-  selectedNotification: 0
-  selectedTutorial: 1
-  isTip: 0
-  isNotification: 0
-  isTutorial: 1
   isOneTimeForAllInstancesOfSameType: 1
   isGUITrigger: 0
-  uxEntityType: 9
+  uxTypeSO: {fileID: 11400000, guid: 04e568aeab3860542b6a1b3edf01e4b2, type: 2}
 --- !u!135 &871411851
 SphereCollider:
   m_ObjectHideFlags: 0
