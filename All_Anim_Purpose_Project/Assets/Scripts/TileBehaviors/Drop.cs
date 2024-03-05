@@ -5,7 +5,7 @@ using UnityEngine;
 public class Drop : MonoBehaviour, IInteractable{
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private bool _isLoosened = false;
-    [SerializeField] private Vector3 startPosition, endPosition;
+    [SerializeField] private Vector3 startPosition = Vector3.zero, endPosition = Vector3.zero;
     [SerializeField] private float fallDownTimer = 0.0f, fallDownWaitTime= 3f;
     private string[] lookUpNames = { "Player", "DroppedObject" };
     private float speed = 0.5f;
@@ -13,7 +13,7 @@ public class Drop : MonoBehaviour, IInteractable{
     private TileAudio tileAudio;
     private bool pendingDestruction = false;
 
-    private void Start(){
+    private void Awake(){
         tileAudio = transform.root.GetComponent<TileAudio>();
     }
 
@@ -24,7 +24,8 @@ public class Drop : MonoBehaviour, IInteractable{
     private void DropBehavior(){
         if (_isLoosened){
             fallDownTimer += Time.deltaTime * TimeMultiplierUtility.GetTimeMultiplier();
-            transform.position = Vector3.Lerp(startPosition, endPosition, fallDownTimer * speed * TimeMultiplierUtility.GetTimeMultiplier());  
+            transform.position = Vector3.Lerp(startPosition, endPosition, fallDownTimer * speed * TimeMultiplierUtility.GetTimeMultiplier());
+            //Destroy Drop Tile SubProcess
             if (fallDownTimer > fallDownWaitTime){
                 _rigidbody.isKinematic = false;
                 fallDownTimer = 0.0f;
@@ -35,6 +36,11 @@ public class Drop : MonoBehaviour, IInteractable{
                 DispatcherUtility.RequestBroadcast(gameObject, entityActivator);
             }
         }
+        else{
+            if(transform.position != startPosition && startPosition != endPosition){
+                transform.position = Vector3.Lerp(transform.position, startPosition, fallDownTimer * speed * TimeMultiplierUtility.GetTimeMultiplier());
+            }
+        }
     }
 
 
@@ -42,12 +48,13 @@ public class Drop : MonoBehaviour, IInteractable{
     public void Interact(GameObject invokeSource){
         if (LayerUtility.LayerIsName(invokeSource.layer, lookUpNames)){
             if (!_isLoosened){
-                if (!pendingDestruction)
-                {
+                if (!pendingDestruction){
                     tileAudio.PlayTileSFX(TileAudio.TILE_SFX_TYPE.Activation);
                     entityActivator = invokeSource;
-                    startPosition = transform.position;
-                    endPosition = transform.position + (Vector3.down * 0.3f);
+                    if (startPosition == Vector3.zero){
+                        startPosition = transform.position;
+                        endPosition = transform.position + (Vector3.down * 0.3f);
+                    }
                     _isLoosened = true;
                 }
             }
@@ -55,5 +62,10 @@ public class Drop : MonoBehaviour, IInteractable{
     }
 
     public void CancelInteracion(GameObject invokeSource){
+        if (LayerUtility.LayerIsName(invokeSource.layer, lookUpNames)){
+            tileAudio.PlayTileSFX(TileAudio.TILE_SFX_TYPE.Activation);
+            _isLoosened = false;
+            fallDownTimer = 0.0f;
+        }
     }
 }

@@ -12,7 +12,7 @@ public class Spin : MonoBehaviour, IInteractable{
 
     private TileAudio tileAudio;
 
-    private void Start(){
+    private void Awake(){
         tileAudio = transform.root.GetComponent<TileAudio>();
     }
 

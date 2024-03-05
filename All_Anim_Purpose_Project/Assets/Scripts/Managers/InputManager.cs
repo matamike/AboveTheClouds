@@ -84,7 +84,8 @@ public class InputManager : Singleton<InputManager>{
 
     // Event Listeners
     private void InputSystem_Sprint_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj){
-        if(!controlsLocked) OnSprintPerformed?.Invoke(this, new OnSprintPerformedEventArgs{ sprint = false });
+        //if(!controlsLocked) 
+        OnSprintPerformed?.Invoke(this, new OnSprintPerformedEventArgs{ sprint = false });
     }
 
     private void InputSystem_Sprint_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj){
@@ -92,7 +93,8 @@ public class InputManager : Singleton<InputManager>{
     }
 
     private void InputSystem_Move_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj){
-        if (!controlsLocked) OnMovePerformed?.Invoke(this, new OnMovePerformedEventArgs { direction = Vector3.zero });
+        //if (!controlsLocked)
+        OnMovePerformed?.Invoke(this, new OnMovePerformedEventArgs { direction = Vector3.zero });
     }
 
     private void InputSystem_Move_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj){

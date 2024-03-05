@@ -7,7 +7,7 @@ using UnityEngine;
 [CreateAssetMenu()]
 public class UserDefinedMappedDifficultySO : ScriptableObject {
     [SerializeField] private List<GridPoolObjectSO> tilePool;
-    [SerializeField][Range(2, 10)] private int tileMapSizeX = 3, tileMapSizeY = 3;
+    [SerializeField][Range(2, 100)] private int tileMapSizeX = 3, tileMapSizeY = 3;
     private readonly int gridCount = 1;
     private TileType.Type[,] tileMappingTileTypes; //mapping of the types in grid.
     private GameObject[,] tileMappingGameObjects; //gameobject collection of Tiletype.Type grid.
@@ -92,7 +92,7 @@ public class UserDefinedMappedDifficultySO : ScriptableObject {
         CreateInitialMapping();
         LoadMapping();
         #if UNITY_EDITOR
-        EditorUtility.SetDirty(this); //uncomment in editor (comment in build)
+        EditorUtility.SetDirty(this);
         #endif
     }
 }

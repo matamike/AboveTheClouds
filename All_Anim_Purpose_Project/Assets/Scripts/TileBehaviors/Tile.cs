@@ -5,22 +5,14 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour{
     private TileGrid _tileGridAssigned;
-    private bool _setToDestroy = false;
 
     private void OnDisable(){
        if(_tileGridAssigned is not null) _tileGridAssigned.OnGridDestroying -= TileGrid_OnGridDestroying;
     }
 
-    private void Update(){
-        if(_tileGridAssigned == null && !_setToDestroy) {
-            TileGrid_OnGridDestroying(this, EventArgs.Empty);
-        }
-    }
-
     private void TileGrid_OnGridDestroying(object sender, EventArgs e){
         gameObject.SetActive(false);
         Destroy(gameObject, UnityEngine.Random.Range(10, 16));
-        _setToDestroy = true;
     }
     public void AssignTileGrid(TileGrid tileGrid){
         _tileGridAssigned = tileGrid;

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ChargeSpring : MonoBehaviour, IInteractable{
@@ -21,8 +19,13 @@ public class ChargeSpring : MonoBehaviour, IInteractable{
     private float chargeTime = 5f;
     private float cooldown = 3f;
 
-    private void Start(){
+    private void Awake(){
         tileAudio = transform.root.GetComponent<TileAudio>();
+    }
+
+    private void Start(){
+        chargeTime = Random.Range(2f, 7f);
+        cooldown = Random.Range(2f, 3f);
     }
 
     private void Update(){

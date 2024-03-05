@@ -7,7 +7,9 @@ public class SimpleTile : MonoBehaviour, IInteractable{
     private TileAudio tileAudio;
     private bool hasObjOnIt = false;
 
-    private void Start(){
+    
+    private void Awake()
+    {
         tileAudio = transform.root.GetComponent<TileAudio>();
     }
 
