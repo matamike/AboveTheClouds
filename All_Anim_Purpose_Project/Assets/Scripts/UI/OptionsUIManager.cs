@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PreferencesUIManager : Singleton<PreferencesUIManager>{
+public class OptionsUIManager : Singleton<OptionsUIManager>{
     [SerializeField] private Button togglePreferencesUIButton; //toggle button
+    [SerializeField] private Button quitGameButton;
     [SerializeField] private GameObject preferencesPanelContainer; //main container(all gui)
     [SerializeField] private GameObject uxToggleSettingPrefab; //access to toggle (on/off) type of setting template
     [SerializeField] private GameObject uxSettingsContainer; //settings instances container(vertical layout group)
@@ -15,39 +14,34 @@ public class PreferencesUIManager : Singleton<PreferencesUIManager>{
         InitializePreferencesUI();        
     }
 
-    private void OnCursorShow(object sender, EventArgs args) {
-        Debug.Log("Show Cursor");
-        Debug.Log("Disable UI if open");
-    }
-
-    private void OnCursorHide(object sender, EventArgs args){
-        Debug.Log("Hide Cursor");
-        Debug.Log("Enable UI if closed");
-    }
-
     private void OnEnable(){
-        IUICursorToggle.OnShow += OnCursorShow;
-        IUICursorToggle.OnHide += OnCursorHide;      
+        IUICursorToggle.OnToggle += Cursor_OnToggle;
+        IUICursorToggle.OnForceClose += Cursor_OnForceClose;
     }
-
     private void OnDisable(){
-        IUICursorToggle.OnShow -= OnCursorShow;
-        IUICursorToggle.OnHide -= OnCursorHide;
+        IUICursorToggle.OnToggle -= Cursor_OnToggle;
+        IUICursorToggle.OnForceClose -= Cursor_OnForceClose;
     }
 
-    //        TogglePreferencesUI();
-    //        CursorVisibilityUtility.SetCursorVisibility(preferencesPanelContainer.activeInHierarchy);
-    //        InputManager.Instance.SetControlLockStatus(preferencesPanelContainer.activeInHierarchy);
-    //        CameraController.Instance.SetLockCameraStatus(preferencesPanelContainer.activeInHierarchy);
+    private void Cursor_OnToggle(object sender, EventArgs args){
+        if (sender.GetType() == typeof(OptionsUIManager)){
+            TogglePreferencesUI();
+        }
+    }
+
+    private void Cursor_OnForceClose(object sender, EventArgs args) => CloseUI();
 
     private void InitializePreferencesUI(){
         //Toggle Button Setup
         togglePreferencesUIButton.onClick.RemoveAllListeners();
         togglePreferencesUIButton.onClick.AddListener(() => {
             TogglePreferencesUI();
-            //CursorVisibilityUtility.SetCursorVisibility(preferencesPanelContainer.activeInHierarchy);
-            //InputManager.Instance.SetControlLockStatus(preferencesPanelContainer.activeInHierarchy);
-            //CameraController.Instance.SetLockCameraStatus(preferencesPanelContainer.activeInHierarchy);
+        });
+
+        //Quit Game Button Setup
+        quitGameButton.onClick.RemoveAllListeners();
+        quitGameButton.onClick.AddListener(() => {
+            Application.Quit();
         });
 
         //UX Setting Setup
@@ -68,5 +62,12 @@ public class PreferencesUIManager : Singleton<PreferencesUIManager>{
         });
     }
 
-   private void TogglePreferencesUI() => preferencesPanelContainer.SetActive(!preferencesPanelContainer.activeInHierarchy);
+    private void TogglePreferencesUI(){
+        preferencesPanelContainer.SetActive(!preferencesPanelContainer.activeInHierarchy);
+        if (!preferencesPanelContainer.activeInHierarchy){
+            CursorVisibilityUtility.ForceCloseAllEntities(this);
+        }
+    }
+
+    private void CloseUI() => preferencesPanelContainer.SetActive(false);
 }

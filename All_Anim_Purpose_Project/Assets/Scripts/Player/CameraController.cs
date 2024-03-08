@@ -25,7 +25,18 @@ public class CameraController : Singleton<CameraController>{
     [SerializeField] private float blockedViewFollowDistance = 2f;
     private bool _rotationLocked = false;
 
+    private void OnEnable(){
+        IUICursorToggle.OnCursorShow += IUICursorToggle_CursorShow;
+        IUICursorToggle.OnCursorHide += IUICursorToggle_CursorHide;
+    }
 
+    private void OnDisable(){
+        IUICursorToggle.OnCursorShow += IUICursorToggle_CursorShow;
+        IUICursorToggle.OnCursorHide += IUICursorToggle_CursorHide;
+    }
+
+    private void IUICursorToggle_CursorHide(object sender, EventArgs e) => SetLockCameraStatus(false);
+    private void IUICursorToggle_CursorShow(object sender, EventArgs e) => SetLockCameraStatus(true);
 
     private void Start(){
         _targetVelocity = Vector3.zero;

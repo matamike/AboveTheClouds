@@ -5,6 +5,7 @@ public class UXTrigger : MonoBehaviour{
     [SerializeField] private bool isOneTimeForAllInstancesOfSameType = false;
     [SerializeField] private bool isGUITrigger = false;
     [SerializeField] private UXTypeSO uxTypeSO;
+    [SerializeField] private bool hideCursorAfterTriggerEnd = true;
 
     private bool isUxGlobalEnabled = false;
     private bool locked = false;
@@ -63,6 +64,7 @@ public class UXTrigger : MonoBehaviour{
                     uxTypeSO.GetUXDescription(), 
                     uxTypeSO.GetUXTitle(), 
                     () => { TimeMultiplierUtility.PauseTime(); }, 
-                    () => { TimeMultiplierUtility.ResumeTime(); });
+                    () => { TimeMultiplierUtility.ResumeTime(); },
+                    hideCursorAfterTriggerEnd);
     }
 }

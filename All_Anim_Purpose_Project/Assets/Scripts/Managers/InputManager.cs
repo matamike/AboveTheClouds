@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class InputManager : Singleton<InputManager>{
@@ -42,10 +40,11 @@ public class InputManager : Singleton<InputManager>{
         _inputSystem.Game.SpecialMove_2.performed += InputSystem_SpecialMove_2_performed;
         _inputSystem.Game.SpecialMove_3.performed += InputSystem_SpecialMove_3_performed;
         _inputSystem.Game.SpecialMove_4.performed += InputSystem_SpecialMove_4_performed;
+        IUICursorToggle.OnCursorShow += IUICursorToggle_CursorShow;
+        IUICursorToggle.OnCursorHide += IUICursorToggle_CursorHide;
     }
 
-    private void OnDisable()
-    {
+    private void OnDisable(){
         _inputSystem.Game.Move.performed -= InputSystem_Move_performed;
         _inputSystem.Game.Move.canceled -= InputSystem_Move_canceled;
         _inputSystem.Game.Sprint.performed -= InputSystem_Sprint_performed;
@@ -55,27 +54,11 @@ public class InputManager : Singleton<InputManager>{
         _inputSystem.Game.SpecialMove_2.performed -= InputSystem_SpecialMove_2_performed;
         _inputSystem.Game.SpecialMove_3.performed -= InputSystem_SpecialMove_3_performed;
         _inputSystem.Game.SpecialMove_4.performed -= InputSystem_SpecialMove_4_performed;
+        IUICursorToggle.OnCursorShow += IUICursorToggle_CursorShow;
+        IUICursorToggle.OnCursorHide += IUICursorToggle_CursorHide;
 
         if (_inputSystem != null) _inputSystem.Game.Disable(); // Disable
     }
-
-    private void InputSystem_SpecialMove_4_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj){
-        if (!controlsLocked) OnSpecialMovePerformed?.Invoke(this, new OnSpecialMovePerformedEventArgs { special_id = 4 });
-    }
-
-    private void InputSystem_SpecialMove_3_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj){
-        if (!controlsLocked) OnSpecialMovePerformed?.Invoke(this, new OnSpecialMovePerformedEventArgs { special_id = 3 });
-    }
-
-    private void InputSystem_SpecialMove_2_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj){
-        if (!controlsLocked) OnSpecialMovePerformed?.Invoke(this, new OnSpecialMovePerformedEventArgs { special_id = 2 });
-    }
-
-    private void InputSystem_SpecialMove_1_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj){
-        if (!controlsLocked) OnSpecialMovePerformed?.Invoke(this, new OnSpecialMovePerformedEventArgs{ special_id = 1});
-    }
-
-
 
     public void SetControlLockStatus(bool flag){
         controlsLocked = flag;
@@ -84,7 +67,6 @@ public class InputManager : Singleton<InputManager>{
 
     // Event Listeners
     private void InputSystem_Sprint_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj){
-        //if(!controlsLocked) 
         OnSprintPerformed?.Invoke(this, new OnSprintPerformedEventArgs{ sprint = false });
     }
 
@@ -92,8 +74,30 @@ public class InputManager : Singleton<InputManager>{
         if (!controlsLocked) OnSprintPerformed?.Invoke(this, new OnSprintPerformedEventArgs{ sprint = true });
     }
 
+    private void IUICursorToggle_CursorHide(object sender, EventArgs e) => SetControlLockStatus(false);
+    private void IUICursorToggle_CursorShow(object sender, EventArgs e) => SetControlLockStatus(true);
+
+    private void InputSystem_SpecialMove_4_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        if (!controlsLocked) OnSpecialMovePerformed?.Invoke(this, new OnSpecialMovePerformedEventArgs { special_id = 4 });
+    }
+
+    private void InputSystem_SpecialMove_3_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        if (!controlsLocked) OnSpecialMovePerformed?.Invoke(this, new OnSpecialMovePerformedEventArgs { special_id = 3 });
+    }
+
+    private void InputSystem_SpecialMove_2_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        if (!controlsLocked) OnSpecialMovePerformed?.Invoke(this, new OnSpecialMovePerformedEventArgs { special_id = 2 });
+    }
+
+    private void InputSystem_SpecialMove_1_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        if (!controlsLocked) OnSpecialMovePerformed?.Invoke(this, new OnSpecialMovePerformedEventArgs { special_id = 1 });
+    }
+
     private void InputSystem_Move_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj){
-        //if (!controlsLocked)
         OnMovePerformed?.Invoke(this, new OnMovePerformedEventArgs { direction = Vector3.zero });
     }
 

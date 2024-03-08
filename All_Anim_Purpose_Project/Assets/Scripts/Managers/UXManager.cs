@@ -8,8 +8,9 @@ public class UXManager : Singleton<UXManager>{
     [SerializeField] private GameObject _uxContainer;
     [SerializeField] private GameObject _uxCardTemplatePrefab;
 
-    public void FireUX(string message = "", string title = "", Action preActionCallback = null, Action postActionCallback = null){
-        PrepareUXAlert(message, title, preActionCallback, postActionCallback);
+    public void FireUX(string message = "", string title = "", Action preActionCallback = null, Action postActionCallback = null, bool cursorToggle = true)
+    {
+        PrepareUXAlert(message, title, preActionCallback, postActionCallback, cursorToggle);
     }
 
 
@@ -19,7 +20,7 @@ public class UXManager : Singleton<UXManager>{
         return card;
     }
 
-    private void PrepareUXAlert(string uxText, string uxTitle, Action preActionCallback, Action postActionCallback){
+    private void PrepareUXAlert(string uxText, string uxTitle, Action preActionCallback, Action postActionCallback, bool cursorHideAfterAction = true){
         GameObject card = CreateUXCard();
         UXCard uxCard = card.GetComponent<UXCard>();
 
@@ -41,6 +42,7 @@ public class UXManager : Singleton<UXManager>{
             TweenHandler.Instance.CreateTween(tweenParamsReturn);
             Destroy(card, 2f);
             if(postActionCallback != null) postActionCallback();
+            if(cursorHideAfterAction) CursorVisibilityUtility.SetCursorVisibility(false);
         });
 
         //Assign Original Position
@@ -49,5 +51,6 @@ public class UXManager : Singleton<UXManager>{
         TweenParameters tweeParamsFire = new(card, _uxContainer.transform.position, new Vector3(0,0,359.9f), card.transform.localScale, 12f, 2f);
         TweenHandler.Instance.CreateTween(tweeParamsFire);
         if (preActionCallback != null) preActionCallback();
+        CursorVisibilityUtility.SetCursorVisibility(true);
     }
 }

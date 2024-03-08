@@ -32,16 +32,58 @@ public class LevelCreatorUIManager : Singleton<LevelCreatorUIManager> {
     // Variables
     private List<Tuple<Vector2Int, TileType.Type>> _unsavedChanges = new List<Tuple<Vector2Int, TileType.Type>>();
 
+    private void OnEnable(){
+        IUICursorToggle.OnToggle += Cursor_OnToggle;
+        IUICursorToggle.OnForceClose += Cursor_OnForceClose;
+    }
+    private void OnDisable(){
+        IUICursorToggle.OnToggle -= Cursor_OnToggle;
+        IUICursorToggle.OnForceClose -= Cursor_OnForceClose;
+    }
+
     private void Start(){
         InitializeToggle();
+        InitializeTemplates();
     }
 
     private void LateUpdate(){
         if (_hasInitialized && toggleEntity.activeInHierarchy) ComputeGridCellSize(targetGridSize.x, targetGridSize.y);
     }
 
+    private void Cursor_OnToggle(object sender, EventArgs args){
+        if (sender.GetType() == typeof(LevelCreatorUIManager)) ToggleUI();
+    }
+
+    private void Cursor_OnForceClose(object sender, EventArgs args) => CloseUI();
+
     private void InitializeToggle(){
         toggleButton.GetComponent<Button>().onClick.AddListener(() =>{ ToggleUI();});
+    }
+
+    private void InitializeTemplates(){
+        _hasInitialized = true;
+        tileGroupGridLayoutRectTransform = tileGroupGridLayout.GetComponent<RectTransform>();
+        PopulateUserDefinedDifficultySOsList();
+        CreateTemplateList();
+
+        //Save Button Listener
+        saveChangesButton.GetComponent<Button>().onClick.AddListener(() => {
+            if (_unsavedChanges.Count > 0) SaveProcess();
+        });
+
+        //Test Map Button Listener
+        testMapButton.GetComponent<Button>().onClick.AddListener(() => {
+            //AutoSave
+            if (_unsavedChanges.Count > 0) SaveProcess();
+            //Hide Canvas
+            ToggleCanvas(false);
+            //Set Callback On Exit from Test
+            TestMapUIManager.Instance.SetExitTestAction(() => { ToggleCanvas(true); CursorVisibilityUtility.SetCursorVisibility(true); });
+            TestMapUIManager.Instance.EnableTestUI();
+            TestMapUIManager.Instance.CreateTestLevel();
+
+            CursorVisibilityUtility.SetCursorVisibility(false);
+        });    
     }
 
     private void PopulateUserDefinedDifficultySOsList(){
@@ -57,68 +99,54 @@ public class LevelCreatorUIManager : Singleton<LevelCreatorUIManager> {
 
     public void ToggleCanvas(bool toggle) => levelCreatorCanvas.enabled = toggle;
 
+    private void CloseUI(){
+        toggleEntity.SetActive(false);
+        ToggleTestMapButton(false);
+    }
+
     private void ToggleUI(){
-        //True->False Levelcreator GUI
-        if (_hasInitialized && toggleEntity.activeInHierarchy){
-            if (HasPendingChanges()){
-                Debug.Log("Found Pending Changes (Unsaved)");
-
-                //Set Callback for ContinueWithSave Button
-                NotificationUIAlertController.Instance.SetCallbackActionContinueWithSave(() => {
-                    OnTemplateRequestSave?.Invoke(this, new OnTemplateRequestSaveArgs { changes = _unsavedChanges });
-                    ResetGUIElementsToDefaultState();
-                    toggleEntity.SetActive(!toggleEntity.activeInHierarchy);
-                });
-
-                //Set Callback for ContinueWithoutSave Button
-                NotificationUIAlertController.Instance.SetCallbackActionContinueWithoutSave(() => {
-                    ResetGUIElementsToDefaultState();
-                    toggleEntity.SetActive(!toggleEntity.activeInHierarchy);
-                });
-
-                //Enable Notification Alert
-                NotificationUIAlertController.Instance.ToggleAlertNotificationUI(true);
+        if (levelCreatorCanvas.enabled){
+            if (_hasInitialized && toggleEntity.activeInHierarchy){
+                bool hasChanges = CheckPendingChanges();
+                if (hasChanges) return;
             }
-            else{
-                Debug.Log("Didn't find any pending changes moving on!");
+
+            //Toggle
+            toggleEntity.SetActive(!toggleEntity.activeInHierarchy);
+
+            //Disable TestMap Button when Toggling the main Level Creator GUI (ON)
+            if (toggleEntity.activeInHierarchy) ToggleTestMapButton(false);
+
+            //Force Close All Interacting Entities
+            if (!toggleEntity.activeInHierarchy) CursorVisibilityUtility.ForceCloseAllEntities(this);
+        }
+        else{
+            CursorVisibilityUtility.SetCursorVisibility(false);
+        }
+    }
+
+    private bool CheckPendingChanges(){
+        if (HasPendingChanges()){
+            //Set Callback for ContinueWithSave Button
+            NotificationUIAlertController.Instance.SetCallbackActionContinueWithSave(() => {
+                OnTemplateRequestSave?.Invoke(this, new OnTemplateRequestSaveArgs { changes = _unsavedChanges });
                 ResetGUIElementsToDefaultState();
                 toggleEntity.SetActive(!toggleEntity.activeInHierarchy);
-            }
-            return;
-        }
-
-        //False->True Levelcreator GUI
-        toggleEntity.SetActive(!toggleEntity.activeInHierarchy);
-        
-
-        //1st time initilization (save templates setup)
-        if (!_hasInitialized && toggleEntity.activeInHierarchy){
-            _hasInitialized = true;
-            tileGroupGridLayoutRectTransform = tileGroupGridLayout.GetComponent<RectTransform>();
-            PopulateUserDefinedDifficultySOsList();
-            CreateTemplateList();
-
-            //Save Button Listener
-            saveChangesButton.GetComponent<Button>().onClick.AddListener(() => {
-                if (_unsavedChanges.Count > 0) SaveProcess();
             });
 
-            //Test Map Button Listener
-            testMapButton.GetComponent<Button>().onClick.AddListener(() => {
-                //AutoSave
-                if (_unsavedChanges.Count > 0) SaveProcess();
-                //Hide Canvas
-                ToggleCanvas(false);
-                //Set Callback On Exit from Test
-                TestMapUIManager.Instance.SetExitTestAction(() => { ToggleCanvas(true); });
-                TestMapUIManager.Instance.EnableTestUI();
-                TestMapUIManager.Instance.CreateTestLevel();
+            //Set Callback for ContinueWithoutSave Button
+            NotificationUIAlertController.Instance.SetCallbackActionContinueWithoutSave(() => {
+                ResetGUIElementsToDefaultState();
+                toggleEntity.SetActive(!toggleEntity.activeInHierarchy);
             });
-        }
 
-        //Disable TestMap Button when Toggling the main Level Creator GUI (ON)
-        if (toggleEntity.activeInHierarchy){
-            ToggleTestMapButton(false);
+            //Enable Notification Alert
+            NotificationUIAlertController.Instance.ToggleAlertNotificationUI(true);
+            return true;
+        }
+        else{
+            ResetGUIElementsToDefaultState();
+            return false;
         }
     }
 

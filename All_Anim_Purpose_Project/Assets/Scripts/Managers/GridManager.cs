@@ -33,19 +33,6 @@ public class GridManager : Singleton<GridManager>{
         DestroyAllGrids();
     }
 
-    //private void Update()
-    //{
-    //    //Debug Console(Testing Only)
-    //    if (Input.GetKeyDown(KeyCode.C))
-    //    {
-    //        CreateGrid(testGridSizeX, testGridSizeY, true);
-    //    }
-    //    if (Input.GetKeyDown(KeyCode.R))
-    //    {
-    //        DestroyGrid(0);
-    //    }
-    //}
-
     //Event Hooks
     private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1){
         StartCoroutine(WaitForLoading(1.5f));

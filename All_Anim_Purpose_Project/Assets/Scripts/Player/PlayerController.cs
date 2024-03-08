@@ -71,7 +71,7 @@ public class PlayerController : Singleton<PlayerController> {
         if(IsGrounded()) _isJumping = e.jump;
     }
     private void InputUtility_OnSpecialMovePerformed(object sender, InputManager.OnSpecialMovePerformedEventArgs e){
-        Debug.Log("Special Move ID: " + e.special_id);
+        //Debug.Log("Special Move ID: " + e.special_id);
         //TODO IMPLEMENT FUTURE !!!
     }
     private void Update() {  

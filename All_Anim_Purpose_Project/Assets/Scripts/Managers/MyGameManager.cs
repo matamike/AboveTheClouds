@@ -23,7 +23,7 @@ public class MyGameManager : Singleton<MyGameManager> {
     [SerializeField] private UXTypeSO loseUXSO;
 
     private void Start(){
-        //Setup Game Over Criteria (todo setup according to difficulty presets - think about it)
+        //Setup Game Over Criteria
         playerTimesRemaining = gameOverCriteriaSO.GetNumberOfRespawns();
 
         spawnPoint = GameObject.Find("SpawnPoint").transform;
@@ -33,8 +33,6 @@ public class MyGameManager : Singleton<MyGameManager> {
         if (GridManager.Instance != null){
             GridManager.Instance.OnLastCheckpointReached += GridManager_OnLastCheckpointReached;
         }
-
-        //CursorVisibilityUtility.SetCursorVisibility(false);
     }
 
     private void OnDisable(){

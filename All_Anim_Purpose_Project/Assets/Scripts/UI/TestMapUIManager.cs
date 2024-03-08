@@ -13,9 +13,12 @@ public class TestMapUIManager : Singleton<TestMapUIManager>{
 
     private void Start(){
         SetupSpawnAction();
-
         DisableTestUI();
         InitializeButtonCallbacks();
+    }
+
+    private void Update(){
+        HandleTestMapInputActions();
     }
 
     private void SetupSpawnAction(){
@@ -23,15 +26,39 @@ public class TestMapUIManager : Singleton<TestMapUIManager>{
             InputManager.Instance.SetControlLockStatus(true);
             GridManager.Instance.RequestDestroyGrid(0);
             container.SetActive(false);
-            if (exitTestAction != null)
-            {
-                exitTestAction();
-                exitTestAction = null; // remove after execution
-            }
+            ExecuteExitAction();
         };
     }
 
+    private void ExecuteExitAction(){
+        if (exitTestAction != null){
+            exitTestAction();
+            exitTestAction = null; // remove after execution
+        }
+    }
+
+    private void HandleTestMapInputActions(){
+        if (container.activeInHierarchy){
+            if (Input.GetKeyDown(KeyCode.E)){
+                CreateTestLevel();
+            }
+
+            if(Input.GetKeyDown(KeyCode.R)) {
+                MyGameManager.Instance.SimplePlayerRespawn();
+            }
+
+            if (Input.GetKeyDown(KeyCode.B)){
+                DisableTestUI();
+            }
+
+            if (Input.GetKeyDown(KeyCode.Backspace)) {
+                MyGameManager.Instance.TeleportPlayerBackToHub();
+            }
+        }
+    }
+
     private void InitializeButtonCallbacks(){
+        //We need a way to trigger these button from keys instead.
         exitTestButton.onClick.AddListener(() => { DisableTestUI(); });
         respawnPlayerButton.onClick.AddListener(() => { MyGameManager.Instance.SimplePlayerRespawn(); });
         resetLevelButton.onClick.AddListener(() => { CreateTestLevel(); });

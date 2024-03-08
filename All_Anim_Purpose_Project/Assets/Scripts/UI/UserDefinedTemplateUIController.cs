@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -23,51 +22,65 @@ public class UserDefinedTemplateUIController : Singleton<UserDefinedTemplateUICo
     private bool _hasInitialized = false;
     private RectTransform tileGroupGridLayoutRectTransform;
 
-    private void Start(){
-        InitializeToggle();
-        ToggleCanvas();
+    private void OnEnable()
+    {
+        IUICursorToggle.OnToggle += Cursor_OnToggle;
+        IUICursorToggle.OnForceClose += Cursor_OnForceClose;
+    }
+    private void OnDisable()
+    {
+        IUICursorToggle.OnToggle -= Cursor_OnToggle;
+        IUICursorToggle.OnForceClose -= Cursor_OnForceClose;
     }
 
-
-    //        ToggleUI();
-    //        CursorVisibilityUtility.SetCursorVisibility(container.activeInHierarchy);
-    //        InputManager.Instance.SetControlLockStatus(container.activeInHierarchy);
-    //        CameraController.Instance.SetLockCameraStatus(container.activeInHierarchy);
+    private void Start(){
+        InitializeToggle();
+        InitializeTemplates();
+        ToggleCanvas();
+    }
 
     private void LateUpdate(){
         if (_hasInitialized && container.activeInHierarchy) ComputeGridCellSize(targetGridSize.x, targetGridSize.y);
     }
 
+    private void Cursor_OnToggle(object sender, EventArgs args){
+        if (sender.GetType() == typeof(UserDefinedTemplateUIController)){
+            ToggleUserDefinedTemplate();
+        }
+    }
+
+    private void Cursor_OnForceClose(object sender, EventArgs args) => CloseUI();
+
     private void InitializeToggle(){
-        toggleButton.GetComponent<Button>().onClick.AddListener(() => { ToggleUI(); });
+        toggleButton.GetComponent<Button>().onClick.AddListener(() => { ToggleUserDefinedTemplate(); });
     }
 
     public void ToggleCanvas() => userDefinedTemplateUICanvas.enabled = !userDefinedTemplateUICanvas.enabled;
 
-    private void ToggleUI(){
-        //True->False UserDefinedDifficulty UI
-        if (_hasInitialized && container.activeInHierarchy){
+    private void CloseUI(){
+        container.SetActive(false);
+        ToggleConfirmSelectionButton(false);
+    }
+
+    private void ToggleUserDefinedTemplate(){
+        //Toggle container (only if canvas is enabled by trigger)
+        if (userDefinedTemplateUICanvas.enabled) container.SetActive(!container.activeInHierarchy);
+
+        if (!container.activeInHierarchy){
             ResetGUIElementsToDefaultState();
-            container.SetActive(!container.activeInHierarchy);
-            return;
+            ToggleConfirmSelectionButton(false);
+            CursorVisibilityUtility.ForceCloseAllEntities(this);
         }
-
-        //False->True Levelcreator GUI
-        container.SetActive(!container.activeInHierarchy);
-
-
-        //1st time initilization (save templates setup)
-        if (!_hasInitialized && container.activeInHierarchy)
-        {
+    }
+    private void InitializeTemplates(){
+        if (!_hasInitialized){
             _hasInitialized = true;
             tileGroupGridLayoutRectTransform = tileGroupGridLayout.GetComponent<RectTransform>();
             PopulateUserDefinedDifficultySOsList();
             CreateTemplateList();
         }
-
-        //Disable Confirm Selection
-        if(!container.activeInHierarchy) ToggleConfirmSelectionButton(true);
     }
+
     private void CreateTemplateList(){
         ClearChilds(templateGroupVerticalLayout.gameObject);
         //Create 
@@ -95,7 +108,7 @@ public class UserDefinedTemplateUIController : Singleton<UserDefinedTemplateUICo
             OnCustomDifficultySelected?.Invoke(this, new OnCustomDifficultySelectedEventArgs {
                 userDefinedMappedDifficultySO = customDiffSOsList[index]
             });
-            ToggleUI();
+            ToggleUserDefinedTemplate();
             ToggleCanvas();
             ToggleConfirmSelectionButton(false);
         });
