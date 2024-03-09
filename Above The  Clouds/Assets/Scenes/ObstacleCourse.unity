@@ -810,6 +810,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4599062051242127467, guid: 6efdda2c9bba7354ea9f62f41bf907ae,
         type: 3}
+      propertyPath: lengthInSec
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 4599062051242127467, guid: 6efdda2c9bba7354ea9f62f41bf907ae,
+        type: 3}
       propertyPath: VelocityModule.y.scalar
       value: 0.1
       objectReference: {fileID: 0}
@@ -817,6 +822,16 @@ PrefabInstance:
         type: 3}
       propertyPath: VelocityModule.orbitalY.scalar
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4599062051242127467, guid: 6efdda2c9bba7354ea9f62f41bf907ae,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4599062051242127467, guid: 6efdda2c9bba7354ea9f62f41bf907ae,
+        type: 3}
+      propertyPath: InitialModule.gravityModifier.scalar
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 4599062051242127469, guid: 6efdda2c9bba7354ea9f62f41bf907ae,
         type: 3}
@@ -1171,6 +1186,7 @@ MonoBehaviour:
   isOneTimeForAllInstancesOfSameType: 1
   isGUITrigger: 0
   uxTypeSO: {fileID: 11400000, guid: 04e568aeab3860542b6a1b3edf01e4b2, type: 2}
+  hideCursorAfterTriggerEnd: 1
 --- !u!135 &871411851
 SphereCollider:
   m_ObjectHideFlags: 0

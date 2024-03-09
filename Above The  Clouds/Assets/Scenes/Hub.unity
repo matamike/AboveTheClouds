@@ -656,7 +656,7 @@ MonoBehaviour:
   - {fileID: 7501229788094249196, guid: e1c068ca3789a8b4a85d95b597b80ffc, type: 3}
   - {fileID: 5007133645576378148, guid: d22d96e4f4f06d64fba4c313396be393, type: 3}
   offset: {x: 1, y: 0, z: 0}
-  startingLogoPosition: {x: -4.6, y: 2, z: -10}
+  startingLogoPosition: {x: -8, y: 2, z: -10}
   logo: ABOVE THE CLOUDS
   letters: []
 --- !u!4 &231747201
