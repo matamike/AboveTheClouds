@@ -16,7 +16,8 @@ Some random maps contain multiple checkpoints. Custom maps allow a single grid m
 Tile Types: 
 
 1) Simple Tile: This is a regular tile without any additional effect.
-    //TODO INSERT IMAGE  
+   ![simple_tile](https://github.com/matamike/AboveTheClouds/assets/55056883/ade1a266-9998-4543-b059-b209e42c1cc2)
+
 2) Empty Tile: This serves as an empty area (gap) inside the mapping.
    //TODO INSERT IMAGE
 3) Spinning Tile: This tile activates upon touch and spins while trying to push gradually the player out of it.
