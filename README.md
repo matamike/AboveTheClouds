@@ -7,6 +7,7 @@ Summary: This is an 3rd person obstacle course game, set in a cloud oriented env
 As a player you are given the options to try different difficulty modes or create and try custom maps.
 
 ![Logo_Intro](https://github.com/matamike/Anim_Tests/assets/55056883/08950a6c-ecdc-4757-bf75-6a946e14308d)
+![Cover](https://github.com/matamike/AboveTheClouds/assets/55056883/90a467e0-2d5c-4a75-b329-c2c849a5c9fd)
 
 The maps contain grid shaped areas that the player has to traverse until reaching a large tile that serves the purpose of a checkpoint.
 Some random maps contain multiple checkpoints. Custom maps allow a single grid mapping.
