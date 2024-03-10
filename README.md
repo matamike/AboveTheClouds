@@ -52,12 +52,15 @@ As soon as you finish up with editing the mappings, you can visit the hub
 and use the respective portal to select the mapping of your choice and try it out in the real environment.
 
    Selecting Template:
+   
    ![Selecting_Creator_Template](https://github.com/matamike/AboveTheClouds/assets/55056883/35dac354-1670-49cb-a119-da6f038a7026)
 
    Changing Tile Type on Selected Template:
+   
    ![Changing_Tile_Type](https://github.com/matamike/AboveTheClouds/assets/55056883/a1a6a212-c4b0-455a-8949-058a20e93c7c)
 
    Saving and Testing Active Template:
+   
    ![Save_and_Test_Template](https://github.com/matamike/AboveTheClouds/assets/55056883/85624af8-08a5-44d8-9003-f97619cccb07)
    
 Hint: You can try the mapping inside the creator, in every step of the way and help shape it better.
