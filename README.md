@@ -19,16 +19,20 @@ Tile Types:
    ![simple_tile](https://github.com/matamike/AboveTheClouds/assets/55056883/ade1a266-9998-4543-b059-b209e42c1cc2)
 
 2) Empty Tile: This serves as an empty area (gap) inside the mapping.
-   //TODO INSERT IMAGE
+   ![empty_tile](https://github.com/matamike/AboveTheClouds/assets/55056883/137a8609-f74c-40d7-ad24-889af46e95a4)
+
 3) Spinning Tile: This tile activates upon touch and spins while trying to push gradually the player out of it.
    The Player has to move accordingly inside that tile, while it spins or risk moving to another tile.
-   //TODO INSERT IMAGE
+   ![spinning_tile](https://github.com/matamike/AboveTheClouds/assets/55056883/a8786a31-6881-454f-acde-d0087fe160c1)
+
 4) Drop Tile: This tile activates upon touch and slowly falls. Remaining on that tile for more than needed will result in falling from the platform.
    The Player has to leave this tile as soon as possible.
-   //TODO INSERT IMAGE
+   ![drop_tile](https://github.com/matamike/AboveTheClouds/assets/55056883/80a12064-8a9d-4bcd-9464-92e6f44b0e44)
+
 5) Bouncy Tile: This tile will activate upon touch and will charge the spring, that will push the player to the sky.
    This particular tile can be used to power jump to other tiles using its feature or simply await the effect to stop and move to other tiles.
-   //TODO INSERT IMAGE
+   ![bouncy_tile](https://github.com/matamike/AboveTheClouds/assets/55056883/313e1483-e5ce-41b8-9db0-48b25e42cb75)
+
 
    
 Hints/Tips: The play area setup is densely clouded, which means that up to certain degree the player will have limited visibility, which is a key factor.
