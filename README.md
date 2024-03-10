@@ -4,6 +4,7 @@ Name: Above The Clouds
 
 Unity Editor Version: 2021.3.15f1
 ![Cover](https://github.com/matamike/AboveTheClouds/assets/55056883/90a467e0-2d5c-4a75-b329-c2c849a5c9fd)
+
 Summary: This is an 3rd person obstacle course game, set in a cloud oriented environment.
 As a player you are given the options to try different difficulty modes or create and try custom maps.
 The maps contain grid shaped areas that the player has to traverse until reaching a large tile that serves the purpose of a checkpoint.
