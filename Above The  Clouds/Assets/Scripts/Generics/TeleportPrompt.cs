@@ -9,6 +9,7 @@ public class TeleportPrompt : MonoBehaviour{
     [SerializeField] DifficultyPresetSO _targetDifficultyPresetSO;
     [SerializeField] UserDefinedMappedDifficultySO _userDefinedMappedDifficultySO;
     [SerializeField] bool requireCustomDifficultyUIPrompt = false;
+    [SerializeField] PortalMaterialHandler portalMaterialHandler;
     
     //Player Components Ref
     private Rigidbody targetRb;
@@ -24,6 +25,7 @@ public class TeleportPrompt : MonoBehaviour{
         if (UserDefinedTemplateUIController.Instance != null){
             UserDefinedTemplateUIController.Instance.OnCustomDifficultySelected += UserDefinedTemplateUIController_OnCustomDifficultySelected;
         }
+        portalMaterialHandler = GetComponent<PortalMaterialHandler>();
     }
 
     private void OnDisable(){
@@ -47,6 +49,8 @@ public class TeleportPrompt : MonoBehaviour{
             targetRb = targetGo.GetComponent<Rigidbody>();
             if (requireCustomDifficultyUIPrompt) UserDefinedTemplateUIController.Instance.ToggleCanvas();
             else StartTransition(other.gameObject);
+            portalMaterialHandler.TryChangeSpeed(0.7f);
+            portalMaterialHandler.ChangeIntensity(300f);
         }
     }
 
@@ -56,6 +60,8 @@ public class TeleportPrompt : MonoBehaviour{
             else StopTransition();
             targetGo = null;
             targetRb = null;
+            portalMaterialHandler.TryChangeSpeed(0.1f);
+            portalMaterialHandler.ChangeIntensity(100f);
         }
     }
 

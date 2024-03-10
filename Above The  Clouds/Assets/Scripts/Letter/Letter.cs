@@ -1,4 +1,5 @@
 using UnityEngine;
+using ObjTween;
 
 public class Letter : MonoBehaviour{
     [SerializeField] private char letter = ' ';

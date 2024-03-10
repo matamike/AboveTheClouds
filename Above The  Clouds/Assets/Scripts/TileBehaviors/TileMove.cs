@@ -1,7 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using ObjTween;
 
 public class TileMove : MonoBehaviour{
     [SerializeField] [Range(1f,10f)]private float resetDuration;

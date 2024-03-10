@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using ObjTween;
 
 public class LogoHandler : Singleton<LogoHandler>
 {

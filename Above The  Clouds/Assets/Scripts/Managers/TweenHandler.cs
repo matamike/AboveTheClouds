@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using ObjTween;
 
 public class TweenHandler : Singleton<TweenHandler>{
     private Dictionary<GameObject, Tuple<Task, CancellationTokenSource>> _tasks = new Dictionary<GameObject, Tuple<Task, CancellationTokenSource>>();
