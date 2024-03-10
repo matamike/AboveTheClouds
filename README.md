@@ -1,4 +1,4 @@
-# Anim_Tests
+![Save_and_Test_Template](https://github.com/matamike/AboveTheClouds/assets/55056883/2a8f54ea-1cab-439d-b458-cdfea8c5d8fe)# Anim_Tests
 
 Name: Above The Clouds
 
@@ -46,11 +46,20 @@ Creator:
 
 The creator is another aspect of the game. Predefined templates are present by visiting one of the portals and enter the creator.
 Inside the creator area the player will be introduced to the creator process and can pick several different fixed size mapping that can be modified to your liking.
-Those mappins can be tested again through a different portal inside the Hub area (starting area). As soon as you finish up with editing the mappings, you can visit the hub
-and use the respective portal to select the mapping and try out in the real environment your mapping.
 
-//TODO INSERT IMAGE
+Those mappings can be tested again through a different portal inside the Hub area (starting area). 
+As soon as you finish up with editing the mappings, you can visit the hub
+and use the respective portal to select the mapping of your choice and try it out in the real environment.
 
+   Selecting Template:
+   ![Selecting_Creator_Template](https://github.com/matamike/AboveTheClouds/assets/55056883/35dac354-1670-49cb-a119-da6f038a7026)
+
+   Changing Tile Type on Selected Template:
+   ![Changing_Tile_Type](https://github.com/matamike/AboveTheClouds/assets/55056883/a1a6a212-c4b0-455a-8949-058a20e93c7c)
+
+   Saving and Testing Active Template:
+   ![Save_and_Test_Template](https://github.com/matamike/AboveTheClouds/assets/55056883/85624af8-08a5-44d8-9003-f97619cccb07)
+   
 Hint: You can try the mapping inside the creator, in every step of the way and help shape it better.
 
 
