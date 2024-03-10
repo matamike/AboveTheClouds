@@ -1,4 +1,4 @@
-![Save_and_Test_Template](https://github.com/matamike/AboveTheClouds/assets/55056883/2a8f54ea-1cab-439d-b458-cdfea8c5d8fe)# Anim_Tests
+# Anim_Tests
 
 Name: Above The Clouds
 
