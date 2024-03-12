@@ -10,7 +10,8 @@ public class OptionsUIManager : Singleton<OptionsUIManager>{
     [SerializeField] private GameObject preferencesPanelContainer; //main container(all gui)
     [SerializeField] private GameObject uxToggleSettingPrefab; //access to toggle (on/off) type of setting template
     [SerializeField] private GameObject uxSettingsContainer; //settings instances container(vertical layout group)
-    [SerializeField] private TMP_Dropdown resolutionDropdown; //will be the holder for changing resolution. 
+    [SerializeField] private TMP_Dropdown resolutionDropdown; //will be the holder for changing resolution.
+    [SerializeField] private Toggle invertVerticalAxisToggle, invertHorizontalAxisToggle;
 
     private readonly Dictionary<int, Vector2Int> resolutions = new Dictionary<int, Vector2Int>(){
         { 0, new Vector2Int(1024, 768) },
@@ -90,6 +91,19 @@ public class OptionsUIManager : Singleton<OptionsUIManager>{
                 Debug.Log("Selected Resolution: " + resolutions[id]);
                 Screen.SetResolution(resolutions[id].x, resolutions[id].y, true);
             } 
+        });
+
+
+        //Toggle Horizontal
+        invertHorizontalAxisToggle.isOn = PreferencesUtility.GetInvertedMouseHorizontalAxisState();
+        invertHorizontalAxisToggle.onValueChanged.AddListener((bool state) => {
+            PreferencesUtility.SetInvertedMouseHorizontalAxis(state);
+        });
+
+        //Toggle Vertical
+        invertVerticalAxisToggle.isOn = PreferencesUtility.GetInvertedMouseVerticalAxisState();
+        invertVerticalAxisToggle.onValueChanged.AddListener((bool state) => {
+            PreferencesUtility.SetInvertedMouseVerticalAxis(state);
         });
     }
 

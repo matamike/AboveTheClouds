@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraController : Singleton<CameraController>{
@@ -24,23 +22,39 @@ public class CameraController : Singleton<CameraController>{
     private Vector3 _cameraUp, _cameraDown;
     [SerializeField] private float blockedViewFollowDistance = 2f;
     private bool _rotationLocked = false;
+    //Prefs
+    private float horizontalRotation = 1f, verticalRotation = 1f;
 
     private void OnEnable(){
         IUICursorToggle.OnCursorShow += IUICursorToggle_CursorShow;
         IUICursorToggle.OnCursorHide += IUICursorToggle_CursorHide;
+        PreferencesUtility.OnInvertedMouseHorizontalChanged += PreferencesUtility_OnInvertedMouseHorizontalChanged;
+        PreferencesUtility.OnInvertedMouseVerticalChanged += PreferencesUtility_OnInvertedMouseVerticalChanged;
     }
 
     private void OnDisable(){
-        IUICursorToggle.OnCursorShow += IUICursorToggle_CursorShow;
-        IUICursorToggle.OnCursorHide += IUICursorToggle_CursorHide;
+        IUICursorToggle.OnCursorShow -= IUICursorToggle_CursorShow;
+        IUICursorToggle.OnCursorHide -= IUICursorToggle_CursorHide;
+        PreferencesUtility.OnInvertedMouseHorizontalChanged -= PreferencesUtility_OnInvertedMouseHorizontalChanged;
+        PreferencesUtility.OnInvertedMouseVerticalChanged -= PreferencesUtility_OnInvertedMouseVerticalChanged;
     }
 
     private void IUICursorToggle_CursorHide(object sender, EventArgs e) => SetLockCameraStatus(false);
     private void IUICursorToggle_CursorShow(object sender, EventArgs e) => SetLockCameraStatus(true);
 
+    private void PreferencesUtility_OnInvertedMouseVerticalChanged(object sender, PreferencesUtility.OnInvertedMouseVerticalEventArgs e){
+        ChangeVerticalAxisCameraOrientationDirection(e.verticalInverted);
+    }
+
+    private void PreferencesUtility_OnInvertedMouseHorizontalChanged(object sender, PreferencesUtility.OnInvertedMouseHorizontalEventArgs e){
+        ChangeHorizontalAxisCameraOrientationDirection(e.horizontalInverted);
+    }
+
     private void Start(){
         _targetVelocity = Vector3.zero;
         CalculateOffset();
+        ChangeVerticalAxisCameraOrientationDirection(PreferencesUtility.GetInvertedMouseVerticalAxisState());
+        ChangeHorizontalAxisCameraOrientationDirection(PreferencesUtility.GetInvertedMouseHorizontalAxisState());
     }
 
     private void Update(){
@@ -51,6 +65,17 @@ public class CameraController : Singleton<CameraController>{
         FollowTarget();
         UpdateDirections();
         CalculateOffset();
+    }
+
+    private void ChangeHorizontalAxisCameraOrientationDirection(bool flag){
+        if (flag) horizontalRotation = 1f;
+        else horizontalRotation = -1f;
+    }
+
+    private void ChangeVerticalAxisCameraOrientationDirection(bool flag)
+    {
+        if (flag) verticalRotation = 1f;
+        else verticalRotation = -1f;
     }
 
     public void AssignFollowTransform(Transform followTransform){
@@ -135,10 +160,9 @@ public class CameraController : Singleton<CameraController>{
     }
     private void RotateAroundTarget(){
         if (_rotateAroundTransform == null) return;
-        //CalculateOffset();
         //Retrieve normalized mouse X,Y Axis Values
-        _lastKnownMousePositionXAxis = MouseUtility.GetMouseXNormalized();
-        _lastKnownMousePositionYAxis = MouseUtility.GetMouseYNormalized();
+        _lastKnownMousePositionXAxis = MouseUtility.GetMouseXNormalized() * horizontalRotation;
+        _lastKnownMousePositionYAxis = MouseUtility.GetMouseYNormalized() * verticalRotation;
 
         //Calculate offset (Apply Negative spectrum)
         float xRotationEulerAngles;
