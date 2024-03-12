@@ -33,7 +33,8 @@ public class GridManager : Singleton<GridManager>{
         DestroyAllGrids();
     }
 
-    //private void Update(){
+    //private void Update()
+    //{
     //    if (Input.GetKeyDown(KeyCode.E)) CreateGrid(testGridSizeX, testGridSizeY);
     //    if (Input.GetKeyDown(KeyCode.R)) DestroyGrid(0);
     //}
