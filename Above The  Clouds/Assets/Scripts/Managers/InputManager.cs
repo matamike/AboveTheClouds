@@ -49,13 +49,13 @@ public class InputManager : Singleton<InputManager>{
         _inputSystem.Game.Move.canceled -= InputSystem_Move_canceled;
         _inputSystem.Game.Sprint.performed -= InputSystem_Sprint_performed;
         _inputSystem.Game.Sprint.canceled -= InputSystem_Sprint_canceled;
-        _inputSystem.Game.Jump.performed += InputSystem_Jump_performed;
+        _inputSystem.Game.Jump.performed -= InputSystem_Jump_performed;
         _inputSystem.Game.SpecialMove_1.performed -= InputSystem_SpecialMove_1_performed;
         _inputSystem.Game.SpecialMove_2.performed -= InputSystem_SpecialMove_2_performed;
         _inputSystem.Game.SpecialMove_3.performed -= InputSystem_SpecialMove_3_performed;
         _inputSystem.Game.SpecialMove_4.performed -= InputSystem_SpecialMove_4_performed;
-        IUICursorToggle.OnCursorShow += IUICursorToggle_CursorShow;
-        IUICursorToggle.OnCursorHide += IUICursorToggle_CursorHide;
+        IUICursorToggle.OnCursorShow -= IUICursorToggle_CursorShow;
+        IUICursorToggle.OnCursorHide -= IUICursorToggle_CursorHide;
 
         if (_inputSystem != null) _inputSystem.Game.Disable(); // Disable
     }
