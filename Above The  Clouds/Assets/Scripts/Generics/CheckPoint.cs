@@ -16,8 +16,17 @@ public class CheckPoint : MonoBehaviour{
     private string[] layerNames = { "Player" };
     private int checkpointIndex = -1;
 
-    private void OnEnable(){
+    private void Awake(){
         lightSource = GetComponentInChildren<Light>();
+    }
+
+
+    private void OnEnable(){
+        IInteractable.OnInteractorPositionChanged += Interactable_OnInteractorPositionChanged;
+    }
+
+    private void OnDisable(){
+        IInteractable.OnInteractorPositionChanged -= Interactable_OnInteractorPositionChanged;
     }
 
     private void OnDestroy(){
@@ -38,11 +47,18 @@ public class CheckPoint : MonoBehaviour{
         }
     }
 
+    private void Interactable_OnInteractorPositionChanged(object sender, IInteractable.OnInteractEventArgs e){
+        float intensity = Vector3.Distance(transform.position, e.position) * 10f;
+        AdjustLightIndicatorIntensity(intensity);
+    }
+
     private void DisableLightSource(){
         if(lightSource != null){
             lightSource.enabled = false;
         }
     }
+
+    private void AdjustLightIndicatorIntensity(float intensity) => lightSource.intensity = intensity;
     public void SetCheckPointIndex(int index) => checkpointIndex = index;
 
     public void SetElementBoundToCheckoint(object element) => elementAssigned = element;

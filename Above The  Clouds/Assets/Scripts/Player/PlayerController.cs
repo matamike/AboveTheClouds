@@ -95,6 +95,11 @@ public class PlayerController : Singleton<PlayerController> {
 
     private void OnCollisionEnter(Collision other){
         TryAddCollidingElement(other.gameObject);
+        if (other.gameObject.TryGetComponent(out IInteractable interactable)){
+            IInteractable.OnInteractorPositionChanged?.Invoke(this, new IInteractable.OnInteractEventArgs{
+                position = transform.position,
+            });
+        }
     }
 
     private void OnCollisionStay(Collision other){

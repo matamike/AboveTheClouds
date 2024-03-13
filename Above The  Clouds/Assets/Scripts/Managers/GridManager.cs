@@ -33,11 +33,11 @@ public class GridManager : Singleton<GridManager>{
         DestroyAllGrids();
     }
 
-    //private void Update()
-    //{
-    //    if (Input.GetKeyDown(KeyCode.E)) CreateGrid(testGridSizeX, testGridSizeY);
-    //    if (Input.GetKeyDown(KeyCode.R)) DestroyGrid(0);
-    //}
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.E)) CreateGrid(testGridSizeX, testGridSizeY);
+        if (Input.GetKeyDown(KeyCode.R)) DestroyGrid(0);
+    }
 
     //Event Hooks
     private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1){

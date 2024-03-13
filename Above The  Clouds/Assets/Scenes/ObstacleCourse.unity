@@ -2027,8 +2027,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2cf7752a8acce0141872215656d16af9, type: 2}
   - {fileID: 11400000, guid: 1d0c50d30ed9b9c429eea91a36bc0366, type: 2}
   startingGridPosition: {x: 0, y: 0, z: 4.5}
-  testGridSizeX: 30
-  testGridSizeY: 30
+  testGridSizeX: 5
+  testGridSizeY: 5
   checkpointPrefab: {fileID: 5486055944467724396, guid: b7db273c86a4bd84a94136eb1c52215c,
     type: 3}
 --- !u!4 &2105130797
