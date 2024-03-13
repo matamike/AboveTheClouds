@@ -5,7 +5,6 @@ public class CameraController : Singleton<CameraController>{
     public static event EventHandler OnDirectionChanged;
 
     [SerializeField] private Transform _rotateAroundTransform;
-    [SerializeField][Range(1f, 10f)] private float rotationSpeed = 2f;
     [SerializeField] private Transform _followFocusTransform;
     [SerializeField][Range(0f, 1f)] private float followSpeed = 0.25f;
     [SerializeField][Range(1f, 10f)] private float followDistance = 6f;
@@ -24,12 +23,14 @@ public class CameraController : Singleton<CameraController>{
     private bool _rotationLocked = false;
     //Prefs
     private float horizontalRotation = 1f, verticalRotation = 1f;
+    private float mouseSpeed;
 
     private void OnEnable(){
         IUICursorToggle.OnCursorShow += IUICursorToggle_CursorShow;
         IUICursorToggle.OnCursorHide += IUICursorToggle_CursorHide;
         PreferencesUtility.OnInvertedMouseHorizontalChanged += PreferencesUtility_OnInvertedMouseHorizontalChanged;
         PreferencesUtility.OnInvertedMouseVerticalChanged += PreferencesUtility_OnInvertedMouseVerticalChanged;
+        PreferencesUtility.OnMouseSensitivityChanged += PreferencesUtility_OnMouseSensitivityChanged;
     }
 
     private void OnDisable(){
@@ -37,6 +38,7 @@ public class CameraController : Singleton<CameraController>{
         IUICursorToggle.OnCursorHide -= IUICursorToggle_CursorHide;
         PreferencesUtility.OnInvertedMouseHorizontalChanged -= PreferencesUtility_OnInvertedMouseHorizontalChanged;
         PreferencesUtility.OnInvertedMouseVerticalChanged -= PreferencesUtility_OnInvertedMouseVerticalChanged;
+        PreferencesUtility.OnMouseSensitivityChanged -= PreferencesUtility_OnMouseSensitivityChanged;
     }
 
     private void IUICursorToggle_CursorHide(object sender, EventArgs e) => SetLockCameraStatus(false);
@@ -50,11 +52,14 @@ public class CameraController : Singleton<CameraController>{
         ChangeHorizontalAxisCameraOrientationDirection(e.horizontalInverted);
     }
 
+    private void PreferencesUtility_OnMouseSensitivityChanged(object sender, PreferencesUtility.OnMouseSensitivityEventArgs e) => mouseSpeed = e.sensitivity;
+
     private void Start(){
         _targetVelocity = Vector3.zero;
         CalculateOffset();
         ChangeVerticalAxisCameraOrientationDirection(PreferencesUtility.GetInvertedMouseVerticalAxisState());
         ChangeHorizontalAxisCameraOrientationDirection(PreferencesUtility.GetInvertedMouseHorizontalAxisState());
+        mouseSpeed = PreferencesUtility.GetMouseSensitivity();
     }
 
     private void Update(){
@@ -170,19 +175,19 @@ public class CameraController : Singleton<CameraController>{
         else xRotationEulerAngles = transform.eulerAngles.x - 360f;
 
         //Rotation X,Y Axeses
-        transform.RotateAround(_rotateAroundTransform.position, transform.up, _lastKnownMousePositionXAxis * rotationSpeed); //Mouse X (Y Axis - Rotation)
+        transform.RotateAround(_rotateAroundTransform.position, transform.up, _lastKnownMousePositionXAxis * mouseSpeed); //Mouse X (Y Axis - Rotation)
 
         //Mouse Y (X Axis - Rotation)
         if ((xRotationEulerAngles > 0f && xRotationEulerAngles < _XAxisAngleMaxThreshold) || (xRotationEulerAngles < 0f && xRotationEulerAngles > _XAxisAngleMinThreshold)){
-            transform.RotateAround(_rotateAroundTransform.position, transform.right, _lastKnownMousePositionYAxis * rotationSpeed); 
+            transform.RotateAround(_rotateAroundTransform.position, transform.right, _lastKnownMousePositionYAxis * mouseSpeed); 
         }
         else //Limits Reached
         {
             if(xRotationEulerAngles > _XAxisAngleMaxThreshold && _lastKnownMousePositionYAxis < 0f)
-                transform.RotateAround(_rotateAroundTransform.position, transform.right, _lastKnownMousePositionYAxis * rotationSpeed);
+                transform.RotateAround(_rotateAroundTransform.position, transform.right, _lastKnownMousePositionYAxis * mouseSpeed);
 
             if (xRotationEulerAngles < _XAxisAngleMinThreshold && _lastKnownMousePositionYAxis > 0f)
-                transform.RotateAround(_rotateAroundTransform.position, transform.right, _lastKnownMousePositionYAxis * rotationSpeed);
+                transform.RotateAround(_rotateAroundTransform.position, transform.right, _lastKnownMousePositionYAxis * mouseSpeed);
         }
 
         //Face Target

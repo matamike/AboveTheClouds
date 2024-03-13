@@ -12,6 +12,7 @@ public class OptionsUIManager : Singleton<OptionsUIManager>{
     [SerializeField] private GameObject uxSettingsContainer; //settings instances container(vertical layout group)
     [SerializeField] private TMP_Dropdown resolutionDropdown; //will be the holder for changing resolution.
     [SerializeField] private Toggle invertVerticalAxisToggle, invertHorizontalAxisToggle;
+    [SerializeField] private Slider mouseSensitivitySlider;
 
     private readonly Dictionary<int, Vector2Int> resolutions = new Dictionary<int, Vector2Int>(){
         { 0, new Vector2Int(1024, 768) },
@@ -104,6 +105,12 @@ public class OptionsUIManager : Singleton<OptionsUIManager>{
         invertVerticalAxisToggle.isOn = PreferencesUtility.GetInvertedMouseVerticalAxisState();
         invertVerticalAxisToggle.onValueChanged.AddListener((bool state) => {
             PreferencesUtility.SetInvertedMouseVerticalAxis(state);
+        });
+
+        //Mouse Sensitivity Slider
+        mouseSensitivitySlider.value = PreferencesUtility.GetMouseSensitivity();
+        mouseSensitivitySlider.onValueChanged.AddListener((float value) =>{
+            PreferencesUtility.SetMouseSensitivity(value);
         });
     }
 
