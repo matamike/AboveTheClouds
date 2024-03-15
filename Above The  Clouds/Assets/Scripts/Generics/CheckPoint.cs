@@ -4,9 +4,12 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider))]
 public class CheckPoint : MonoBehaviour{
     public static event EventHandler<OnCheckPointReachedEventArgs> OnCheckPointReached;
+    [SerializeField] private GameObject checkPointHighlightPrefab;
+
     private bool hasReached = false;
-    [SerializeField] private object elementAssigned = null;
+    private object elementAssigned = null;
     private Light lightSource = null;
+    private GameObject checkPointHighlight;
 
     public class OnCheckPointReachedEventArgs : EventArgs{
         public int index;
@@ -43,6 +46,7 @@ public class CheckPoint : MonoBehaviour{
                 });
                 hasReached = true;
                 DisableLightSource();
+                Destroy(checkPointHighlight);
             }
         }
     }
@@ -50,6 +54,13 @@ public class CheckPoint : MonoBehaviour{
     private void Interactable_OnInteractorPositionChanged(object sender, IInteractable.OnInteractEventArgs e){
         float intensity = Vector3.Distance(transform.position, e.position) * 10f;
         AdjustLightIndicatorIntensity(intensity);
+    }
+
+    public void CreateCheckPointHighlight(){
+        checkPointHighlight = Instantiate(checkPointHighlightPrefab, transform.position, Quaternion.identity);
+        checkPointHighlight.transform.position += new Vector3(0f, 2.5f, 0f);
+        Canvas checkpointHighlightCanvas = checkPointHighlight.GetComponent<Canvas>();
+        checkpointHighlightCanvas.worldCamera = FindObjectOfType<Camera>();
     }
 
     private void DisableLightSource(){

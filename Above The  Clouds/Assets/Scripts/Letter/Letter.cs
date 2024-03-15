@@ -17,7 +17,7 @@ public class Letter : MonoBehaviour{
         Vector3 targetPosition = transform.position + new Vector3(0f, -10f, 0f);
         TweenParameters tweenParameters = new TweenParameters(gameObject, targetPosition, Vector3.zero, gameObject.transform.localScale, tweenTime, timeout);
         TweenHandler.Instance.CreateTween(tweenParameters);
-        LogoHandler.Instance.RequestRemoval(gameObject, timeout);
+        LogoHandler.Instance.RequestCharacterRemoval(gameObject, timeout);
     }
 
     public char GetLetter() => letter;

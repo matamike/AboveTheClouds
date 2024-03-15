@@ -33,12 +33,6 @@ public class GridManager : Singleton<GridManager>{
         DestroyAllGrids();
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.E)) CreateGrid(testGridSizeX, testGridSizeY);
-        if (Input.GetKeyDown(KeyCode.R)) DestroyGrid(0);
-    }
-
     //Event Hooks
     private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1){
         StartCoroutine(WaitForLoading(1.5f));
@@ -147,7 +141,8 @@ public class GridManager : Singleton<GridManager>{
             CheckPoint checkpoint = go.GetComponent<CheckPoint>();
             checkpoint.SetCheckPointIndex(_checkPointReached + 1);
             //Create bond between checkpoint and grid
-            checkpoint.SetElementBoundToCheckoint(_grids[index]); 
+            checkpoint.SetElementBoundToCheckoint(_grids[index]);
+            checkpoint.CreateCheckPointHighlight();
         }
     }
 }
